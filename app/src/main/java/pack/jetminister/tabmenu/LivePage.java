@@ -12,7 +12,6 @@ import pack.jetminister.R;
 
 public class LivePage extends Fragment {
 
-
     public LivePage() {
         // Required empty public constructor
     }
