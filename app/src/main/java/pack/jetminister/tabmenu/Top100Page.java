@@ -11,9 +11,9 @@ import android.view.ViewGroup;
 import pack.jetminister.R;
 
 
-public class Top100 extends Fragment {
+public class Top100Page extends Fragment {
 
-    public Top100() {
+    public Top100Page() {
         // Required empty public constructor
     }
 
