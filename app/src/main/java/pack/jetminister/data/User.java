@@ -4,18 +4,15 @@ public class User {
 
     private String userid, username, password, email, imageURL, bio;
     private String[] followers, following;
-    private boolean streamer;
+    private boolean streamer = false;
 
-    public User(String userid, String username, String password, String email, String imageURL, String bio, String[] followers, String[] following, boolean streamer) {
+    public User(String userid, String username, String password, String email, String imageURL, String bio) {
         this.userid = userid;
         this.username = username;
         this.password = password;
         this.email = email;
         this.imageURL = imageURL;
         this.bio = bio;
-        this.followers = followers;
-        this.following = following;
-        this.streamer = streamer;
     }
 
     public User() {
