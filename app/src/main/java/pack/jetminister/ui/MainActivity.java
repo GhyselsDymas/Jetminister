@@ -61,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
 
         //set menu item title and fragment to 'Start'
         toolbar.setTitle(R.string.page_start);
+
+        toolbar.hide();
+
         loadFragment(new LiveFragment());
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottom_nav);
