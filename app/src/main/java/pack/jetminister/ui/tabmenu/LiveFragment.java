@@ -26,6 +26,6 @@ public class LiveFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tabmenu_live_page, container, false);
+        return inflater.inflate(R.layout.fragment_live_, container, false);
     }
 }
