@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "330178857579",
+    "firebase_url": "https://jetministerstream.firebaseio.com",
+    "project_id": "jetministerstream",
+    "storage_bucket": "jetministerstream.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:330178857579:android:eb622f247d65ea259cbf2e",
+        "android_client_info": {
+          "package_name": "pack.jetminister"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "330178857579-bhdjl32m46nn1qr1jqqgj68rl22ninm4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0diojapmuTtrbtvUzqtixWNHHaQXNDSM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "330178857579-bhdjl32m46nn1qr1jqqgj68rl22ninm4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
