@@ -6,8 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -18,6 +21,7 @@ import pack.jetminister.ui.fragments.ProfileFragment;
 import pack.jetminister.ui.fragments.Top100Fragment;
 
 public class MainActivity extends AppCompatActivity {
+
     private ActionBar toolbar;
 
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -68,8 +72,20 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottom_nav);
         navigation.setOnNavigationItemSelectedListener(bottomNavListener);
+        Button button = findViewById(R.id.btn_login);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openLogin();
+            }
+        });
 
 
+    }
+
+    private void openLogin() {
+        Intent intent = new Intent(this, LoginOrRegister.class);
+        startActivity(intent);
     }
 
     private void loadFragment(Fragment fragment) {
