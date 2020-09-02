@@ -14,5 +14,5 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         addPreferencesFromResource(R.xml.settings);
     }
 
-    //add Dark Mode functionality
+    //TODO: add Dark Mode functionality
 }
