@@ -1,23 +1,28 @@
 package pack.jetminister.data;
 
+
+import com.google.firebase.database.Exclude;
+
 public class User {
 
-    private String userid, username, password, email, imageURL, bio;
+    private String userid, username, password, email, imageURL, bio, theme;
     private String[] followers, following;
     private boolean streamer = false;
 
-    public User(String userid, String username, String password, String email, String imageURL, String bio) {
+    public User(String userid, String username, String password, String email, String imageURL, String bio , String theme) {
         this.userid = userid;
         this.username = username;
         this.password = password;
         this.email = email;
         this.imageURL = imageURL;
         this.bio = bio;
+        this.theme = theme;
     }
 
     public User() {
     }
 
+    @Exclude
     public String getUserid() {
         return userid;
     }
@@ -38,9 +43,9 @@ public class User {
         return imageURL;
     }
 
-    public String getBio() {
-        return bio;
-    }
+    public String getBio() { return bio; }
+
+    public String getTheme() { return theme; }
 
     public String[] getFollowers() {
         return followers;
@@ -74,9 +79,9 @@ public class User {
         this.imageURL = imageURL;
     }
 
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public void setTheme(String theme) { this.theme = theme; }
 
     public void setFollowers(String[] followers) {
         this.followers = followers;
