@@ -1,4 +1,4 @@
-package pack.jetminister.tabmenu;
+package pack.jetminister.ui.tabmenu;
 
 import android.os.Bundle;
 
@@ -11,9 +11,9 @@ import android.view.ViewGroup;
 import pack.jetminister.R;
 
 
-public class Top100Page extends Fragment {
+public class Top100Fragment extends Fragment {
 
-    public Top100Page() {
+    public Top100Fragment() {
         // Required empty public constructor
     }
 

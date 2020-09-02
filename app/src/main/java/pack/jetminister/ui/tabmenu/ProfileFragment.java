@@ -1,4 +1,4 @@
-package pack.jetminister.tabmenu;
+package pack.jetminister.ui.tabmenu;
 
 import android.os.Bundle;
 
@@ -10,10 +10,10 @@ import android.view.ViewGroup;
 
 import pack.jetminister.R;
 
-public class ProfilePage extends Fragment {
+public class ProfileFragment extends Fragment {
 
 
-    public ProfilePage() {
+    public ProfileFragment() {
         // Required empty public constructor
     }
 

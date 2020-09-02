@@ -1,4 +1,4 @@
-package pack.jetminister.tabmenu;
+package pack.jetminister.ui.tabmenu;
 
 import android.os.Bundle;
 

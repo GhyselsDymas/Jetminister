@@ -1,4 +1,4 @@
-package pack.jetminister.tabmenu;
+package pack.jetminister.ui.tabmenu;
 
 import android.os.Bundle;
 
@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 
 import pack.jetminister.R;
 
-public class LivestreamPage extends Fragment {
+public class LiveFragment extends Fragment {
 
-    public LivestreamPage() {
+    public LiveFragment() {
         // Required empty public constructor
     }
 
@@ -26,6 +26,6 @@ public class LivestreamPage extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tabmenu_livestream_page, container, false);
+        return inflater.inflate(R.layout.fragment_tabmenu_live_page, container, false);
     }
 }

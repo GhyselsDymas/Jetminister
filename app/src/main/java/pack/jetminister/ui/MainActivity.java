@@ -1,4 +1,4 @@
-package pack.jetminister;
+package pack.jetminister.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -11,9 +11,11 @@ import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import pack.jetminister.tabmenu.LivePage;
-import pack.jetminister.tabmenu.ProfilePage;
-import pack.jetminister.tabmenu.Top100Page;
+import pack.jetminister.R;
+import pack.jetminister.ui.tabmenu.SettingsFragment;
+import pack.jetminister.ui.tabmenu.LiveFragment;
+import pack.jetminister.ui.tabmenu.ProfileFragment;
+import pack.jetminister.ui.tabmenu.Top100Fragment;
 
 public class MainActivity extends AppCompatActivity {
     private ActionBar toolbar;
@@ -23,24 +25,27 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Fragment fragment;
 
+            //load different fragments when menu item is selected
             switch (item.getItemId()){
                 case R.id.bottom_nav_start:
                     toolbar.setTitle(R.string.page_start);
-                    fragment = new LivePage();
+                    fragment = new LiveFragment();
                     loadFragment(fragment);
                     return true;
                 case R.id.bottom_nav_top100:
                     toolbar.setTitle(R.string.page_top100);
-                    fragment = new Top100Page();
+                    fragment = new Top100Fragment();
                     loadFragment(fragment);
                     return true;
                 case R.id.bottom_nav_profile:
                     toolbar.setTitle(R.string.page_profile);
-                    fragment = new ProfilePage();
+                    fragment = new ProfileFragment();
                     loadFragment(fragment);
                     return true;
                 case R.id.bottom_nav_settings:
                     toolbar.setTitle(R.string.page_settings);
+                    fragment = new SettingsFragment();
+                    loadFragment(fragment);
                     return true;
             }
             return false;
@@ -56,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         //set menu item title and fragment to 'Start'
         toolbar.setTitle(R.string.page_start);
-        loadFragment(new LivePage());
+        loadFragment(new LiveFragment());
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottom_nav);
         navigation.setOnNavigationItemSelectedListener(bottomNavListener);
