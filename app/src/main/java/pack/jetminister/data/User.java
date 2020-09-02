@@ -1,6 +1,4 @@
 package pack.jetminister.data;
-
-
 import com.google.firebase.database.Exclude;
 
 public class User {
