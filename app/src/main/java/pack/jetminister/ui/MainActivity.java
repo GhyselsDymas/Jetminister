@@ -12,10 +12,10 @@ import android.view.MenuItem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import pack.jetminister.R;
-import pack.jetminister.ui.tabmenu.SettingsFragment;
-import pack.jetminister.ui.tabmenu.LiveFragment;
-import pack.jetminister.ui.tabmenu.ProfileFragment;
-import pack.jetminister.ui.tabmenu.Top100Fragment;
+import pack.jetminister.ui.fragments.SettingsFragment;
+import pack.jetminister.ui.fragments.LiveFragment;
+import pack.jetminister.ui.fragments.ProfileFragment;
+import pack.jetminister.ui.fragments.Top100Fragment;
 
 public class MainActivity extends AppCompatActivity {
     private ActionBar toolbar;

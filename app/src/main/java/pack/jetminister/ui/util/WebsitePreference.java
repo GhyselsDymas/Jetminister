@@ -5,27 +5,25 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import pack.jetminister.R;
 
-public class TermsConditionsPreference extends Preference {
-
+public class WebsitePreference extends Preference {
     private static final String URI_JETMINISTER = "https://jetminister.com/";
 
-    public TermsConditionsPreference(Context context, AttributeSet attrs) {
+    public WebsitePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         //set the right XML file
-        setWidgetLayoutResource(R.layout.settings_terms_conditions);}
+        setWidgetLayoutResource(R.layout.settings_website);}
 
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         holder.itemView.setClickable(false);
-        View image = holder.findViewById(R.id.iv_settings_termsconditions);
+        View image = holder.findViewById(R.id.tv_settings_website);
         image.setClickable(true);
         image.setOnClickListener(new View.OnClickListener() {
             @Override

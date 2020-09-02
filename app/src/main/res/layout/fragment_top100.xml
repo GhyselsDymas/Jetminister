@@ -5,7 +5,7 @@
     android:id="@+id/frameLayout3"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.tabmenu.Top100Fragment">
+    tools:context=".ui.fragments.Top100Fragment">
 
     <ImageView
         android:id="@+id/imageView"

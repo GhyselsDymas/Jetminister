@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/iv_settings_termsconditions"
+    <TextView
+        android:id="@+id/tv_settings_website"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/settings_termsconditions_descr"
-        app:srcCompat="@drawable/ic_info_24" />
+        android:text="@string/app_name" />
 </FrameLayout>
