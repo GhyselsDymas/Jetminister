@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
@@ -25,7 +24,7 @@ public class TermsConditionsPreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         holder.itemView.setClickable(false);
-        View image = holder.findViewById(R.id.iv_settings_termsconditions);
+        View image = holder.findViewById(R.id.imageview_settings_termsconditions);
         image.setClickable(true);
         image.setOnClickListener(new View.OnClickListener() {
             @Override

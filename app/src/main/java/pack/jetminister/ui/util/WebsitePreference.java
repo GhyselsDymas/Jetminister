@@ -23,7 +23,7 @@ public class WebsitePreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         holder.itemView.setClickable(false);
-        View image = holder.findViewById(R.id.tv_settings_website);
+        View image = holder.findViewById(R.id.textview_settings_website);
         image.setClickable(true);
         image.setOnClickListener(new View.OnClickListener() {
             @Override
