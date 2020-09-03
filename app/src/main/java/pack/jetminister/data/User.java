@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public class User {
 
+
     private String userid, username, password, email, imageURL, bio, theme;
     private ArrayList<String> followers, following;
     private boolean streamer = false;
