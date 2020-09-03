@@ -3,12 +3,10 @@ import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
 
+
 public class User {
 
-    private String username, password, email;
-//    private String imageURL;
-    private String bio = "";
-    private String theme = "";
+    private String userid, username, password, email, imageURL, bio, theme;
     private ArrayList<String> followers, following;
     private boolean streamer = false;
 
@@ -19,6 +17,11 @@ public class User {
     }
 
     public User() {
+    }
+
+    @Exclude
+    public String getUserid() {
+        return userid;
     }
 
     public String getUsername() {
@@ -33,9 +36,9 @@ public class User {
         return email;
     }
 
-//    public String getImageURL() {
-//        return imageURL;
-//    }
+    public String getImageURL() {
+        return imageURL;
+    }
 
     public String getBio() { return bio; }
 
@@ -54,6 +57,9 @@ public class User {
     }
 
 
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
 
     public void setUsername(String username) {
         this.username = username;
@@ -67,9 +73,9 @@ public class User {
         this.email = email;
     }
 
-//    public void setImageURL(String imageURL) {
-//        this.imageURL = imageURL;
-//    }
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
 
     public void setBio(String bio) { this.bio = bio; }
 
@@ -79,7 +85,7 @@ public class User {
         this.followers = followers;
     }
 
-    public void setFollowing(ArrayList<String>  following) {
+    public void setFollowing(ArrayList<String> following) {
         this.following = following;
     }
 

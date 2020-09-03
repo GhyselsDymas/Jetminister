@@ -1,5 +1,7 @@
 package pack.jetminister.ui;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -9,8 +11,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
@@ -18,8 +25,9 @@ import pack.jetminister.ui.util.EmailValidator;
 
 public class LoginOrRegister extends AppCompatActivity {
 
-    private FirebaseDatabase database;
-    private DatabaseReference usersRef;
+    //get an instance of Firebase and a reference to the collection
+    FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
+    DatabaseReference usersRef = rootNode.getReference("Users");
 
     private EditText usernameLoginET, passwordLoginET, usernameRegisterET, passwordRegisterET, confirmPasswordRegisterET, emailRegisterET;
     private Button loginBtn, registerBtn;
@@ -55,20 +63,26 @@ public class LoginOrRegister extends AppCompatActivity {
     }
 
     private void registerUser() {
-        EmailValidator emailValidator = new EmailValidator();
-        database = FirebaseDatabase.getInstance();
-        usersRef = database.getReference("Users");
 
         //get values from the text fields
-        String newEmail = emailRegisterET.getText().toString();
-        String newUsername = usernameRegisterET.getText().toString();
+        String newEmail = emailRegisterET.getText().toString().trim();
+        String newUsername = usernameRegisterET.getText().toString().trim();
+
         String newPassword = passwordRegisterET.getText().toString();
+
+        //check if the password fields match AND the email address is valid
         if (newPassword.equals(confirmPasswordRegisterET.getText().toString())
                 & EmailValidator.validate(newEmail)) {
+            //create new user with values from the textfields
             User newUser = new User(newUsername, newPassword, newEmail);
-            usersRef.setValue(newUser);
-            Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
+
+            //create new entries in database by username
+            //TODO: replace username with auto-generated id
+            usersRef.child(newUsername).setValue(newUser);
+
+            Toast.makeText(LoginOrRegister.this, "Welcome to JetMinister", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
         } else {
             Toast.makeText(LoginOrRegister.this, R.string.register_fail, Toast.LENGTH_LONG).show();
         }
