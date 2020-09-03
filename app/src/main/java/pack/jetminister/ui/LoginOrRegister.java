@@ -63,29 +63,54 @@ public class LoginOrRegister extends AppCompatActivity {
     }
 
     private void registerUser() {
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //get values from the text fields
+                String newEmail = emailRegisterET.getText().toString().trim();
+                String newUsername = usernameRegisterET.getText().toString().trim();
+                String newPassword = passwordRegisterET.getText().toString();
+                boolean isDuplicate = false;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    if (snapshot.exists()) {
+                        User checkUser = snapshot.getValue(User.class);
+                        if (checkUser != null) {
+                            if (newUsername.equals(checkUser.getUsername())) {
+                                isDuplicate = true;
+                                Toast.makeText(LoginOrRegister.this, R.string.register_username_duplicate, Toast.LENGTH_SHORT).show();
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (newPassword.equals(confirmPasswordRegisterET.getText().toString())
+                        & EmailValidator.validate(newEmail) & !isDuplicate) {
+                    //TODO: replace username with auto-generated id
+                    User newUser = new User(newUsername, newPassword, newEmail);
+                    usersRef.child(newUsername).setValue(newUser);
 
-        //get values from the text fields
-        String newEmail = emailRegisterET.getText().toString().trim();
-        String newUsername = usernameRegisterET.getText().toString().trim();
+                    Toast.makeText(LoginOrRegister.this, "Welcome to JetMinister", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginOrRegister.this, MainActivity.class);
+                    startActivity(intent);
+                }
+            }
 
-        String newPassword = passwordRegisterET.getText().toString();
+                @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-        //check if the password fields match AND the email address is valid
-        if (newPassword.equals(confirmPasswordRegisterET.getText().toString())
-                & EmailValidator.validate(newEmail)) {
-            //create new user with values from the textfields
-            User newUser = new User(newUsername, newPassword, newEmail);
+            }
+        });
 
-            //create new entries in database by username
-            //TODO: replace username with auto-generated id
-            usersRef.child(newUsername).setValue(newUser);
-
-            Toast.makeText(LoginOrRegister.this, "Welcome to JetMinister", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        } else {
-            Toast.makeText(LoginOrRegister.this, R.string.register_fail, Toast.LENGTH_LONG).show();
-        }
+//
+//        //check if the password fields match AND the email address is valid
+//
+//            //create new user with values from the textfields
+//            User newUser = new User(newUsername, newPassword, newEmail);
+//
+//            //create new entries in database by username
+//                   } else {
+//            Toast.makeText(LoginOrRegister.this, R.string.register_fail, Toast.LENGTH_LONG).show();
+//        }
     }
 
     private void loginUser() {

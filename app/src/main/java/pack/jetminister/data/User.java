@@ -16,6 +16,7 @@ public class User {
         this.email = email;
         this.bio = "Description of channel";
         this.theme = "Blank";
+        this.imageURL = "https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg";
     }
 
     public User() {
