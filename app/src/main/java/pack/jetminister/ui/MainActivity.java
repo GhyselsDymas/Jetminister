@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
+import android.icu.number.FractionPrecision;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ActionBar toolbar;
 
-    private User user = new User();
+    private User authenticatedUser;
 
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -89,12 +90,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        receiveUserData();
+        authenticatedUser = receiveUserData();
+        Bundle dataToSend = new Bundle();
+        if (authenticatedUser != null){
+            dataToSend.putSerializable("authenticated_user", authenticatedUser);
+            ProfileFragment fragment = new ProfileFragment();
+            fragment.setArguments(dataToSend);
+        }
 
 
     }
-    private void receiveUserData() {
+    private User receiveUserData() {
         Intent intent = getIntent();
+        User user = new User();
         if (intent != null){
             String usernameFromDatabase = intent.getStringExtra("username");
             String passwordFromDatabase = intent.getStringExtra("password");
@@ -112,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
             user.setImageURL(imageURLFromDatabase);
             user.setStreamer(streamerFromDatabaseDatabase);
         }
-
+        return user;
     }
 
     private void openLogin() {

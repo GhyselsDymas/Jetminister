@@ -1,10 +1,11 @@
 package pack.jetminister.data;
 import com.google.firebase.database.Exclude;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
-public class User {
+public class User implements Serializable {
 
 
     private String userid, username, password, email, imageURL, description, theme;

@@ -12,13 +12,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import pack.jetminister.R;
+import pack.jetminister.data.User;
 import pack.jetminister.ui.ProfileImageActivity;
 
 public class ProfileFragment extends Fragment {
 
     private AppCompatActivity mycontext;
+    private Bundle dataFromUser;
+    private User authenticatedUser;
+
+    private ImageView profileImage;
+    private TextView usernameTV;
+
+    private TextView descriptionTV;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -38,12 +49,19 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-
         View rootview =  inflater.inflate(R.layout.fragment_profile, container, false);
+        profileImage = rootview.findViewById(R.id.iv_profile_image);
+        usernameTV = rootview.findViewById(R.id.tv_profile_username);
+        descriptionTV = rootview.findViewById(R.id.tv_profile_description);
 
-        ImageView buttonProfile = rootview.findViewById(R.id.iv_profile_image);
-        buttonProfile.setOnLongClickListener(new View.OnLongClickListener() {
+        if (dataPassed()){
+            authenticatedUser = (User) dataFromUser.getSerializable("authenticated_user");
+            updateUI(authenticatedUser.getUsername(), authenticatedUser.getDescription());
+        }
+
+        profileImage.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 openImagePage();
@@ -54,8 +72,23 @@ public class ProfileFragment extends Fragment {
         return rootview;
     }
 
+    private void updateUI(String username, String description) {
+        usernameTV.setText(username);
+        descriptionTV.setText(description);
+    }
+
     private void openImagePage() {
         Intent intent = new Intent(mycontext , ProfileImageActivity.class);
         startActivity(intent);
+    }
+
+    public boolean dataPassed() {
+        dataFromUser = getArguments();
+        if (dataFromUser != null) {
+            if (dataFromUser.containsKey("authenticated_user")) {
+                return true;
+            }
+        }
+        return false;
     }
 }
