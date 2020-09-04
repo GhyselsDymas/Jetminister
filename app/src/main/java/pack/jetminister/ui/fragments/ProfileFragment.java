@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -36,11 +37,6 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mycontext = (AppCompatActivity)context;
@@ -50,16 +46,16 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+//        if (dataPassed()){
+//            authenticatedUser = (User) getArguments().getSerializable("authenticated_user");
+//            updateUI(authenticatedUser.getUsername(), authenticatedUser.getDescription());
+//        }
+
         // Inflate the layout for this fragment
         View rootview =  inflater.inflate(R.layout.fragment_profile, container, false);
         profileImage = rootview.findViewById(R.id.iv_profile_image);
         usernameTV = rootview.findViewById(R.id.tv_profile_username);
         descriptionTV = rootview.findViewById(R.id.tv_profile_description);
-
-        if (dataPassed()){
-            authenticatedUser = (User) dataFromUser.getSerializable("authenticated_user");
-            updateUI(authenticatedUser.getUsername(), authenticatedUser.getDescription());
-        }
 
         profileImage.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -82,13 +78,16 @@ public class ProfileFragment extends Fragment {
         startActivity(intent);
     }
 
-    public boolean dataPassed() {
-        dataFromUser = getArguments();
-        if (dataFromUser != null) {
-            if (dataFromUser.containsKey("authenticated_user")) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean dataPassed() {
+//        dataFromUser = getArguments();
+//        if (dataFromUser != null) {
+//            if (dataFromUser.containsKey("authenticated_user")) {
+//                Toast.makeText(mycontext, "Data passed", Toast.LENGTH_SHORT).show();
+//                return true;
+//            }
+//            Toast.makeText(mycontext, "Arguments received", Toast.LENGTH_SHORT).show();
+//        }
+//        Toast.makeText(mycontext, "Data did not pass", Toast.LENGTH_SHORT).show();;
+//        return false;
+//    }
 }

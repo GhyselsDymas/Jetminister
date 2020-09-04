@@ -5,13 +5,16 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import android.content.Intent;
-import android.icu.number.FractionPrecision;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -26,31 +29,29 @@ public class MainActivity extends AppCompatActivity {
 
     private ActionBar toolbar;
 
-    private User authenticatedUser;
-
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Fragment fragment;
 
             //load different fragments when menu item is selected
-            switch (item.getItemId()){
-                case R.id.bottom_nav_start:
+            switch (item.getItemId()) {
+                case R.id.live_fragment:
                     toolbar.setTitle(R.string.page_start);
                     fragment = new LiveFragment();
                     loadFragment(fragment);
                     return true;
-                case R.id.bottom_nav_top100:
+                case R.id.top100_fragment:
                     toolbar.setTitle(R.string.page_top100);
                     fragment = new Top100Fragment();
                     loadFragment(fragment);
                     return true;
-                case R.id.bottom_nav_profile:
+                case R.id.profile_fragment:
                     toolbar.setTitle(R.string.page_profile);
                     fragment = new ProfileFragment();
                     loadFragment(fragment);
                     return true;
-                case R.id.bottom_nav_settings:
+                case R.id.settings_fragment:
                     toolbar.setTitle(R.string.page_settings);
                     fragment = new SettingsFragment();
                     loadFragment(fragment);
@@ -75,14 +76,18 @@ public class MainActivity extends AppCompatActivity {
 
         //set menu item title and fragment to 'Start'
         toolbar.setTitle(R.string.page_start);
-
         toolbar.hide();
+
+        BottomNavigationView bottomNavigationView;
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
+        bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavListener);
+
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupWithNavController(bottomNavigationView, navController);
 
         loadFragment(new LiveFragment());
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottom_nav);
-        navigation.setOnNavigationItemSelectedListener(bottomNavListener);
-        Button button = findViewById(R.id.btn_login);
+        Button button = findViewById(R.id.btn_registration);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -90,9 +95,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        authenticatedUser = receiveUserData();
+        User authenticatedUser = receiveUserData();
+
+        TextView textViewUser = findViewById(R.id.tv_username);
+        TextView textViewDescription = findViewById(R.id.tv_description);
+
+        textViewUser.setText(authenticatedUser.getUsername());
+        textViewDescription.setText(authenticatedUser.getDescription());
+
+
         Bundle dataToSend = new Bundle();
-        if (authenticatedUser != null){
+        if (authenticatedUser != null) {
             dataToSend.putSerializable("authenticated_user", authenticatedUser);
             ProfileFragment fragment = new ProfileFragment();
             fragment.setArguments(dataToSend);
@@ -100,10 +113,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
     private User receiveUserData() {
         Intent intent = getIntent();
         User user = new User();
-        if (intent != null){
+        if (intent != null) {
             String usernameFromDatabase = intent.getStringExtra("username");
             String passwordFromDatabase = intent.getStringExtra("password");
             String emailFromDatabase = intent.getStringExtra("email");
@@ -130,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, fragment);
+        transaction.replace(R.id.nav_host_fragment, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
