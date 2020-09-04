@@ -23,10 +23,10 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/imgTourismHr"
+            android:id="@+id/iv_profile_image"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:contentDescription="Profile Image"
+            android:contentDescription="@string/iv_profile_image_descr"
             android:longClickable="true"
             android:scaleType="fitXY"
             app:srcCompat="@android:drawable/sym_def_app_icon" />
@@ -34,7 +34,7 @@
     </androidx.cardview.widget.CardView>
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/tv_profile_username"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
@@ -43,11 +43,11 @@
         android:layout_marginEnd="40dp"
         android:layout_marginRight="40dp"
         android:gravity="center"
-        android:text="Username"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView" />
+        app:layout_constraintTop_toBottomOf="@+id/cardView"
+        tools:text="Dymas_420" />
 
     <TextView
         android:id="@+id/textView4"
@@ -56,19 +56,21 @@
         android:layout_marginStart="80dp"
         android:layout_marginLeft="80dp"
         android:layout_marginTop="10dp"
-        android:text="followers"
+        android:contentDescription="@string/tv_profile_followers"
+        android:text="@string/tv_profile_followers"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_profile_username"
+        tools:text="followers" />
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/tv_profile_followers"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
         android:layout_marginLeft="80dp"
-        android:text="100"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        tools:text="100" />
 
     <TextView
         android:id="@+id/textView5"
@@ -77,23 +79,24 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="80dp"
         android:layout_marginRight="80dp"
+        android:contentDescription="@string/tv_profile_following"
         android:gravity="end"
-        android:text="followed"
+        android:text="@string/tv_profile_following"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView4"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_profile_username"
+        tools:text="following" />
 
     <TextView
-        android:id="@+id/textView7"
+        android:id="@+id/tv_profile_following"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="80dp"
         android:layout_marginRight="80dp"
         android:gravity="end"
-        android:text="200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/textView6"
+        app:layout_constraintStart_toEndOf="@+id/tv_profile_followers"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <TextView
@@ -103,14 +106,15 @@
         android:layout_marginStart="40dp"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="40dp"
-        android:text="Description"
+        android:contentDescription="@string/tv_profile_description"
+        android:text="@string/tv_profile_description"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toStartOf="@+id/imageView2"
+        app:layout_constraintEnd_toStartOf="@+id/iv_profile_edit"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_profile_following" />
 
     <TextView
-        android:id="@+id/textView12"
+        android:id="@+id/tv_profile_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
@@ -118,13 +122,14 @@
         android:layout_marginTop="2dp"
         android:layout_marginEnd="40dp"
         android:layout_marginRight="40dp"
-        android:text="filler text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView11" />
+        app:layout_constraintTop_toBottomOf="@+id/textView11"
+        tools:text="I tried and abandoned Inventor's Outlook in Freeport, Gnomeland Security in Steamfont, the Drednever Crash Site in The Bonemire and Dropship Landing Zone in The Moors of Ykesha. Given the way things work out, I guess we're looking at late August for the pre-release patch. Growing up in the late 90′s, like a lot of kids, I fell in love with the Final Fantasy series through the brilliantly marketed Final Fantasy VII. Of course, I learned a couple of days before BWE3 that Jennifer Hale is voicing the sylvari female — that’s Commander Shepard from the Mass Effect trilogy. The first one will come out this December and the second a year after, in 2013.  Generated by MMO Ipsum Generator. " />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/iv_profile_edit"
+        android:clickable="true"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
@@ -132,6 +137,6 @@
         android:layout_marginRight="40dp"
         android:src="@android:drawable/ic_menu_edit"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_profile_following" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

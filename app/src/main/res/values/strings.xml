@@ -46,5 +46,9 @@
     <string name="register_success">Registration successful. Welcome!</string>
     <string name="register_error">Something went wrong, please try again</string>
     <string name="register_username_duplicate">Username already exists, please choose another</string>
+    <string name="iv_profile_image_descr">User\'s profile image</string>
+    <string name="tv_profile_followers">followers</string>
+    <string name="tv_profile_following">following</string>
+    <string name="tv_profile_description">Channel description</string>
 
 </resources>
