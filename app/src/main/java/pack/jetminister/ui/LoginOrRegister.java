@@ -22,6 +22,8 @@ import com.google.firebase.database.ValueEventListener;
 import pack.jetminister.R;
 import pack.jetminister.data.User;
 import pack.jetminister.ui.util.EmailValidator;
+import pack.jetminister.ui.util.PasswordValidator;
+import pack.jetminister.ui.util.UsernameValidator;
 
 public class LoginOrRegister extends AppCompatActivity {
 
@@ -70,28 +72,20 @@ public class LoginOrRegister extends AppCompatActivity {
                 String newEmail = emailRegisterET.getText().toString().trim();
                 String newUsername = usernameRegisterET.getText().toString().trim();
                 String newPassword = passwordRegisterET.getText().toString();
-                boolean isDuplicate = false;
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if (snapshot.exists()) {
-                        User checkUser = snapshot.getValue(User.class);
-                        if (checkUser != null) {
-                            if (newUsername.equals(checkUser.getUsername())) {
-                                isDuplicate = true;
-                                Toast.makeText(LoginOrRegister.this, R.string.register_username_duplicate, Toast.LENGTH_SHORT).show();
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (newPassword.equals(confirmPasswordRegisterET.getText().toString())
-                        & EmailValidator.validate(newEmail) & !isDuplicate) {
-                    //TODO: replace username with auto-generated id
-                    User newUser = new User(newUsername, newPassword, newEmail);
-                    usersRef.child(newUsername).setValue(newUser);
 
-                    Toast.makeText(LoginOrRegister.this, "Welcome to JetMinister", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoginOrRegister.this, MainActivity.class);
-                    startActivity(intent);
+                //check if the password fields match AND the email address is valid AND there is no duplicate username
+                if (newPassword.equals(confirmPasswordRegisterET.getText().toString())
+                        & EmailValidator.validate(newEmail) & !isDuplicate(dataSnapshot, newUsername)) {
+                    //create new user with values from the textfields
+                    User newUser = new User(newUsername, newPassword, newEmail);
+                    //create new entry in database by username
+                    // TODO: replace username with auto-generated id as child
+                    usersRef.child(newUsername).setValue(newUser);
+                    Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
+                    authenticateUser(dataSnapshot, newUsername);
+
+                } else {
+                    Toast.makeText(LoginOrRegister.this, R.string.register_error, Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -100,23 +94,81 @@ public class LoginOrRegister extends AppCompatActivity {
 
             }
         });
+    }
 
-//
-//        //check if the password fields match AND the email address is valid
-//
-//            //create new user with values from the textfields
-//            User newUser = new User(newUsername, newPassword, newEmail);
-//
-//            //create new entries in database by username
-//                   } else {
-//            Toast.makeText(LoginOrRegister.this, R.string.register_fail, Toast.LENGTH_LONG).show();
-//        }
+    private boolean isDuplicate(DataSnapshot dataSnapshot, String newUsername){
+        //loop over the database, convert each entry to User and get username to check for duplicates
+        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+            if (snapshot.exists()) {
+                User checkUser = snapshot.getValue(User.class);
+                if (checkUser != null) {
+                    if (newUsername.equals(checkUser.getUsername())) {
+                        Toast.makeText(LoginOrRegister.this, R.string.register_username_duplicate, Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private void loginUser() {
-        Toast.makeText(LoginOrRegister.this, R.string.login_fail, Toast.LENGTH_LONG).show();
+        final String inputUsername = usernameLoginET.getText().toString().trim();
+        final String inputPassword = passwordLoginET.getText().toString();
+        if (!UsernameValidator.validateUsername(inputUsername) || !PasswordValidator.validatePassword(inputPassword)){
+            Toast.makeText(LoginOrRegister.this, R.string.login_fail, Toast.LENGTH_LONG).show();
+        } else {
+            Query checkUserQuery = usersRef.orderByChild("username").equalTo(inputUsername);
+            checkUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                    if (isRegisteredUser(userSnapshot)) {
+                        if (isCorrectPassword(userSnapshot, inputUsername, inputPassword)) {
+                            authenticateUser(userSnapshot, inputUsername);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+    }
+
+    private void authenticateUser(DataSnapshot snapshot, String username) {
+        String usernameFromDatabase = snapshot.child(username).child("username").getValue(String.class);
+        String passwordFromDatabase = snapshot.child(username).child("password").getValue(String.class);
+        String emailFromDatabase = snapshot.child(username).child("email").getValue(String.class);
+        String descriptionFromDatabase = snapshot.child(username).child("description").getValue(String.class);
+        String themeFromDatabase = snapshot.child(username).child("theme").getValue(String.class);
+        String imageURLFromDatabase = snapshot.child(username).child("imageURL").getValue(String.class);
+        boolean streamerFromDatabase = snapshot.child(username).child("streamer").getValue(Boolean.class);
+
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.putExtra("username", usernameFromDatabase);
+        intent.putExtra("password", passwordFromDatabase);
+        intent.putExtra("email", emailFromDatabase);
+        intent.putExtra("description", descriptionFromDatabase);
+        intent.putExtra("theme", themeFromDatabase);
+        intent.putExtra("imageURL", imageURLFromDatabase);
+        intent.putExtra("streamer", streamerFromDatabase);
+
+        startActivity(intent);
 
     }
 
+    private boolean isRegisteredUser(DataSnapshot snapshot) {
+        return snapshot.exists();
+    }
+
+    private boolean isCorrectPassword(DataSnapshot snapshot, String username, String password) {
+        String passwordFromDatabase = snapshot.child(username).child("password").getValue(String.class);
+        if (passwordFromDatabase != null) {
+            return passwordFromDatabase.equals(password);
+        }
+        return false;
+    }
 
 }

@@ -11,12 +11,10 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import pack.jetminister.R;
-import pack.jetminister.ui.LoginOrRegister;
-import pack.jetminister.ui.ProfileImagePage;
+import pack.jetminister.ui.ProfileImageActivity;
 
 public class ProfileFragment extends Fragment {
 
@@ -57,7 +55,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void openImagePage() {
-        Intent intent = new Intent(mycontext , ProfileImagePage.class);
+        Intent intent = new Intent(mycontext , ProfileImageActivity.class);
         startActivity(intent);
     }
 }

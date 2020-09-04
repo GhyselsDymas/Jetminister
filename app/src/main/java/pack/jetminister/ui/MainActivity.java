@@ -15,6 +15,7 @@ import android.widget.Button;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import pack.jetminister.R;
+import pack.jetminister.data.User;
 import pack.jetminister.ui.fragments.SettingsFragment;
 import pack.jetminister.ui.fragments.LiveFragment;
 import pack.jetminister.ui.fragments.ProfileFragment;
@@ -23,6 +24,8 @@ import pack.jetminister.ui.fragments.Top100Fragment;
 public class MainActivity extends AppCompatActivity {
 
     private ActionBar toolbar;
+
+    private User user = new User();
 
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -57,6 +60,12 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -80,6 +89,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        receiveUserData();
+
+
+    }
+    private void receiveUserData() {
+        Intent intent = getIntent();
+        if (intent != null){
+            String usernameFromDatabase = intent.getStringExtra("username");
+            String passwordFromDatabase = intent.getStringExtra("password");
+            String emailFromDatabase = intent.getStringExtra("email");
+            String descriptionFromDatabase = intent.getStringExtra("description");
+            String themeFromDatabase = intent.getStringExtra("theme");
+            String imageURLFromDatabase = intent.getStringExtra("imageURL");
+            boolean streamerFromDatabaseDatabase = intent.getBooleanExtra("streamer", false);
+
+            user.setUsername(usernameFromDatabase);
+            user.setPassword(passwordFromDatabase);
+            user.setEmail(emailFromDatabase);
+            user.setDescription(descriptionFromDatabase);
+            user.setTheme(themeFromDatabase);
+            user.setImageURL(imageURLFromDatabase);
+            user.setStreamer(streamerFromDatabaseDatabase);
+        }
 
     }
 

@@ -38,10 +38,13 @@
     <string name="tv_login">Login here</string>
     <string name="btn_login">Log in</string>
     <string name="login_success">Successfully logged in, welcome back!</string>
-    <string name="login_fail">Login failed, please tr again</string>
+    <string name="login_fail">Login failed, please try again</string>
+    <string name="register_error_username_limit">Username cannoot exceed 16 characters</string>
+    <string name="register_error_empty_field">Field cannot be empty</string>
+    <string name="register_error_username_whitespace">Username cannot contain whitespace</string>
     <string name="btn_regsiter">Register</string>
     <string name="register_success">Registration successful. Welcome!</string>
-    <string name="register_fail">Something went wrong, please try again</string>
+    <string name="register_error">Something went wrong, please try again</string>
     <string name="register_username_duplicate">Username already exists, please choose another</string>
 
 </resources>

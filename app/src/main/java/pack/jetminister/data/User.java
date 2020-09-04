@@ -7,21 +7,22 @@ import java.util.ArrayList;
 public class User {
 
 
-    private String userid, username, password, email, imageURL, bio, theme;
+    private String userid, username, password, email, imageURL, description, theme;
     private ArrayList<String> followers, following;
     private boolean streamer = false;
+
+    public User() {
+    }
 
     public User(String username, String password, String email) {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.bio = "Description of channel";
+        this.description = "Description of channel";
         this.theme = "Blank";
         this.imageURL = "https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg";
     }
 
-    public User() {
-    }
 
     @Exclude
     public String getUserid() {
@@ -44,7 +45,7 @@ public class User {
         return imageURL;
     }
 
-    public String getBio() { return bio; }
+    public String getDescription() { return description; }
 
     public String getTheme() { return theme; }
 
@@ -81,7 +82,7 @@ public class User {
         this.imageURL = imageURL;
     }
 
-    public void setBio(String bio) { this.bio = bio; }
+    public void setDescription(String description) { this.description = description; }
 
     public void setTheme(String theme) { this.theme = theme; }
 

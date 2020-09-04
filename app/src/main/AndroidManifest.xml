@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.ProfileImagePage"></activity>
+        <activity android:name=".ui.ProfileImageActivity"></activity>
         <activity android:name=".ui.LoginOrRegister"></activity>
         <activity android:name=".ui.MainActivity">
             <intent-filter>

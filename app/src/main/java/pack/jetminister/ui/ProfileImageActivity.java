@@ -20,10 +20,10 @@ import pack.jetminister.R;
 
 import static android.app.Activity.RESULT_OK;
 
-public class ProfileImagePage  extends AppCompatActivity {
+public class ProfileImageActivity extends AppCompatActivity {
 
 
-    public ProfileImagePage() {
+    public ProfileImageActivity() {
         // Required empty public constructor
     }
 
