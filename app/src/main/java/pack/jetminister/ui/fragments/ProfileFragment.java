@@ -42,7 +42,7 @@ public class ProfileFragment extends Fragment {
 
         View rootview =  inflater.inflate(R.layout.fragment_profile, container, false);
 
-        ImageView buttonProfile = rootview.findViewById(R.id.imgTourismHr);
+        ImageView buttonProfile = rootview.findViewById(R.id.iv_profile_image);
         buttonProfile.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
