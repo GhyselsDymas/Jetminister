@@ -11,10 +11,10 @@ import androidx.navigation.ui.NavigationUI;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -28,33 +28,40 @@ import pack.jetminister.ui.fragments.Top100Fragment;
 public class MainActivity extends AppCompatActivity {
 
     private ActionBar toolbar;
+    private ProfileFragment profileFragment;
+    private Top100Fragment top100Fragment;
+    private LiveFragment liveFragment;
+    private User authenticatedUser;
+    private static final String BUNDLE_KEY_AUTHENTICATED_USER = "authenticated_user";
+    private static final String TAG = "MainActivity";
 
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Fragment fragment;
-
+            Fragment destinationFragment;
+            Bundle args = new Bundle();
+            args.putSerializable(BUNDLE_KEY_AUTHENTICATED_USER, authenticatedUser);
             //load different fragments when menu item is selected
             switch (item.getItemId()) {
                 case R.id.live_fragment:
                     toolbar.setTitle(R.string.page_start);
-                    fragment = new LiveFragment();
-                    loadFragment(fragment);
+                    destinationFragment = new LiveFragment();
+                    loadFragment(destinationFragment, args);
                     return true;
                 case R.id.top100_fragment:
                     toolbar.setTitle(R.string.page_top100);
-                    fragment = new Top100Fragment();
-                    loadFragment(fragment);
+                    destinationFragment = new Top100Fragment();
+                    loadFragment(destinationFragment, args);
                     return true;
                 case R.id.profile_fragment:
                     toolbar.setTitle(R.string.page_profile);
-                    fragment = new ProfileFragment();
-                    loadFragment(fragment);
+                    destinationFragment = new ProfileFragment();
+                    loadFragment(destinationFragment, args);
                     return true;
                 case R.id.settings_fragment:
                     toolbar.setTitle(R.string.page_settings);
-                    fragment = new SettingsFragment();
-                    loadFragment(fragment);
+                    destinationFragment = new SettingsFragment();
+                    loadFragment(destinationFragment, args);
                     return true;
             }
             return false;
@@ -72,45 +79,35 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = getSupportActionBar();
+        final User authenticatedUser = receiveUserData();
 
-        //set menu item title and fragment to 'Start'
+        toolbar = getSupportActionBar();
         toolbar.setTitle(R.string.page_start);
         toolbar.hide();
 
         BottomNavigationView bottomNavigationView;
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
+        bottomNavigationView = findViewById(R.id.bottom_nav);
         bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavListener);
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
 
-        loadFragment(new LiveFragment());
+//        loadFragment(new LiveFragment());
 
-        Button button = findViewById(R.id.btn_registration);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button registerButton = findViewById(R.id.btn_registration);
+        registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openLogin();
             }
         });
-
-        User authenticatedUser = receiveUserData();
-
-        TextView textViewUser = findViewById(R.id.tv_username);
-        TextView textViewDescription = findViewById(R.id.tv_description);
-
-        textViewUser.setText(authenticatedUser.getUsername());
-        textViewDescription.setText(authenticatedUser.getDescription());
-
-
-        Bundle dataToSend = new Bundle();
-        if (authenticatedUser != null) {
-            dataToSend.putSerializable("authenticated_user", authenticatedUser);
-            ProfileFragment fragment = new ProfileFragment();
-            fragment.setArguments(dataToSend);
-        }
-
+        Button testAuthenticatedUserButton = findViewById(R.id.btn_testauthenticateduser);
+        testAuthenticatedUserButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, authenticatedUser.toString());
+            }
+        });
 
     }
 
@@ -142,9 +139,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void loadFragment(Fragment fragment) {
+    private void loadFragment(Fragment fragment, Bundle args) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.nav_host_fragment, fragment);
+        transaction.replace(R.id.nav_host_fragment, fragment.getClass(), args);
         transaction.addToBackStack(null);
         transaction.commit();
     }

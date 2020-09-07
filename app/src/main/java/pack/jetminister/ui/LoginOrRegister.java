@@ -3,9 +3,12 @@ package pack.jetminister.ui;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,16 +24,27 @@ import com.google.firebase.database.ValueEventListener;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
+import pack.jetminister.ui.fragments.ProfileFragment;
 import pack.jetminister.ui.util.EmailValidator;
 import pack.jetminister.ui.util.PasswordValidator;
 import pack.jetminister.ui.util.UsernameValidator;
 
 public class LoginOrRegister extends AppCompatActivity {
 
+    private static final String SHARED_PREFS = "SharedPreferences";
+    private static final String SHARED_PREFS_USERNAME = "username";
+    private static final String SHARED_PREFS_EMAIL = "email";
+    private static final String SHARED_PREFS_DESCRIPTION = "description";
+    private static final String SHARED_PREFS_THEME = "theme";
+    private static final String SHARED_PREFS_IMAGE_URL = "imageURL";
+    private static final String SHARED_PREFS_STREAMER = "streamer";
+
+
     //get an instance of Firebase and a reference to the collection
     FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
     DatabaseReference usersRef = rootNode.getReference("Users");
-
+    private static final String TAG = "LoginOrRegister";
+    private static final String BUNDLE_KEY_AUTHENTICATED_USER = "authenticated_user";
     private EditText usernameLoginET, passwordLoginET, usernameRegisterET, passwordRegisterET, confirmPasswordRegisterET, emailRegisterET;
     private Button loginBtn, registerBtn;
 
@@ -124,7 +138,9 @@ public class LoginOrRegister extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot userSnapshot) {
                     if (isRegisteredUser(userSnapshot)) {
                         if (isCorrectPassword(userSnapshot, inputUsername, inputPassword)) {
+                            saveUserInfo(userSnapshot, inputUsername);
                             authenticateUser(userSnapshot, inputUsername);
+
                         }
                     }
                 }
@@ -137,26 +153,39 @@ public class LoginOrRegister extends AppCompatActivity {
         }
     }
 
+    private void saveUserInfo(DataSnapshot snapshot, String username) {
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SHARED_PREFS_USERNAME, snapshot.child(username).child("username").getValue(String.class));
+        editor.putString(SHARED_PREFS_EMAIL, snapshot.child(username).child("email").getValue(String.class));
+        editor.putString(SHARED_PREFS_DESCRIPTION, snapshot.child(username).child("description").getValue(String.class));
+        editor.putString(SHARED_PREFS_THEME, snapshot.child(username).child("theme").getValue(String.class));
+        editor.putString(SHARED_PREFS_IMAGE_URL, snapshot.child(username).child("imageURL").getValue(String.class));
+        editor.putBoolean(SHARED_PREFS_STREAMER, snapshot.child(username).child("streamer").getValue(Boolean.class));
+        editor.apply();
+    }
+
+
     private void authenticateUser(DataSnapshot snapshot, String username) {
-        String usernameFromDatabase = snapshot.child(username).child("username").getValue(String.class);
-        String passwordFromDatabase = snapshot.child(username).child("password").getValue(String.class);
-        String emailFromDatabase = snapshot.child(username).child("email").getValue(String.class);
-        String descriptionFromDatabase = snapshot.child(username).child("description").getValue(String.class);
-        String themeFromDatabase = snapshot.child(username).child("theme").getValue(String.class);
-        String imageURLFromDatabase = snapshot.child(username).child("imageURL").getValue(String.class);
-        boolean streamerFromDatabase = snapshot.child(username).child("streamer").getValue(Boolean.class);
+//        String usernameFromDatabase = snapshot.child(username).child("username").getValue(String.class);
+//        String passwordFromDatabase = snapshot.child(username).child("password").getValue(String.class);
+//        String emailFromDatabase = snapshot.child(username).child("email").getValue(String.class);
+//        String descriptionFromDatabase = snapshot.child(username).child("description").getValue(String.class);
+//        String themeFromDatabase = snapshot.child(username).child("theme").getValue(String.class);
+//        String imageURLFromDatabase = snapshot.child(username).child("imageURL").getValue(String.class);
+//        boolean streamerFromDatabase = snapshot.child(username).child("streamer").getValue(Boolean.class);
+
+
 
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.putExtra("username", usernameFromDatabase);
-        intent.putExtra("password", passwordFromDatabase);
-        intent.putExtra("email", emailFromDatabase);
-        intent.putExtra("description", descriptionFromDatabase);
-        intent.putExtra("theme", themeFromDatabase);
-        intent.putExtra("imageURL", imageURLFromDatabase);
-        intent.putExtra("streamer", streamerFromDatabase);
-
+//        intent.putExtra("username", usernameFromDatabase);
+//        intent.putExtra("password", passwordFromDatabase);
+//        intent.putExtra("email", emailFromDatabase);
+//        intent.putExtra("description", descriptionFromDatabase);
+//        intent.putExtra("theme", themeFromDatabase);
+//        intent.putExtra("imageURL", imageURLFromDatabase);
+//        intent.putExtra("streamer", streamerFromDatabase);
         startActivity(intent);
-
     }
 
     private boolean isRegisteredUser(DataSnapshot snapshot) {

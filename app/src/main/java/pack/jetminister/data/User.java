@@ -1,4 +1,6 @@
 package pack.jetminister.data;
+import android.widget.TextView;
+
 import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
@@ -97,5 +99,14 @@ public class User implements Serializable {
 
     public void setStreamer(boolean streamer) {
         this.streamer = streamer;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

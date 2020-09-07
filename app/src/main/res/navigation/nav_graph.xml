@@ -8,16 +8,35 @@
     <fragment
         android:id="@+id/live_fragment"
         android:name="pack.jetminister.ui.fragments.LiveFragment"
-        tools:layout="@layout/fragment_live_" />
+        tools:layout="@layout/fragment_live_" >
+        <argument
+            android:name="authenticated_user"
+            app:argType="pack.jetminister.data.User" />
+    </fragment>
     <fragment
         android:id="@+id/top100_fragment"
         android:name="pack.jetminister.ui.fragments.Top100Fragment"
-        tools:layout="@layout/fragment_top100" />
+        tools:layout="@layout/fragment_top100" >
+        <argument
+            android:name="authenticated_user"
+            app:argType="pack.jetminister.data.User" />
+    </fragment>
     <fragment
         android:id="@+id/profile_fragment"
         android:name="pack.jetminister.ui.fragments.ProfileFragment"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <argument
+            android:name="authenticated_user"
+            app:argType="pack.jetminister.data.User" />
+    </fragment>
     <fragment
         android:id="@+id/settings_fragment"
         android:name="pack.jetminister.ui.fragments.SettingsFragment" />
+    <activity
+        android:id="@+id/activity_main"
+        android:name="pack.jetminister.ui.MainActivity" >
+        <argument
+            android:name="authenticated_user"
+            app:argType="pack.jetminister.data.User" />
+    </activity>
 </navigation>
