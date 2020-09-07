@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -34,6 +36,7 @@ public class LoginOrRegister extends AppCompatActivity {
     private static final String SHARED_PREFS_THEME = "theme";
     private static final String SHARED_PREFS_IMAGE_URL = "imageURL";
     private static final String SHARED_PREFS_STREAMER = "streamer";
+    private static final String URI_JETMINISTER = "https://jetminister.com/";
 
 
     //get an instance of Firebase and a reference to the collection
@@ -43,13 +46,14 @@ public class LoginOrRegister extends AppCompatActivity {
     private static final String BUNDLE_KEY_AUTHENTICATED_USER = "authenticated_user";
     private EditText usernameLoginET, passwordLoginET, usernameRegisterET, passwordRegisterET, confirmPasswordRegisterET, emailRegisterET;
     private Button loginBtn, registerBtn;
-    private CheckBox checkboxLogin, checkboxRegister;
+    TextView termsConditionsTV;
+    private CheckBox termsConditionCB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_or_register);
-
+        termsConditionsTV = findViewById(R.id.tv_register_terms_cond);
         usernameLoginET = findViewById(R.id.edittext_login_username);
         passwordLoginET = findViewById(R.id.edittext_login_password);
         loginBtn = findViewById(R.id.btn_login);
@@ -61,13 +65,20 @@ public class LoginOrRegister extends AppCompatActivity {
             }
         });
 
+
         emailRegisterET = findViewById(R.id.edittext_register_email);
         usernameRegisterET = findViewById(R.id.edittext_register_username);
         passwordRegisterET = findViewById(R.id.edittext_register_password);
         confirmPasswordRegisterET = findViewById(R.id.edittext_register_password_confirm);
         registerBtn = findViewById(R.id.btn_register);
-        checkboxLogin = findViewById(R.id.action_checkbox_login);
-        checkboxRegister = findViewById(R.id.action_checkbox_register);
+        termsConditionCB = findViewById(R.id.action_checkbox_terms_conditions);
+        termsConditionsTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent termsConditionsIntent = new Intent(Intent.ACTION_VIEW);
+                termsConditionsIntent.setData(Uri.parse(URI_JETMINISTER));
+            }
+        });
 
 
         registerBtn.setOnClickListener(new View.OnClickListener() {
@@ -76,7 +87,6 @@ public class LoginOrRegister extends AppCompatActivity {
                 registerUser();
             }
         });
-
     }
 
     private void registerUser() {
@@ -88,9 +98,11 @@ public class LoginOrRegister extends AppCompatActivity {
                 String newUsername = usernameRegisterET.getText().toString().trim();
                 String newPassword = passwordRegisterET.getText().toString();
 
-                //check if the password fields match AND the email address is valid AND there is no duplicate username
+                //check if the password fields match AND the email address is valid AND there is no duplicate username AND the tersms and conditions have been accepted
                 if (newPassword.equals(confirmPasswordRegisterET.getText().toString())
-                        & EmailValidator.validate(newEmail) & !isDuplicate(dataSnapshot, newUsername)) {
+                        & EmailValidator.validate(newEmail)
+                        & !isDuplicate(dataSnapshot, newUsername)
+                        & termsConditionCB.isChecked()) {
                     //create new user with values from the textfields
                     User newUser = new User(newUsername, newPassword, newEmail);
                     //create new entry in database by username
@@ -104,14 +116,14 @@ public class LoginOrRegister extends AppCompatActivity {
                 }
             }
 
-                @Override
+            @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
     }
 
-    private boolean isDuplicate(DataSnapshot dataSnapshot, String newUsername){
+    private boolean isDuplicate(DataSnapshot dataSnapshot, String newUsername) {
         //loop over the database, convert each entry to User and get username to check for duplicates
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
             if (snapshot.exists()) {
@@ -130,7 +142,7 @@ public class LoginOrRegister extends AppCompatActivity {
     private void loginUser() {
         final String inputUsername = usernameLoginET.getText().toString().trim();
         final String inputPassword = passwordLoginET.getText().toString();
-        if (!UsernameValidator.validateUsername(inputUsername) || !PasswordValidator.validatePassword(inputPassword)){
+        if (!UsernameValidator.validateUsername(inputUsername) || !PasswordValidator.validatePassword(inputPassword)) {
             Toast.makeText(LoginOrRegister.this, R.string.login_fail, Toast.LENGTH_LONG).show();
         } else {
             Query checkUserQuery = usersRef.orderByChild("username").equalTo(inputUsername);
@@ -139,9 +151,7 @@ public class LoginOrRegister extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot userSnapshot) {
                     if (isRegisteredUser(userSnapshot)) {
                         if (isCorrectPassword(userSnapshot, inputUsername, inputPassword)) {
-                            if(checkboxLogin.isChecked()){
                             saveUserInfo(userSnapshot, inputUsername);
-                            }
                             authenticateUser(userSnapshot, inputUsername);
 
                         }
@@ -177,7 +187,6 @@ public class LoginOrRegister extends AppCompatActivity {
 //        String themeFromDatabase = snapshot.child(username).child("theme").getValue(String.class);
 //        String imageURLFromDatabase = snapshot.child(username).child("imageURL").getValue(String.class);
 //        boolean streamerFromDatabase = snapshot.child(username).child("streamer").getValue(Boolean.class);
-
 
 
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);

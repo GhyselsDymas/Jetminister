@@ -50,7 +50,8 @@
     <string name="tv_profile_followers">followers</string>
     <string name="tv_profile_following">following</string>
     <string name="tv_profile_description">Channel description</string>
-    <string name="cb_login_remember">Remember me</string>
-    <string name="cb_register_remember">Keep me logged in</string>
+    <string name="cb_terms_conditions">I accept the Terms and Conditions</string>
+    <string name="tv_register_no_account">No account yet?</string>
+    <string name="tv_read_more">Read more</string>
 
 </resources>

@@ -29,7 +29,7 @@
                 android:layout_marginEnd="40dp"
                 android:layout_marginRight="40dp"
                 android:text="@string/tv_login"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -98,17 +98,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_password" />
 
-            <CheckBox
-                android:id="@+id/action_checkbox_login"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:text="@string/cb_login_remember"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_login" />
-
             <TextView
                 android:id="@+id/tv_no_account"
                 android:layout_width="0dp"
@@ -118,10 +107,10 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="40dp"
                 android:layout_marginRight="40dp"
-                android:text="If you have no account yet"
+                android:text="@string/tv_register_no_account"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/action_checkbox_login" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_login" />
 
             <TextView
                 android:id="@+id/tv_register"
@@ -132,7 +121,7 @@
                 android:layout_marginEnd="40dp"
                 android:layout_marginRight="40dp"
                 android:text="@string/tv_register"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_no_account" />
@@ -253,15 +242,27 @@
                 app:layout_constraintTop_toBottomOf="@+id/til_register_password_confirm" />
 
             <CheckBox
-                android:id="@+id/action_checkbox_register"
+                android:id="@+id/action_checkbox_terms_conditions"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:text="@string/cb_terms_conditions"
+                app:layout_constraintEnd_toStartOf="@+id/tv_register_terms_cond"
+                app:layout_constraintTop_toBottomOf="@id/btn_register" />
+
+            <TextView
+                android:id="@+id/tv_register_terms_cond"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:text="@string/cb_register_remember"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginRight="40dp"
+                android:clickable="true"
+                android:text="@string/tv_read_more"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btn_register" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_register" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
