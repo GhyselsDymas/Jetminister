@@ -21,6 +21,8 @@ import org.w3c.dom.Text;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
+import pack.jetminister.ui.LoginOrRegister;
+import pack.jetminister.ui.MainActivity;
 import pack.jetminister.ui.ProfileImageActivity;
 
 public class ProfileFragment extends Fragment {
@@ -65,45 +67,58 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootview =  inflater.inflate(R.layout.fragment_profile, container, false);
-        profileImage = rootview.findViewById(R.id.iv_profile_image);
-        usernameTV = rootview.findViewById(R.id.tv_profile_username);
-        descriptionTV = rootview.findViewById(R.id.tv_profile_description);
+        View rootview = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        profileImage.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                openImagePage();
-                return true;
-            }
-        });
+        SharedPreferences myPrefs = mycontext.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        String username = myPrefs.getString(SHARED_PREFS_USERNAME, null);
+        if (username == null) {
 
-        updateUI();
+            Intent intent = new Intent(mycontext, LoginOrRegister.class);
+            startActivity(intent);
+
+        } else {
+            profileImage = rootview.findViewById(R.id.iv_profile_image);
+            usernameTV = rootview.findViewById(R.id.tv_profile_username);
+            descriptionTV = rootview.findViewById(R.id.tv_profile_description);
+
+            profileImage.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    openImagePage();
+                    return true;
+                }
+            });
+
+            updateUI();
+            return rootview;
+        }
         return rootview;
     }
 
-    private void updateUI() {
-        Context context = usernameTV.getContext();
-        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        usernameTV.setText(sharedPreferences.getString(SHARED_PREFS_USERNAME, ""));
-        descriptionTV.setText(sharedPreferences.getString(SHARED_PREFS_DESCRIPTION, ""));
-    }
 
-    private void openImagePage() {
-        Intent intent = new Intent(mycontext , ProfileImageActivity.class);
-        startActivity(intent);
-    }
-
-    public boolean dataPassed() {
-        dataFromUser = getArguments();
-        if (dataFromUser != null) {
-            if (dataFromUser.containsKey("authenticated_user")) {
-                Log.d(TAG, "data contains key");
-                return true;
-            } else if (dataFromUser.isEmpty()) {
-                Log.d(TAG, "bundle passed but is empty" + dataFromUser.toString());
-            }
+        private void updateUI () {
+            Context context = usernameTV.getContext();
+            SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+            usernameTV.setText(sharedPreferences.getString(SHARED_PREFS_USERNAME, ""));
+            descriptionTV.setText(sharedPreferences.getString(SHARED_PREFS_DESCRIPTION, ""));
         }
-        return false;
-    }
+
+        private void openImagePage () {
+            Intent intent = new Intent(mycontext, ProfileImageActivity.class);
+            startActivity(intent);
+        }
+
+        public boolean dataPassed () {
+            dataFromUser = getArguments();
+            if (dataFromUser != null) {
+                if (dataFromUser.containsKey("authenticated_user")) {
+                    Log.d(TAG, "data contains key");
+                    return true;
+                } else if (dataFromUser.isEmpty()) {
+                    Log.d(TAG, "bundle passed but is empty" + dataFromUser.toString());
+                }
+            }
+            return false;
+        }
+
 }
