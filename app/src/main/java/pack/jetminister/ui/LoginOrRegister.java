@@ -105,8 +105,7 @@ public class LoginOrRegister extends AppCompatActivity {
                         & termsConditionCB.isChecked()) {
                     //create new user with values from the textfields
                     User newUser = new User(newUsername, newPassword, newEmail);
-                    //create new entry in database by username
-                    // TODO: replace username with auto-generated id as child
+                    //create new entry in database by username²
                     usersRef.child(newUsername).setValue(newUser);
                     Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
                     authenticateUser(dataSnapshot, newUsername);
