@@ -1,20 +1,17 @@
 package pack.jetminister.ui;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,7 +21,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
-import pack.jetminister.ui.fragments.ProfileFragment;
 import pack.jetminister.ui.util.EmailValidator;
 import pack.jetminister.ui.util.PasswordValidator;
 import pack.jetminister.ui.util.UsernameValidator;
@@ -47,6 +43,7 @@ public class LoginOrRegister extends AppCompatActivity {
     private static final String BUNDLE_KEY_AUTHENTICATED_USER = "authenticated_user";
     private EditText usernameLoginET, passwordLoginET, usernameRegisterET, passwordRegisterET, confirmPasswordRegisterET, emailRegisterET;
     private Button loginBtn, registerBtn;
+    private CheckBox checkboxLogin, checkboxRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +66,10 @@ public class LoginOrRegister extends AppCompatActivity {
         passwordRegisterET = findViewById(R.id.edittext_register_password);
         confirmPasswordRegisterET = findViewById(R.id.edittext_register_password_confirm);
         registerBtn = findViewById(R.id.btn_register);
+        checkboxLogin = findViewById(R.id.action_checkbox_login);
+        checkboxRegister = findViewById(R.id.action_checkbox_register);
+
+
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -138,7 +139,9 @@ public class LoginOrRegister extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot userSnapshot) {
                     if (isRegisteredUser(userSnapshot)) {
                         if (isCorrectPassword(userSnapshot, inputUsername, inputPassword)) {
+                            if(checkboxLogin.isChecked()){
                             saveUserInfo(userSnapshot, inputUsername);
+                            }
                             authenticateUser(userSnapshot, inputUsername);
 
                         }
