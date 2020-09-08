@@ -3,6 +3,7 @@ package pack.jetminister.ui.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
@@ -67,15 +73,18 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootview = inflater.inflate(R.layout.fragment_profile, container, false);
-//
-//        SharedPreferences myPrefs = mycontext.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-//        String username = myPrefs.getString(SHARED_PREFS_USERNAME, null);
-//        if (username == null) {
-//            Intent intent = new Intent(mycontext, LoginOrRegister.class);
-//            startActivity(intent);
-//
-//        } else {
+
+        View rootview = inflater.inflate(R.layout.support_simple_spinner_dropdown_item, container, false);;
+
+        SharedPreferences myPrefs = mycontext.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        String username = myPrefs.getString(SHARED_PREFS_USERNAME, null);
+        if (username == null) {
+            Intent intent = new Intent(mycontext, LoginOrRegister.class);
+            startActivity(intent);
+
+        } else {
+            rootview = inflater.inflate(R.layout.fragment_profile, container, false);
+
             profileImage = rootview.findViewById(R.id.iv_profile_image);
             usernameTV = rootview.findViewById(R.id.tv_profile_username);
             descriptionTV = rootview.findViewById(R.id.tv_profile_description);
@@ -89,17 +98,19 @@ public class ProfileFragment extends Fragment {
             });
 
             updateUI();
-            return rootview;
         }
-//        return rootview;
-//    }
-
+        return rootview;
+    }
 
         private void updateUI () {
             Context context = usernameTV.getContext();
             SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
             usernameTV.setText(sharedPreferences.getString(SHARED_PREFS_USERNAME, ""));
             descriptionTV.setText(sharedPreferences.getString(SHARED_PREFS_DESCRIPTION, ""));
+
+            Uri myUri = Uri.parse(sharedPreferences.getString(SHARED_PREFS_IMAGE_URL, ""));
+            //profileImage.setImageURI(myUri);
+            Picasso.get().load(myUri).into(profileImage);
         }
 
         private void openImagePage () {

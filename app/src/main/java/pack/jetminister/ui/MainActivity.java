@@ -9,6 +9,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -60,15 +62,9 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.profile_fragment:
                     toolbar.setTitle(R.string.page_profile);
                     destinationFragment = new ProfileFragment();
-                    SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-                    String prefUsername = sharedPreferences.getString(SHARED_PREFS_USERNAME, null);
-                    if (prefUsername != null){
-                        loadFragment(destinationFragment);
-                    } else {
-                        Intent intent = new Intent(MainActivity.this, LoginOrRegister.class);
-                        startActivity(intent);
-                    }
+                    loadFragment(destinationFragment);
                     return true;
+
                 case R.id.settings_fragment:
                     toolbar.setTitle(R.string.page_settings);
                     destinationFragment = new SettingsFragment();
