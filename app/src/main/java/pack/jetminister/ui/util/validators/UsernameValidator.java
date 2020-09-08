@@ -1,4 +1,4 @@
-package pack.jetminister.ui.util;
+package pack.jetminister.ui.util.validators;
 
 import android.widget.Toast;
 

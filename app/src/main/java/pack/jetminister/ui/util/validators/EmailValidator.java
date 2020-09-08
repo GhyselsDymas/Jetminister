@@ -1,4 +1,4 @@
-package pack.jetminister.ui.util;
+package pack.jetminister.ui.util.validators;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

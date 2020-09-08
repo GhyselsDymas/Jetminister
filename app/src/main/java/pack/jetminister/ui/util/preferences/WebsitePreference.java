@@ -1,4 +1,4 @@
-package pack.jetminister.ui.util;
+package pack.jetminister.ui.util.preferences;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +17,7 @@ public class WebsitePreference extends Preference {
     public WebsitePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         //set the right XML file
-        setWidgetLayoutResource(R.layout.settings_website);}
+        setWidgetLayoutResource(R.layout.preference_website);}
 
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {

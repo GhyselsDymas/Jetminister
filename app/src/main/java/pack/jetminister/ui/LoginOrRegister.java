@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -14,6 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,12 +26,15 @@ import com.google.firebase.database.ValueEventListener;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
-import pack.jetminister.ui.util.EmailValidator;
-import pack.jetminister.ui.util.PasswordValidator;
-import pack.jetminister.ui.util.UsernameValidator;
+import pack.jetminister.ui.util.validators.EmailValidator;
+import pack.jetminister.ui.util.validators.PasswordValidator;
+import pack.jetminister.ui.util.validators.UsernameValidator;
 
 public class LoginOrRegister extends AppCompatActivity {
 
+    private static final String TAG = "LoginOrRegister";
+
+    //Keys for the shared preferences
     private static final String SHARED_PREFS = "SharedPreferences";
     private static final String SHARED_PREFS_USERNAME = "username";
     private static final String SHARED_PREFS_EMAIL = "email";
@@ -38,130 +44,208 @@ public class LoginOrRegister extends AppCompatActivity {
     private static final String SHARED_PREFS_STREAMER = "streamer";
     private static final String URI_JETMINISTER = "https://jetminister.com/";
 
-
     //get an instance of Firebase and a reference to the collection
     FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
     DatabaseReference usersRef = rootNode.getReference("Users");
-    private static final String TAG = "LoginOrRegister";
-    private static final String BUNDLE_KEY_AUTHENTICATED_USER = "authenticated_user";
-    private EditText usernameLoginET, passwordLoginET, usernameRegisterET, passwordRegisterET, confirmPasswordRegisterET, emailRegisterET;
-    private Button loginBtn, registerBtn;
-    TextView termsConditionsTV;
+
+    private TextInputLayout usernameLoginTIL, passwordLoginTIL, emailRegisterTIL, usernameRegisterTIL, passwordRegisterTIL, passwordConfirmRegisterTIL;
+    private EditText usernameLoginET, passwordLoginET, emailRegisterET, usernameRegisterET, passwordRegisterET, passwordConfirmRegisterET;
     private CheckBox termsConditionCB;
+
+    View.OnClickListener loginListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            loginUser();
+        }
+    };
+    View.OnClickListener termsConditionsListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent termsConditionsIntent = new Intent(Intent.ACTION_VIEW);
+            termsConditionsIntent.setData(Uri.parse(URI_JETMINISTER));
+        }
+    };
+
+    View.OnClickListener registerListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            registerUser();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_or_register);
-        termsConditionsTV = findViewById(R.id.tv_register_terms_cond);
+
+        usernameLoginTIL = findViewById(R.id.til_username);
         usernameLoginET = findViewById(R.id.edittext_login_username);
+        passwordLoginTIL = findViewById(R.id.til_password);
         passwordLoginET = findViewById(R.id.edittext_login_password);
-        loginBtn = findViewById(R.id.btn_login);
+        Button loginBtn = findViewById(R.id.btn_login);
+        loginBtn.setOnClickListener(loginListener);
 
-        loginBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loginUser();
-            }
-        });
-
-
+        emailRegisterTIL = findViewById(R.id.til_register_email);
         emailRegisterET = findViewById(R.id.edittext_register_email);
+        usernameRegisterTIL = findViewById(R.id.til_register_username);
         usernameRegisterET = findViewById(R.id.edittext_register_username);
+        passwordRegisterTIL = findViewById(R.id.til_register_password);
         passwordRegisterET = findViewById(R.id.edittext_register_password);
-        confirmPasswordRegisterET = findViewById(R.id.edittext_register_password_confirm);
-        registerBtn = findViewById(R.id.btn_register);
+        passwordConfirmRegisterTIL = findViewById(R.id.til_register_password_confirm);
+        passwordConfirmRegisterET = findViewById(R.id.edittext_register_password_confirm);
         termsConditionCB = findViewById(R.id.action_checkbox_terms_conditions);
-        termsConditionsTV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent termsConditionsIntent = new Intent(Intent.ACTION_VIEW);
-                termsConditionsIntent.setData(Uri.parse(URI_JETMINISTER));
-            }
-        });
-
-
-        registerBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                registerUser();
-            }
-        });
+        TextView termsConditionsTV = findViewById(R.id.tv_register_terms_cond);
+        termsConditionsTV.setPaintFlags(termsConditionsTV.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        termsConditionsTV.setOnClickListener(termsConditionsListener);
+        Button registerBtn = findViewById(R.id.btn_register);
+        registerBtn.setOnClickListener(registerListener);
     }
 
     private void registerUser() {
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                CharSequence confirmPasswordError = getResources().getString(R.string.register_error_confirmpassword);
                 //get values from the text fields
-                String newEmail = emailRegisterET.getText().toString().trim();
-                String newUsername = usernameRegisterET.getText().toString().trim();
-                String newPassword = passwordRegisterET.getText().toString();
-
+                String newEmail = emailRegisterTIL.getEditText().getText().toString().trim();
+                String newUsername = usernameRegisterTIL.getEditText().getText().toString().trim();
+                String newPassword = passwordRegisterTIL.getEditText().getText().toString();
+                String newConfirmPassword = passwordConfirmRegisterTIL.getEditText().getText().toString();
                 //check if the password fields match AND the email address is valid AND there is no duplicate username AND the tersms and conditions have been accepted
-                if (newPassword.equals(confirmPasswordRegisterET.getText().toString())
-                        & EmailValidator.validate(newEmail)
-                        & !isDuplicate(dataSnapshot, newUsername)
+                if (validatePassword(newPassword)
+                        & (confirmPasswordMatch(newPassword, newConfirmPassword))
+                        & validateEmail(newEmail)
+                        & isDuplicate(dataSnapshot, newUsername)
                         & termsConditionCB.isChecked()) {
                     //create new user with values from the textfields
                     User newUser = new User(newUsername, newPassword, newEmail);
-                    //create new entry in database by username²
+                    //create new entry in database by username
                     usersRef.child(newUsername).setValue(newUser);
                     Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
-                    authenticateUser(dataSnapshot, newUsername);
-
+                    saveUserInfo(dataSnapshot, newUsername);
+                    proceedToMain();
                 } else {
-                    Toast.makeText(LoginOrRegister.this, R.string.register_error, Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginOrRegister.this, R.string.register_error, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
 
+    private boolean validateEmail(String email) {
+        CharSequence emptyFieldError = getResources().getString(R.string.register_error_empty_field);
+        CharSequence invalidEmailError = getResources().getString(R.string.register_error_email_invalid);
+
+        if (email.isEmpty()) {
+            emailRegisterTIL.setError(emptyFieldError);
+            return false;
+        } else if (!EmailValidator.validate(email)) {
+            emailRegisterTIL.setError(invalidEmailError);
+        } else {
+            emailRegisterTIL.setError(null);
+            emailRegisterTIL.setErrorEnabled(false);
+        }
+        return true;
+    }
+
+    private boolean validatePassword(String password) {
+        CharSequence emptyFieldError = getResources().getString(R.string.register_error_empty_field);
+        CharSequence invalidPasswordError = getResources().getString(R.string.register_error_password_invalid);
+
+        if (password.isEmpty()) {
+            passwordRegisterTIL.setError(emptyFieldError);
+            return false;
+        } else if (!PasswordValidator.validate(password)) {
+            passwordRegisterTIL.setError(invalidPasswordError);
+            return false;
+        } else {
+            passwordRegisterTIL.setError(null);
+            passwordRegisterTIL.setErrorEnabled(false);
+            return true;
+        }
+    }
+
+    private boolean confirmPasswordMatch(String password, String confirmPassword) {
+        CharSequence confirmPasswordError = getResources().getString(R.string.register_error_confirmpassword);
+        if (!password.equals(confirmPassword)) {
+            passwordConfirmRegisterTIL.setError(confirmPasswordError);
+            return false;
+        }
+        passwordConfirmRegisterTIL.setError(null);
+        passwordConfirmRegisterTIL.setErrorEnabled(false);
+        return true;
+    }
+
+
     private boolean isDuplicate(DataSnapshot dataSnapshot, String newUsername) {
+        CharSequence duplicateUsernameError = getResources().getString(R.string.register_error_username_duplicate);
         //loop over the database, convert each entry to User and get username to check for duplicates
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
             if (snapshot.exists()) {
                 User checkUser = snapshot.getValue(User.class);
                 if (checkUser != null) {
                     if (newUsername.equals(checkUser.getUsername())) {
-                        Toast.makeText(LoginOrRegister.this, R.string.register_username_duplicate, Toast.LENGTH_SHORT).show();
+                        usernameRegisterTIL.setError(null);
+                        usernameRegisterTIL.setErrorEnabled(false);
                         return true;
                     }
                 }
             }
         }
+        usernameRegisterTIL.setError(duplicateUsernameError);
         return false;
     }
 
     private void loginUser() {
         final String inputUsername = usernameLoginET.getText().toString().trim();
         final String inputPassword = passwordLoginET.getText().toString();
-        if (!UsernameValidator.validateUsername(inputUsername) || !PasswordValidator.validatePassword(inputPassword)) {
-            Toast.makeText(LoginOrRegister.this, R.string.login_fail, Toast.LENGTH_LONG).show();
+        Query checkUserQuery = usersRef.orderByChild("username").equalTo(inputUsername);
+        checkUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                if (!isRegisteredUser(userSnapshot)) {
+                    Toast.makeText(LoginOrRegister.this, "Not a registered user", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (!isCorrectPassword(userSnapshot, inputUsername, inputPassword)) {
+                    Toast.makeText(LoginOrRegister.this, "Incorrect password", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                saveUserInfo(userSnapshot, inputUsername);
+                proceedToMain();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+    private boolean isRegisteredUser(DataSnapshot snapshot) {
+        CharSequence unknownUserError = getResources().getString(R.string.login_error_user_unknown);
+        if (!snapshot.exists()) {
+            usernameLoginTIL.setError(unknownUserError);
+            return false;
         } else {
-            Query checkUserQuery = usersRef.orderByChild("username").equalTo(inputUsername);
-            checkUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot userSnapshot) {
-                    if (isRegisteredUser(userSnapshot)) {
-                        if (isCorrectPassword(userSnapshot, inputUsername, inputPassword)) {
-                            saveUserInfo(userSnapshot, inputUsername);
-                            authenticateUser(userSnapshot, inputUsername);
+            usernameLoginTIL.setError(null);
+            usernameLoginTIL.setErrorEnabled(false);
+            return true;
+        }
+    }
 
-                        }
-                    }
-                }
+    private boolean isCorrectPassword(DataSnapshot snapshot, String username, String password) {
+        CharSequence wrongPasswordError = getResources().getString(R.string.login_error_wrong_password);
+        String passwordFromDatabase = snapshot.child(username).child("password").getValue(String.class);
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
+        if (passwordFromDatabase == null || !passwordFromDatabase.equals(password)) {
+            passwordLoginTIL.setError(wrongPasswordError);
+            return false;
+        } else {
+            passwordLoginTIL.setError(null);
+            passwordLoginTIL.setErrorEnabled(false);
+            return true;
         }
     }
 
@@ -177,8 +261,7 @@ public class LoginOrRegister extends AppCompatActivity {
         editor.apply();
     }
 
-
-    private void authenticateUser(DataSnapshot snapshot, String username) {
+    private void proceedToMain() {
 //        String usernameFromDatabase = snapshot.child(username).child("username").getValue(String.class);
 //        String passwordFromDatabase = snapshot.child(username).child("password").getValue(String.class);
 //        String emailFromDatabase = snapshot.child(username).child("email").getValue(String.class);
@@ -186,7 +269,6 @@ public class LoginOrRegister extends AppCompatActivity {
 //        String themeFromDatabase = snapshot.child(username).child("theme").getValue(String.class);
 //        String imageURLFromDatabase = snapshot.child(username).child("imageURL").getValue(String.class);
 //        boolean streamerFromDatabase = snapshot.child(username).child("streamer").getValue(Boolean.class);
-
 
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
 //        intent.putExtra("username", usernameFromDatabase);
@@ -197,18 +279,6 @@ public class LoginOrRegister extends AppCompatActivity {
 //        intent.putExtra("imageURL", imageURLFromDatabase);
 //        intent.putExtra("streamer", streamerFromDatabase);
         startActivity(intent);
-    }
-
-    private boolean isRegisteredUser(DataSnapshot snapshot) {
-        return snapshot.exists();
-    }
-
-    private boolean isCorrectPassword(DataSnapshot snapshot, String username, String password) {
-        String passwordFromDatabase = snapshot.child(username).child("password").getValue(String.class);
-        if (passwordFromDatabase != null) {
-            return passwordFromDatabase.equals(password);
-        }
-        return false;
     }
 
 }

@@ -39,13 +39,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginRight="30dp"
                 app:errorEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_login">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edittext_login_username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -56,8 +57,11 @@
                     android:layout_marginRight="40dp"
                     android:ems="10"
                     android:hint="@string/et_login_username"
+                    android:importantForAutofill="no"
                     android:inputType="textPersonName" />
+
             </com.google.android.material.textfield.TextInputLayout>
+
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_password"
@@ -70,7 +74,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_username">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edittext_login_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -138,7 +142,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_register">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edittext_register_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -163,7 +167,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_register_email">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edittext_register_username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -188,7 +192,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_register_username">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edittext_register_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -213,7 +217,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_register_password">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edittext_register_password_confirm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -236,7 +240,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="40dp"
                 android:layout_marginRight="40dp"
-                android:text="@string/btn_regsiter"
+                android:text="@string/btn_register"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_register_password_confirm" />
@@ -248,7 +252,9 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
+                android:layout_marginBottom="8dp"
                 android:text="@string/cb_terms_conditions"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/tv_register_terms_cond"
                 app:layout_constraintTop_toBottomOf="@id/btn_register" />
 
@@ -262,7 +268,8 @@
                 android:clickable="true"
                 android:text="@string/tv_read_more"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_register" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_register"
+                android:focusable="true" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

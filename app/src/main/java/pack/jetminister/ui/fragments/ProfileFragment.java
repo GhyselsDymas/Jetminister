@@ -68,15 +68,14 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootview = inflater.inflate(R.layout.fragment_profile, container, false);
-
-        SharedPreferences myPrefs = mycontext.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        String username = myPrefs.getString(SHARED_PREFS_USERNAME, null);
-        if (username == null) {
-
-            Intent intent = new Intent(mycontext, LoginOrRegister.class);
-            startActivity(intent);
-
-        } else {
+//
+//        SharedPreferences myPrefs = mycontext.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+//        String username = myPrefs.getString(SHARED_PREFS_USERNAME, null);
+//        if (username == null) {
+//            Intent intent = new Intent(mycontext, LoginOrRegister.class);
+//            startActivity(intent);
+//
+//        } else {
             profileImage = rootview.findViewById(R.id.iv_profile_image);
             usernameTV = rootview.findViewById(R.id.tv_profile_username);
             descriptionTV = rootview.findViewById(R.id.tv_profile_description);
@@ -92,8 +91,8 @@ public class ProfileFragment extends Fragment {
             updateUI();
             return rootview;
         }
-        return rootview;
-    }
+//        return rootview;
+//    }
 
 
         private void updateUI () {

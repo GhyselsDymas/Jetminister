@@ -1,4 +1,4 @@
-package pack.jetminister.ui.util;
+package pack.jetminister.ui.util.preferences;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +18,7 @@ public class TermsConditionsPreference extends Preference {
     public TermsConditionsPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         //set the right XML file
-        setWidgetLayoutResource(R.layout.settings_terms_conditions);}
+        setWidgetLayoutResource(R.layout.preference_terms_conditions);}
 
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {

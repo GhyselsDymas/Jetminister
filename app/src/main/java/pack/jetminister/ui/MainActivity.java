@@ -10,6 +10,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -27,41 +28,51 @@ import pack.jetminister.ui.fragments.Top100Fragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ActionBar toolbar;
-    private ProfileFragment profileFragment;
-    private Top100Fragment top100Fragment;
-    private LiveFragment liveFragment;
-    private User authenticatedUser;
-    private static final String BUNDLE_KEY_AUTHENTICATED_USER = "authenticated_user";
     private static final String TAG = "MainActivity";
+
+    private static final String SHARED_PREFS = "SharedPreferences";
+    private static final String SHARED_PREFS_USERNAME = "username";
+    private static final String SHARED_PREFS_EMAIL = "email";
+    private static final String SHARED_PREFS_DESCRIPTION = "description";
+    private static final String SHARED_PREFS_THEME = "theme";
+    private static final String SHARED_PREFS_IMAGE_URL = "imageURL";
+    private static final String SHARED_PREFS_STREAMER = "streamer";
+
+    private ActionBar toolbar;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Fragment destinationFragment;
-            Bundle args = new Bundle();
-            args.putSerializable(BUNDLE_KEY_AUTHENTICATED_USER, authenticatedUser);
             //load different fragments when menu item is selected
             switch (item.getItemId()) {
                 case R.id.live_fragment:
                     toolbar.setTitle(R.string.page_start);
                     destinationFragment = new LiveFragment();
-                    loadFragment(destinationFragment, args);
+                    loadFragment(destinationFragment);
                     return true;
                 case R.id.top100_fragment:
                     toolbar.setTitle(R.string.page_top100);
                     destinationFragment = new Top100Fragment();
-                    loadFragment(destinationFragment, args);
+                    loadFragment(destinationFragment);
                     return true;
                 case R.id.profile_fragment:
                     toolbar.setTitle(R.string.page_profile);
                     destinationFragment = new ProfileFragment();
-                    loadFragment(destinationFragment, args);
+                    SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+                    String prefUsername = sharedPreferences.getString(SHARED_PREFS_USERNAME, null);
+                    if (prefUsername != null){
+                        loadFragment(destinationFragment);
+                    } else {
+                        Intent intent = new Intent(MainActivity.this, LoginOrRegister.class);
+                        startActivity(intent);
+                    }
                     return true;
                 case R.id.settings_fragment:
                     toolbar.setTitle(R.string.page_settings);
                     destinationFragment = new SettingsFragment();
-                    loadFragment(destinationFragment, args);
+                    loadFragment(destinationFragment);
                     return true;
             }
             return false;
@@ -112,8 +123,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private User receiveUserData() {
+        User authenticatedUser = new User();
         Intent intent = getIntent();
-        User user = new User();
         if (intent != null) {
             String usernameFromDatabase = intent.getStringExtra("username");
             String passwordFromDatabase = intent.getStringExtra("password");
@@ -123,15 +134,15 @@ public class MainActivity extends AppCompatActivity {
             String imageURLFromDatabase = intent.getStringExtra("imageURL");
             boolean streamerFromDatabaseDatabase = intent.getBooleanExtra("streamer", false);
 
-            user.setUsername(usernameFromDatabase);
-            user.setPassword(passwordFromDatabase);
-            user.setEmail(emailFromDatabase);
-            user.setDescription(descriptionFromDatabase);
-            user.setTheme(themeFromDatabase);
-            user.setImageURL(imageURLFromDatabase);
-            user.setStreamer(streamerFromDatabaseDatabase);
+            authenticatedUser.setUsername(usernameFromDatabase);
+            authenticatedUser.setPassword(passwordFromDatabase);
+            authenticatedUser.setEmail(emailFromDatabase);
+            authenticatedUser.setDescription(descriptionFromDatabase);
+            authenticatedUser.setTheme(themeFromDatabase);
+            authenticatedUser.setImageURL(imageURLFromDatabase);
+            authenticatedUser.setStreamer(streamerFromDatabaseDatabase);
         }
-        return user;
+        return authenticatedUser;
     }
 
     private void openLogin() {
@@ -139,9 +150,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void loadFragment(Fragment fragment, Bundle args) {
+    private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.nav_host_fragment, fragment.getClass(), args);
+        transaction.replace(R.id.nav_host_fragment, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }

@@ -28,13 +28,13 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import pack.jetminister.R;
-import pack.jetminister.ui.util.Upload;
+import pack.jetminister.data.Image;
 
 public class ProfileImageActivity extends AppCompatActivity {
-
-
+    
+    private static final String TAG = "ProfileImageActivity";
+    
     public ProfileImageActivity() {
-        // Required empty public constructor
     }
 
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -60,8 +60,8 @@ public class ProfileImageActivity extends AppCompatActivity {
         mImageView = findViewById(R.id.image_view);
         mProgressBar = findViewById(R.id.progress_bar);
 
-        mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads");
+        mStorageRef = FirebaseStorage.getInstance().getReference("images");
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("images");
 
         mButtonChooseImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +81,6 @@ public class ProfileImageActivity extends AppCompatActivity {
         });
     }
 
-
     private void openFileChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -90,11 +89,11 @@ public class ProfileImageActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getData() != null) {
-            mImageUri = data.getData();
+                && intent != null && intent.getData() != null) {
+            mImageUri = intent.getData();
             Picasso.get().load(mImageUri).into(mImageView);
         }
     }
@@ -106,8 +105,7 @@ public class ProfileImageActivity extends AppCompatActivity {
     }
     private void uploadFile() {
         if (mImageUri != null) {
-            StorageReference fileReference = mStorageRef.child(System.currentTimeMillis()
-                    + "." + getFileExtension(mImageUri));
+            StorageReference fileReference = mStorageRef.child(System.currentTimeMillis() + "." + getFileExtension(mImageUri));
             mUploadTask = fileReference.putFile(mImageUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -119,11 +117,12 @@ public class ProfileImageActivity extends AppCompatActivity {
                                     mProgressBar.setProgress(0);
                                 }
                             }, 500);
-                            Toast.makeText(ProfileImageActivity.this, "Upload successful", Toast.LENGTH_LONG).show();
-                            Upload upload = new Upload("hallo".toString().trim(),
-                                    taskSnapshot.getStorage().getDownloadUrl().toString());
+                            Toast.makeText(ProfileImageActivity.this, R.string.profile_image_upload_success, Toast.LENGTH_LONG).show();
+                            Image uploadImage = new Image(taskSnapshot.getStorage().getDownloadUrl().toString());
+
+                            //create entry in database with unique key and store image metadata in entry
                             String uploadId = mDatabaseRef.push().getKey();
-                            mDatabaseRef.child(uploadId).setValue(upload);
+                            mDatabaseRef.child(uploadId).setValue(uploadImage);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -140,7 +139,7 @@ public class ProfileImageActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.profile_image_error_none_selected, Toast.LENGTH_SHORT).show();
         }
     }
 }
