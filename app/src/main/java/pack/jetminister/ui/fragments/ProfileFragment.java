@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,17 +36,11 @@ public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
     private static final String SHARED_PREFS = "SharedPreferences";
     private static final String SHARED_PREFS_USERNAME = "username";
-    private static final String SHARED_PREFS_PASSWORD = "password";
-    private static final String SHARED_PREFS_EMAIL = "email";
     private static final String SHARED_PREFS_DESCRIPTION = "description";
-    private static final String SHARED_PREFS_THEME = "theme";
     private static final String SHARED_PREFS_IMAGE_URL = "imageURL";
-    private static final String SHARED_PREFS_STREAMER = "streamer";
 
-    private static final String BUNDLE_KEY_AUTHENTICATED_USER = "authenticated_user";
     private AppCompatActivity mycontext;
     private Bundle dataFromUser;
-    private User authenticatedUser;
 
     private ImageView profileImage;
     private TextView usernameTV;
@@ -74,19 +69,26 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootview = inflater.inflate(R.layout.support_simple_spinner_dropdown_item, container, false);;
-
         SharedPreferences myPrefs = mycontext.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        String username = myPrefs.getString(SHARED_PREFS_USERNAME, null);
-        if (username == null) {
+        final String currentUsername = myPrefs.getString(SHARED_PREFS_USERNAME, null);
+        final String currentImageURL = myPrefs.getString(SHARED_PREFS_IMAGE_URL, "xXxXx");
+
+        if (currentUsername == null) {
             Intent intent = new Intent(mycontext, LoginOrRegister.class);
             startActivity(intent);
 
         } else {
             rootview = inflater.inflate(R.layout.fragment_profile, container, false);
-
+            Button testBtn = rootview.findViewById(R.id.btn_test);
             profileImage = rootview.findViewById(R.id.iv_profile_image);
             usernameTV = rootview.findViewById(R.id.tv_profile_username);
             descriptionTV = rootview.findViewById(R.id.tv_profile_description);
+            testBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d(TAG, currentUsername + "/" + currentImageURL);
+                }
+            });
 
             profileImage.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override

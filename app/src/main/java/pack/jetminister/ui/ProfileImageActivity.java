@@ -29,12 +29,11 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import pack.jetminister.R;
-import pack.jetminister.data.Image;
 
 public class ProfileImageActivity extends AppCompatActivity {
-    
+
     private static final String TAG = "ProfileImageActivity";
-    
+
     public ProfileImageActivity() {
     }
 
@@ -56,7 +55,7 @@ public class ProfileImageActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_profile_image_page);
+        setContentView(R.layout.activity_profile_image_page);
 
         mButtonChooseImage = findViewById(R.id.button_choose_image);
         mButtonUpload = findViewById(R.id.button_upload);
@@ -107,6 +106,7 @@ public class ProfileImageActivity extends AppCompatActivity {
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
+
     private void uploadFile() {
         if (mImageUri != null) {
             StorageReference fileReference = mStorageRef.child(System.currentTimeMillis() + "." + getFileExtension(mImageUri));
@@ -121,14 +121,22 @@ public class ProfileImageActivity extends AppCompatActivity {
                                     mProgressBar.setProgress(0);
                                 }
                             }, 500);
-                            String downloadURL = taskSnapshot.getStorage().getDownloadUrl().toString();
-                            SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString(SHARED_PREFS_IMAGE_URL, downloadURL);
-                            editor.apply();
-                            String username = sharedPreferences.getString(SHARED_PREFS_USERNAME, null);
-                            mDatabaseRef.child(username).child("imageURL").setValue(downloadURL);
-                            Toast.makeText(ProfileImageActivity.this, R.string.profile_image_upload_success, Toast.LENGTH_LONG).show();
+                            taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String downloadURI = uri.toString();
+                                    SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putString(SHARED_PREFS_IMAGE_URL, downloadURI);
+                                    editor.apply();
+                                    String username = sharedPreferences.getString(SHARED_PREFS_USERNAME, null);
+                                    mDatabaseRef.child(username).child("imageURL").setValue(downloadURI);
+                                    Toast.makeText(ProfileImageActivity.this, R.string.profile_image_upload_success, Toast.LENGTH_LONG).show();
+                                }
+                            }
+
+                            );
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -145,7 +153,7 @@ public class ProfileImageActivity extends AppCompatActivity {
                         }
                     });
         } else {
-                Toast.makeText(this, R.string.profile_image_error_none_selected, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.profile_image_error_none_selected, Toast.LENGTH_SHORT).show();
         }
     }
 }
