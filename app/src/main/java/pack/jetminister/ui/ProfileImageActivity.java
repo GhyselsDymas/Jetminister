@@ -2,6 +2,7 @@ package pack.jetminister.ui;
 
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -38,6 +39,9 @@ public class ProfileImageActivity extends AppCompatActivity {
     }
 
     private static final int PICK_IMAGE_REQUEST = 1;
+    private static final String SHARED_PREFS = "SharedPreferences";
+    private static final String SHARED_PREFS_USERNAME = "username";
+    private static final String SHARED_PREFS_IMAGE_URL = "imageURL";
     private Button mButtonChooseImage;
     private Button mButtonUpload;
     private Button mButtonCancel;
@@ -61,7 +65,7 @@ public class ProfileImageActivity extends AppCompatActivity {
         mProgressBar = findViewById(R.id.progress_bar);
 
         mStorageRef = FirebaseStorage.getInstance().getReference("images");
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("images");
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("Users");
 
         mButtonChooseImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,12 +121,14 @@ public class ProfileImageActivity extends AppCompatActivity {
                                     mProgressBar.setProgress(0);
                                 }
                             }, 500);
+                            String downloadURL = taskSnapshot.getStorage().getDownloadUrl().toString();
+                            SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString(SHARED_PREFS_IMAGE_URL, downloadURL);
+                            editor.apply();
+                            String username = sharedPreferences.getString(SHARED_PREFS_USERNAME, null);
+                            mDatabaseRef.child(username).child("imageURL").setValue(downloadURL);
                             Toast.makeText(ProfileImageActivity.this, R.string.profile_image_upload_success, Toast.LENGTH_LONG).show();
-                            Image uploadImage = new Image(taskSnapshot.getStorage().getDownloadUrl().toString());
-
-                            //create entry in database with unique key and store image metadata in entry
-                            String uploadId = mDatabaseRef.push().getKey();
-                            mDatabaseRef.child(uploadId).setValue(uploadImage);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {

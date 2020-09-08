@@ -100,22 +100,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
 
 //        loadFragment(new LiveFragment());
-
-        Button registerButton = findViewById(R.id.btn_registration);
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openLogin();
-            }
-        });
-        Button testAuthenticatedUserButton = findViewById(R.id.btn_testauthenticateduser);
-        testAuthenticatedUserButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, authenticatedUser.toString());
-            }
-        });
-
     }
 
     private User receiveUserData() {

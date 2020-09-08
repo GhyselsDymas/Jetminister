@@ -2,20 +2,20 @@ package pack.jetminister.data;
 
 public class Image {
 
-//    private String mName;
-    private String mImageUrl;
+    private String name;
+    private String imageURL;
 
     public Image(){
         //Empty constructor needed
     }
 
-    public Image(String ImageUrl){
+    public Image(String ImageUrl, String name){
 //        if(name.trim().equals("")){
 //            name = "No Name";
 //        }
 //
 //        mName = name;
-        mImageUrl = ImageUrl;
+        imageURL = ImageUrl;
     }
 
 //    public String getName(){
@@ -27,12 +27,12 @@ public class Image {
 //        mName = "";
 //    }
 
-    public String getmImageUrl(){
-        return mImageUrl;
+    public String getImageURL(){
+        return imageURL;
     }
 
     public void setImageUrl(String ImageUrl) {
-        mImageUrl = ImageUrl;
+        imageURL = ImageUrl;
     }
 
 }
