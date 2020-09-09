@@ -46,10 +46,9 @@ public class LoginOrRegister extends AppCompatActivity {
 
     //get an instance of Firebase and a reference to the collection
     FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
-    DatabaseReference usersRef = rootNode.getReference("Users");
+    DatabaseReference usersRef = rootNode.getReference("users");
 
     private TextInputLayout usernameLoginTIL, passwordLoginTIL, emailRegisterTIL, usernameRegisterTIL, passwordRegisterTIL, passwordConfirmRegisterTIL;
-    private EditText usernameLoginET, passwordLoginET, emailRegisterET, usernameRegisterET, passwordRegisterET, passwordConfirmRegisterET;
     private CheckBox termsConditionCB;
 
     View.OnClickListener loginListener = new View.OnClickListener() {
@@ -79,20 +78,13 @@ public class LoginOrRegister extends AppCompatActivity {
         setContentView(R.layout.activity_login_or_register);
 
         usernameLoginTIL = findViewById(R.id.til_username);
-        usernameLoginET = findViewById(R.id.edittext_login_username);
         passwordLoginTIL = findViewById(R.id.til_password);
-        passwordLoginET = findViewById(R.id.edittext_login_password);
         Button loginBtn = findViewById(R.id.btn_login);
         loginBtn.setOnClickListener(loginListener);
 
-        emailRegisterTIL = findViewById(R.id.til_register_email);
-        emailRegisterET = findViewById(R.id.edittext_register_email);
         usernameRegisterTIL = findViewById(R.id.til_register_username);
-        usernameRegisterET = findViewById(R.id.edittext_register_username);
         passwordRegisterTIL = findViewById(R.id.til_register_password);
-        passwordRegisterET = findViewById(R.id.edittext_register_password);
         passwordConfirmRegisterTIL = findViewById(R.id.til_register_password_confirm);
-        passwordConfirmRegisterET = findViewById(R.id.edittext_register_password_confirm);
         termsConditionCB = findViewById(R.id.action_checkbox_terms_conditions);
         TextView termsConditionsTV = findViewById(R.id.tv_register_terms_cond);
         termsConditionsTV.setPaintFlags(termsConditionsTV.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -112,11 +104,12 @@ public class LoginOrRegister extends AppCompatActivity {
                 String newPassword = passwordRegisterTIL.getEditText().getText().toString();
                 String newConfirmPassword = passwordConfirmRegisterTIL.getEditText().getText().toString();
                 //check if the password fields match AND the email address is valid AND there is no duplicate username AND the tersms and conditions have been accepted
-                if (validatePassword(newPassword)
-                        & (confirmPasswordMatch(newPassword, newConfirmPassword))
-                        & validateEmail(newEmail)
-                        & isDuplicate(dataSnapshot, newUsername)
-                        & termsConditionCB.isChecked()) {
+                if (!validatePassword(newPassword)
+                        | (confirmPasswordMatch(newPassword, newConfirmPassword))
+                        | validateEmail(newEmail)
+                        | isDuplicate(dataSnapshot, newUsername)
+                        | termsConditionCB.isChecked()) {
+                } else {
                     //create new user with values from the textfields
                     User newUser = new User(newUsername, newPassword, newEmail);
                     //create new entry in database by username
@@ -124,8 +117,6 @@ public class LoginOrRegister extends AppCompatActivity {
                     Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
                     saveUserInfo(dataSnapshot, newUsername);
                     proceedToMain();
-                } else {
-                    Toast.makeText(LoginOrRegister.this, R.string.register_error, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -188,20 +179,20 @@ public class LoginOrRegister extends AppCompatActivity {
                 User checkUser = snapshot.getValue(User.class);
                 if (checkUser != null) {
                     if (newUsername.equals(checkUser.getUsername())) {
-                        usernameRegisterTIL.setError(null);
-                        usernameRegisterTIL.setErrorEnabled(false);
-                        return true;
+                        usernameRegisterTIL.setError(duplicateUsernameError);
+                        return false;
                     }
                 }
             }
         }
-        usernameRegisterTIL.setError(duplicateUsernameError);
-        return false;
+        usernameRegisterTIL.setError(null);
+        usernameRegisterTIL.setErrorEnabled(false);
+        return true;
     }
 
     private void loginUser() {
-        final String inputUsername = usernameLoginET.getText().toString().trim();
-        final String inputPassword = passwordLoginET.getText().toString();
+        final String inputUsername = usernameLoginTIL.getEditText().getText().toString().trim();
+        final String inputPassword = passwordLoginTIL.getEditText().getText().toString();
         Query checkUserQuery = usersRef.orderByChild("username").equalTo(inputUsername);
         checkUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

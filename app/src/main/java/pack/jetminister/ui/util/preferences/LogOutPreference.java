@@ -7,6 +7,6 @@ import androidx.preference.Preference;
 
 public class LogOutPreference extends Preference {
     public LogOutPreference(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        super(context, attrs );
     }
 }

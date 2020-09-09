@@ -19,8 +19,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -41,50 +45,54 @@ public class ProfileImageActivity extends AppCompatActivity {
     private static final String SHARED_PREFS = "SharedPreferences";
     private static final String SHARED_PREFS_USERNAME = "username";
     private static final String SHARED_PREFS_IMAGE_URL = "imageURL";
-    private Button mButtonChooseImage;
-    private Button mButtonUpload;
-    private Button mButtonCancel;
-    private ImageView mImageView;
+    private static final String SHARED_PREFS_IMAGE_FILENAME = "imageFilename";
+    private Button chooseImageBtn;
+    private Button uploadImageBtn;
+    private Button cancelBtn;
+    private ImageView previewIV;
     private ProgressBar mProgressBar;
     private Uri mImageUri;
 
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
-    private StorageTask mUploadTask;
+    private StorageTask mUploadToStorageTask;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_image_page);
 
-        mButtonChooseImage = findViewById(R.id.button_choose_image);
-        mButtonUpload = findViewById(R.id.button_upload);
-        mButtonCancel = findViewById(R.id.button_cancel);
-        mImageView = findViewById(R.id.image_view);
+        chooseImageBtn = findViewById(R.id.button_choose_image);
+        uploadImageBtn = findViewById(R.id.button_upload);
+        cancelBtn = findViewById(R.id.button_cancel);
+        previewIV = findViewById(R.id.image_view);
         mProgressBar = findViewById(R.id.progress_bar);
 
         mStorageRef = FirebaseStorage.getInstance().getReference("images");
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("Users");
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
 
-        mButtonChooseImage.setOnClickListener(new View.OnClickListener() {
+        chooseImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openFileChooser();
+                chooseFromImagePicker();
             }
         });
-        mButtonUpload.setOnClickListener(new View.OnClickListener() {
+        uploadImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mUploadTask != null && mUploadTask.isInProgress()) {
+                //check for running tasks to prevent duplicate uploads
+                if (mUploadToStorageTask != null && mUploadToStorageTask.isInProgress()) {
                     Toast.makeText(ProfileImageActivity.this, "Upload in progress", Toast.LENGTH_SHORT).show();
                 } else {
                     uploadFile();
                 }
             }
         });
+
     }
 
-    private void openFileChooser() {
+    private void chooseFromImagePicker() {
+        //request access to and open Android's image picker
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -94,26 +102,33 @@ public class ProfileImageActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
+        //if access was granted and an image was chosen, get the data from it
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
                 && intent != null && intent.getData() != null) {
             mImageUri = intent.getData();
-            Picasso.get().load(mImageUri).into(mImageView);
+            //load image into preview
+            Picasso.get().load(mImageUri).into(previewIV);
         }
     }
 
-    private String getFileExtension(Uri uri) {
-        ContentResolver cR = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(uri));
-    }
-
     private void uploadFile() {
+        //check if an image was returned from image picker
         if (mImageUri != null) {
-            StorageReference fileReference = mStorageRef.child(System.currentTimeMillis() + "." + getFileExtension(mImageUri));
-            mUploadTask = fileReference.putFile(mImageUri)
+            //upload will store uri into user's db entry, so must get username from SharedPreferences
+            final SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+            final SharedPreferences.Editor editor = sharedPreferences.edit();
+            final String username = sharedPreferences.getString(SHARED_PREFS_USERNAME, null);
+
+            //make unique filename for storage with timestamp, and append file extension
+            final String newImageFilename = System.currentTimeMillis() + "." + getFileExtension(mImageUri);
+            //make storage reference using the new filename
+            final StorageReference newImageReference = mStorageRef.child(newImageFilename);
+            //put the data from the image into storage using new reference
+            mUploadToStorageTask = newImageReference.putFile(mImageUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            //handle the upload using a progressbar for user feedback
                             Handler handler = new Handler();
                             handler.postDelayed(new Runnable() {
                                 @Override
@@ -121,22 +136,44 @@ public class ProfileImageActivity extends AppCompatActivity {
                                     mProgressBar.setProgress(0);
                                 }
                             }, 500);
-                            taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            //start a task to get the image's downloadURL from storage and save it in user's sharedpreferences
+                            taskSnapshot.getStorage().getDownloadUrl()
+                                    .addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     String downloadURI = uri.toString();
-                                    SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
                                     editor.putString(SHARED_PREFS_IMAGE_URL, downloadURI);
                                     editor.apply();
-                                    String username = sharedPreferences.getString(SHARED_PREFS_USERNAME, null);
+                                    //store the downloadURL in the user's database entry
                                     mDatabaseRef.child(username).child("imageURL").setValue(downloadURI);
-                                    Toast.makeText(ProfileImageActivity.this, R.string.profile_image_upload_success, Toast.LENGTH_LONG).show();
+                                    //make database query for user entry
+                                    Query checkUserQuery = mDatabaseRef.orderByChild("username").equalTo(username);
+                                    checkUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            //check if user has entry
+                                            if(snapshot.exists()){
+                                                //get the old filename from database
+                                                String oldFilename = snapshot.child("imageFilename").getValue().toString();
+                                                StorageReference oldImageReference = mStorageRef.child(oldFilename);
+                                                //delete the old file from storage
+                                                oldImageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        //put new image in storage with new filename
+                                                        mDatabaseRef.child(username).child("imageFilename").setValue(newImageFilename);
+                                                        Toast.makeText(ProfileImageActivity.this, R.string.profile_image_upload_success, Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
+                                            }
+                                        }
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                        }
+                                    });
+
                                 }
-                            }
-
-                            );
-
+                            });
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -155,5 +192,11 @@ public class ProfileImageActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, R.string.profile_image_error_none_selected, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private String getFileExtension(Uri uri) {
+        ContentResolver cR = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 }

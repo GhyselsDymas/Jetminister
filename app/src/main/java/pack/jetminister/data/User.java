@@ -10,7 +10,11 @@ import java.util.ArrayList;
 public class User implements Serializable {
 
 
-    private String userid, username, password, email, imageURL, description, theme;
+    private String username, password, email;
+    private String imageFilename = "";
+    private String imageURL = "";
+    private String description =  "Description of channel";
+    private String theme = "Blank";
     private ArrayList<String> followers, following;
     private boolean streamer = false;
 
@@ -21,16 +25,9 @@ public class User implements Serializable {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.description = "Description of channel";
-        this.theme = "Blank";
-        this.imageURL = "https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg";
     }
 
 
-    @Exclude
-    public String getUserid() {
-        return userid;
-    }
 
     public String getUsername() {
         return username;
@@ -46,6 +43,10 @@ public class User implements Serializable {
 
     public String getImageURL() {
         return imageURL;
+    }
+
+    public String getImageFilename() {
+        return imageFilename;
     }
 
     public String getDescription() { return description; }
@@ -65,10 +66,6 @@ public class User implements Serializable {
     }
 
 
-    public void setUserid(String userid) {
-        this.userid = userid;
-    }
-
     public void setUsername(String username) {
         this.username = username;
     }
@@ -79,6 +76,10 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setImageFilename(String imageFilename) {
+        this.imageFilename = imageFilename;
     }
 
     public void setImageURL(String imageURL) {
