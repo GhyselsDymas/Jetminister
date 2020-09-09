@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -46,6 +47,8 @@ public class ProfileFragment extends Fragment {
     private TextView usernameTV;
     private TextView descriptionTV;
 
+    private Button startStreamBtn;
+
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -83,6 +86,7 @@ public class ProfileFragment extends Fragment {
             profileImage = rootview.findViewById(R.id.iv_profile_image);
             usernameTV = rootview.findViewById(R.id.tv_profile_username);
             descriptionTV = rootview.findViewById(R.id.tv_profile_description);
+            startStreamBtn = rootview.findViewById(R.id.btn_start_livestream);
             testBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -97,6 +101,15 @@ public class ProfileFragment extends Fragment {
                     return true;
                 }
             });
+
+            startStreamBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                   DialogFragment newDialogFragment = new DialogFragment();
+                    newDialogFragment.show(getParentFragmentManager(), "themes") ;
+                }
+            });
+
 
             updateUI();
         }

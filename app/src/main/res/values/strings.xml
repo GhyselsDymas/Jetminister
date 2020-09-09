@@ -22,7 +22,7 @@
     <string name="et_register_descr">Description</string>
     <string name="et_register_username">Username</string>
     <string name="app_name">JetMinister</string>
-    <string name="page_top100">Top 100p</string>
+    <string name="page_top100">Top 100</string>
     <string name="page_settings">Settings</string>
     <string name="page_profile">Profile</string>
     <string name="page_start">Start</string>
@@ -63,5 +63,7 @@
     <string name="cb_terms_conditions">I accept the Terms and Conditions</string>
     <string name="tv_register_no_account">No account yet?</string>
     <string name="tv_read_more">Read more</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

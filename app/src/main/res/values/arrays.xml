@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="themes">
+        <item>Popular</item>
+        <item>Music</item>
+        <item>Business</item>
+        <item>Cooking</item>
+        <item>Life</item>
+    </array>
+</resources>

@@ -6,9 +6,10 @@ import com.google.firebase.database.Exclude;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import pack.jetminister.R;
+
 
 public class User implements Serializable {
-
 
     private String username, password, email;
     private String imageFilename = "";
