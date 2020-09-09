@@ -24,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import pack.jetminister.R;
@@ -106,41 +107,41 @@ public class LoginOrRegister extends AppCompatActivity {
     }
 
     private void registerUser() {
-        String newEmail = emailRegisterTIL.getEditText().getText().toString().trim();
-        String newUsername = usernameRegisterTIL.getEditText().getText().toString().trim();
-        String newPassword = passwordRegisterTIL.getEditText().getText().toString();
-        String newConfirmPassword = passwordConfirmRegisterTIL.getEditText().getText().toString();
+        final String newEmail = emailRegisterTIL.getEditText().getText().toString().trim();
+        final String newUsername = usernameRegisterTIL.getEditText().getText().toString().trim();
+        final String newPassword = passwordRegisterTIL.getEditText().getText().toString();
+        final String newConfirmPassword = passwordConfirmRegisterTIL.getEditText().getText().toString();
         authenticateRegisteredUser(newEmail, newPassword);
-//        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                CharSequence confirmPasswordError = getResources().getString(R.string.register_error_confirmpassword);
-//                //get values from the text fields
-//
-//                //check if the password fields match AND the email address is valid AND there is no duplicate username AND the tersms and conditions have been accepted
-//                if (    !validatePassword(newPassword)
-//                        | (confirmPasswordMatch(newPassword, newConfirmPassword))
-//                        | validateEmail(newEmail)
-//                        | isDuplicate(dataSnapshot, newUsername)
-//                        | !checkedTermsConditions(termsConditionCB)) {
-//                    Toast.makeText(LoginOrRegister.this, R.string.register_error, Toast.LENGTH_SHORT).show();
-//                }
-//                else {
-//
-//                    //create new user with values from the textfields
-//                    User newUser = new User(newUsername, newPassword, newEmail);
-//                    //create new entry in database by username
-//                    usersRef.child(newUsername)     .setValue(newUser);
-//                    Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
-//                    saveUserInfo(dataSnapshot, newEmail);
-//                    proceedToMain();
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//            }
-//        });
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                CharSequence confirmPasswordError = getResources().getString(R.string.register_error_confirmpassword);
+                //get values from the text fields
+
+                //check if the password fields match AND the email address is valid AND there is no duplicate username AND the tersms and conditions have been accepted
+                if (    !validatePassword(newPassword)
+                        | (confirmPasswordMatch(newPassword, newConfirmPassword))
+                        | validateEmail(newEmail)
+                        | isDuplicate(dataSnapshot, newUsername)
+                        | !checkedTermsConditions(termsConditionCB)) {
+                    Toast.makeText(LoginOrRegister.this, R.string.register_error, Toast.LENGTH_SHORT).show();
+                }
+                else {
+
+                    //create new user with values from the textfields
+                    User newUser = new User(newUsername, newPassword, newEmail);
+                    //create new entry in database by username
+                    usersRef.child(newUsername)     .setValue(newUser);
+                    Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
+                    saveUserInfo(dataSnapshot, newEmail);
+                    proceedToMain();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
     }
 
     private void authenticateRegisteredUser(String email, String password) {
@@ -236,25 +237,25 @@ public class LoginOrRegister extends AppCompatActivity {
 
         authenticateUserLogin(inputEmail, inputPassword);
 
-//        Query checkUserQuery = usersRef.orderByChild("email").equalTo(inputEmail);
-//        checkUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot userSnapshot) {
-//                if (!isRegisteredUser(userSnapshot)) {
-//                    Toast.makeText(LoginOrRegister.this, "Not a registered user", Toast.LENGTH_SHORT).show();
-//                    return;
-//                } else if (!isCorrectPassword(userSnapshot, inputEmail, inputPassword)) {
-//                    Toast.makeText(LoginOrRegister.this, "Incorrect password", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                saveUserInfo(userSnapshot, inputEmail);
-//                proceedToMain();
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//            }
-//        });
+        Query checkUserQuery = usersRef.orderByChild("email").equalTo(inputEmail);
+        checkUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                if (!isRegisteredUser(userSnapshot)) {
+                    Toast.makeText(LoginOrRegister.this, "Not a registered user", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (!isCorrectPassword(userSnapshot, inputEmail, inputPassword)) {
+                    Toast.makeText(LoginOrRegister.this, "Incorrect password", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                saveUserInfo(userSnapshot, inputEmail);
+                proceedToMain();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
     }
 
     private void authenticateUserLogin(String email, String password) {
