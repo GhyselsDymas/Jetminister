@@ -235,7 +235,7 @@ public class LoginOrRegister extends AppCompatActivity {
                     Toast.makeText(LoginOrRegister.this, "Incorrect password", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                saveUserInfo(userSnapshot, inputEmail);
+                saveUserInfo(inputEmail);
                 proceedToMain();
             }
 
@@ -285,20 +285,28 @@ public class LoginOrRegister extends AppCompatActivity {
         }
     }
 
-    private void saveUserInfo(String uID) {
-        Query userQuery = usersRef.child(
-        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SHARED_PREFS_USERNAME, snapshot.child(uID).child("username").getValue(String.class));
-        editor.putString(SHARED_PREFS_EMAIL, snapshot.child(uID).child("email").getValue(String.class));
-        editor.putString(SHARED_PREFS_DESCRIPTION, snapshot.child(uID).child("description").getValue(String.class));
-        editor.putString(SHARED_PREFS_THEME, snapshot.child(uID).child("theme").getValue(String.class));
-        editor.putString(SHARED_PREFS_IMAGE_URL, snapshot.child(uID).child("imageURL").getValue(String.class));
-        editor.putBoolean(SHARED_PREFS_STREAMER, snapshot.child(uID).child("streamer").getValue(Boolean.class));
-        editor.apply();
+    private void saveUserInfo(final String uID) {
+        Query userQuery = usersRef.equalTo(uID);
+        userQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(SHARED_PREFS_USERNAME, snapshot.child(uID).child("username").getValue(String.class));
+                editor.putString(SHARED_PREFS_EMAIL, snapshot.child(uID).child("email").getValue(String.class));
+                editor.putString(SHARED_PREFS_DESCRIPTION, snapshot.child(uID).child("description").getValue(String.class));
+                editor.putString(SHARED_PREFS_THEME, snapshot.child(uID).child("theme").getValue(String.class));
+                editor.putString(SHARED_PREFS_IMAGE_URL, snapshot.child(uID).child("imageURL").getValue(String.class));
+                editor.putBoolean(SHARED_PREFS_STREAMER, snapshot.child(uID).child("streamer").getValue(Boolean.class));
+                editor.apply();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
-
-
 
     private void proceedToMain() {
 //        String usernameFromDatabase = snapshot.child(username).child("username").getValue(String.class);
