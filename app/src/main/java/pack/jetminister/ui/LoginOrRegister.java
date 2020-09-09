@@ -151,7 +151,6 @@ public class LoginOrRegister extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
                     Toast.makeText(LoginOrRegister.this, "Authentication successful", Toast.LENGTH_SHORT).show();
-                    proceedToMain();
                 } else {
                     Toast.makeText(LoginOrRegister.this, R.string.register_authentication_error, Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "authentication: " + task.getException().getMessage());
@@ -265,7 +264,6 @@ public class LoginOrRegister extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()){
                             Toast.makeText(LoginOrRegister.this, R.string.login_success, Toast.LENGTH_SHORT).show();
-                            proceedToMain();
                         } else {
                             Toast.makeText(LoginOrRegister.this, R.string.login_fail, Toast.LENGTH_SHORT).show();
                         }
