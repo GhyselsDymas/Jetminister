@@ -112,51 +112,39 @@ public class LoginOrRegister extends AppCompatActivity {
         final String newPassword = passwordRegisterTIL.getEditText().getText().toString();
         final String newConfirmPassword = passwordConfirmRegisterTIL.getEditText().getText().toString();
         authenticateRegisteredUser(newEmail, newPassword);
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                CharSequence confirmPasswordError = getResources().getString(R.string.register_error_confirmpassword);
-                //get values from the text fields
+        saveUserInfo(mAuth.getUid());
+        proceedToMain();
 
-                //check if the password fields match AND the email address is valid AND there is no duplicate username AND the tersms and conditions have been accepted
-                if (    !validatePassword(newPassword)
-                        | (confirmPasswordMatch(newPassword, newConfirmPassword))
-                        | validateEmail(newEmail)
-                        | isDuplicate(dataSnapshot, newUsername)
-                        | !checkedTermsConditions(termsConditionCB)) {
-                    Toast.makeText(LoginOrRegister.this, R.string.register_error, Toast.LENGTH_SHORT).show();
-                }
-                else {
-
-                    //create new user with values from the textfields
-                    User newUser = new User(newUsername, newPassword, newEmail);
-                    //create new entry in database by username
-                    usersRef.child(newUsername)     .setValue(newUser);
-                    Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
-                    saveUserInfo(dataSnapshot, newEmail);
-                    proceedToMain();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
     }
 
-    private void authenticateRegisteredUser(String email, String password) {
+    private void authenticateRegisteredUser(final String email, final String password) {
         mAuth.createUserWithEmailAndPassword(email,password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
                     Toast.makeText(LoginOrRegister.this, "Authentication successful", Toast.LENGTH_SHORT).show();
+                    User newUser = new User(email, password);
+                    addUserToDatabase(newUser);
                 } else {
                     Toast.makeText(LoginOrRegister.this, R.string.register_authentication_error, Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "authentication: " + task.getException().getMessage());
                 }
             }
         });
+    }
+
+    private void addUserToDatabase(User user) {
+        usersRef.child(mAuth.getUid()).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
+
     }
 
     private boolean validateEmail(String email) {
@@ -297,15 +285,16 @@ public class LoginOrRegister extends AppCompatActivity {
         }
     }
 
-    private void saveUserInfo(DataSnapshot snapshot, String email) {
+    private void saveUserInfo(String uID) {
+        Query userQuery = usersRef.child(
         SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SHARED_PREFS_USERNAME, snapshot.child(email).child("username").getValue(String.class));
-        editor.putString(SHARED_PREFS_EMAIL, snapshot.child(email).child("email").getValue(String.class));
-        editor.putString(SHARED_PREFS_DESCRIPTION, snapshot.child(email).child("description").getValue(String.class));
-        editor.putString(SHARED_PREFS_THEME, snapshot.child(email).child("theme").getValue(String.class));
-        editor.putString(SHARED_PREFS_IMAGE_URL, snapshot.child(email).child("imageURL").getValue(String.class));
-        editor.putBoolean(SHARED_PREFS_STREAMER, snapshot.child(email).child("streamer").getValue(Boolean.class));
+        editor.putString(SHARED_PREFS_USERNAME, snapshot.child(uID).child("username").getValue(String.class));
+        editor.putString(SHARED_PREFS_EMAIL, snapshot.child(uID).child("email").getValue(String.class));
+        editor.putString(SHARED_PREFS_DESCRIPTION, snapshot.child(uID).child("description").getValue(String.class));
+        editor.putString(SHARED_PREFS_THEME, snapshot.child(uID).child("theme").getValue(String.class));
+        editor.putString(SHARED_PREFS_IMAGE_URL, snapshot.child(uID).child("imageURL").getValue(String.class));
+        editor.putBoolean(SHARED_PREFS_STREAMER, snapshot.child(uID).child("streamer").getValue(Boolean.class));
         editor.apply();
     }
 
@@ -335,3 +324,11 @@ public class LoginOrRegister extends AppCompatActivity {
     }
 
 }
+
+//                //check if the password fields match AND the email address is valid AND there is no duplicate username AND the tersms and conditions have been accepted
+//                if (    !validatePassword(newPassword)
+//                        | (confirmPasswordMatch(newPassword, newConfirmPassword))
+//                        | validateEmail(newEmail)
+////                        | isDuplicate(dataSnapshot, newUsername)
+//                        | !checkedTermsConditions(termsConditionCB)) {
+//                }
