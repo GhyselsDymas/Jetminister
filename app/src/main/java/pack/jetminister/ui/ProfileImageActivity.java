@@ -152,19 +152,23 @@ public class ProfileImageActivity extends AppCompatActivity {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                                             //check if user has entry
-                                            if(snapshot.exists()){
+                                            if(snapshot.exists() && snapshot.child("imageFilename").exists()){
                                                 //get the old filename from database
                                                 String oldFilename = snapshot.child("imageFilename").getValue().toString();
-                                                StorageReference oldImageReference = mStorageRef.child(oldFilename);
-                                                //delete the old file from storage
-                                                oldImageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
-                                                        //put new image in storage with new filename
-                                                        mDatabaseRef.child(username).child("imageFilename").setValue(newImageFilename);
-                                                        Toast.makeText(ProfileImageActivity.this, R.string.profile_image_upload_success, Toast.LENGTH_LONG).show();
-                                                    }
-                                                });
+                                                if (!oldFilename.isEmpty()) {
+                                                    StorageReference oldImageReference = mStorageRef.child(oldFilename);
+                                                    //delete the old file from storage
+                                                    oldImageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            //put new image in storage with new filename
+                                                            mDatabaseRef.child(username).child("imageFilename").setValue(newImageFilename);
+                                                            Toast.makeText(ProfileImageActivity.this, R.string.profile_image_upload_success, Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
+                                                } else {
+                                                    mDatabaseRef.child(username).child("imageFilename").setValue(newImageFilename);
+                                                }
                                             }
                                         }
                                         @Override
