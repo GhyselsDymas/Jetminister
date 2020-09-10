@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -111,40 +112,56 @@ public class LoginOrRegister extends AppCompatActivity {
         final String newUsername = usernameRegisterTIL.getEditText().getText().toString().trim();
         final String newPassword = passwordRegisterTIL.getEditText().getText().toString();
         final String newConfirmPassword = passwordConfirmRegisterTIL.getEditText().getText().toString();
-        authenticateRegisteredUser(newEmail, newPassword);
-        saveUserInfo(mAuth.getUid());
-        proceedToMain();
-
+        boolean checkTermsConditions = termsConditionCB.isChecked();
+        authenticateRegisteredUser(newEmail, newPassword, newConfirmPassword, checkTermsConditions);
     }
 
-    private void authenticateRegisteredUser(final String email, final String password) {
-        mAuth.createUserWithEmailAndPassword(email,password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
-                    Toast.makeText(LoginOrRegister.this, "Authentication successful", Toast.LENGTH_SHORT).show();
-                    User newUser = new User(email, password);
-                    addUserToDatabase(newUser);
-                } else {
-                    Toast.makeText(LoginOrRegister.this, R.string.register_authentication_error, Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "authentication: " + task.getException().getMessage());
-                }
-            }
-        });
+    private void authenticateRegisteredUser(final String email, final String password, String confirmPassword, boolean termsConditions) {
+        if (validateEmail(email) && validatePassword(password) && confirmPasswordMatch(password, confirmPassword) && checkedTermsConditions(termsConditions)) {
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                User newUser = new User(email, password);
+                                newUser.setUsername(usernameRegisterTIL.getEditText().getText().toString());
+                                addUserToDatabase(newUser);
+                                proceedToMain();
+                            } else if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                                emailRegisterTIL.getEditText().requestFocus();
+                                Toast.makeText(LoginOrRegister.this, R.string.register_error_email_duplicate, Toast.LENGTH_SHORT).show();
+                            } else {
+                                Log.d(TAG, task.getException().getMessage());
+                                emailRegisterTIL.getEditText().requestFocus();
+                                Toast.makeText(LoginOrRegister.this, R.string.register_authentication_error, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        } else {
+            Toast.makeText(this, R.string.register_error, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void addUserToDatabase(User user) {
-        usersRef.child(mAuth.getUid()).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
+        if (mAuth.getCurrentUser() != null){
+            final String newUID = mAuth.getCurrentUser().getUid();
+            usersRef.child(newUID).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()){
+                        saveUserInfo(newUID);
+                        Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Log.d(TAG, task.getException().getMessage());
+                    }
                 }
-            }
-        });
-        Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
+            });
+            Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
 
+        } else {
+            Log.d(TAG, "mAuth.getCurrentUser() == null");
+        }
     }
 
     private boolean validateEmail(String email) {
@@ -210,9 +227,9 @@ public class LoginOrRegister extends AppCompatActivity {
         return true;
     }
 
-    private boolean checkedTermsConditions(CheckBox checkBox){
-        if (!checkBox.isChecked()){
-            Toast.makeText(this, R.string.cb_terms_conditions, Toast.LENGTH_SHORT).show();
+    private boolean checkedTermsConditions(boolean termsConditions){
+        if (!termsConditions){
+            Toast.makeText(this, R.string.register_error_termsconditions_unchecked, Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -224,39 +241,45 @@ public class LoginOrRegister extends AppCompatActivity {
 
         authenticateUserLogin(inputEmail, inputPassword);
 
-        Query checkUserQuery = usersRef.orderByChild("email").equalTo(inputEmail);
-        checkUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot userSnapshot) {
-                if (!isRegisteredUser(userSnapshot)) {
-                    Toast.makeText(LoginOrRegister.this, "Not a registered user", Toast.LENGTH_SHORT).show();
-                    return;
-                } else if (!isCorrectPassword(userSnapshot, inputEmail, inputPassword)) {
-                    Toast.makeText(LoginOrRegister.this, "Incorrect password", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                saveUserInfo(inputEmail);
-                proceedToMain();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+//        Query checkUserQuery = usersRef.orderByChild("email").equalTo(inputEmail);
+//        checkUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+//                if (!isRegisteredUser(userSnapshot)) {
+//                    Toast.makeText(LoginOrRegister.this, "Not a registered user", Toast.LENGTH_SHORT).show();
+//                    return;
+//                } else if (!isCorrectPassword(userSnapshot, inputEmail, inputPassword)) {
+//                    Toast.makeText(LoginOrRegister.this, "Incorrect password", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//                saveUserInfo(inputEmail);
+//                proceedToMain();
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//            }
+//        });
     }
 
     private void authenticateUserLogin(String email, String password) {
+        if (validateEmail(email) && validatePassword(password)){
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()){
+                            proceedToMain();
                             Toast.makeText(LoginOrRegister.this, R.string.login_success, Toast.LENGTH_SHORT).show();
                         } else {
+                            Log.d(TAG, task.getException().getMessage());
+
                             Toast.makeText(LoginOrRegister.this, R.string.login_fail, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
+        }
+        emailLoginTIL.getEditText().requestFocus();
     }
 
     private boolean isRegisteredUser(DataSnapshot snapshot) {
@@ -286,26 +309,28 @@ public class LoginOrRegister extends AppCompatActivity {
     }
 
     private void saveUserInfo(final String uID) {
-        Query userQuery = usersRef.equalTo(uID);
-        userQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(SHARED_PREFS_USERNAME, snapshot.child(uID).child("username").getValue(String.class));
-                editor.putString(SHARED_PREFS_EMAIL, snapshot.child(uID).child("email").getValue(String.class));
-                editor.putString(SHARED_PREFS_DESCRIPTION, snapshot.child(uID).child("description").getValue(String.class));
-                editor.putString(SHARED_PREFS_THEME, snapshot.child(uID).child("theme").getValue(String.class));
-                editor.putString(SHARED_PREFS_IMAGE_URL, snapshot.child(uID).child("imageURL").getValue(String.class));
-                editor.putBoolean(SHARED_PREFS_STREAMER, snapshot.child(uID).child("streamer").getValue(Boolean.class));
-                editor.apply();
-            }
+        if (uID != null) {
+            usersRef.child(uID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(SHARED_PREFS_USERNAME, snapshot.child("username").getValue(String.class));
+                    editor.putString(SHARED_PREFS_EMAIL, snapshot.child("email").getValue(String.class));
+                    editor.putString(SHARED_PREFS_DESCRIPTION, snapshot.child("description").getValue(String.class));
+                    editor.putString(SHARED_PREFS_THEME, snapshot.child("theme").getValue(String.class));
+                    editor.putString(SHARED_PREFS_IMAGE_URL, snapshot.child("imageURL").getValue(String.class));
+                    editor.putBoolean(SHARED_PREFS_STREAMER, snapshot.child("streamer").getValue(Boolean.class));
+                    editor.apply();
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
+        } else {
+            Log.d(TAG, "saveUserInfo does not work");
+        }
     }
 
     private void proceedToMain() {

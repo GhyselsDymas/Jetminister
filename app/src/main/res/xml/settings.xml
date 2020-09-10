@@ -14,4 +14,13 @@
         android:key="@string/settings_termsconditions"
         android:title="@string/settings_termsconditions_title"/>
 
+    <pack.jetminister.ui.util.preferences.LogOutPreference
+        android:key="@string/settings_logout"
+        android:title="@string/settings_logout_title">
+    <intent
+        android:action="android.intent.action.VIEW"
+        android:targetPackage="pack.jetminister.ui"
+        android:targetClass="pack.jetminister.ui.MainActivity" />
+    /></pack.jetminister.ui.util.preferences.LogOutPreference>
+
 </PreferenceScreen>

@@ -20,7 +20,7 @@
         app:cardElevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_test">
+        app:layout_constraintTop_toBottomOf="@+id/btn_test_auth">
 
         <ImageView
             android:id="@+id/iv_profile_image"
@@ -140,11 +140,11 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_profile_following" />
 
     <Button
-        android:id="@+id/btn_test"
+        android:id="@+id/btn_test_auth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="test"
+        android:text="test auth"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

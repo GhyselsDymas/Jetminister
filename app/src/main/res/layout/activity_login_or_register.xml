@@ -50,6 +50,7 @@
                     android:id="@+id/edittext_login_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:focusable="true"
                     android:hint="@string/et_login_email"
                     android:importantForAutofill="no"
                     android:inputType="text" />

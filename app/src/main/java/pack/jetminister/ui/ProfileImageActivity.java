@@ -8,8 +8,10 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
@@ -17,13 +19,16 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -33,6 +38,7 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import pack.jetminister.R;
+import pack.jetminister.ui.fragments.ProfileFragment;
 
 public class ProfileImageActivity extends AppCompatActivity {
 
@@ -53,9 +59,11 @@ public class ProfileImageActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private Uri mImageUri;
 
-    private StorageReference mStorageRef;
-    private DatabaseReference mDatabaseRef;
+    private StorageReference imageStorageRef;
+    private DatabaseReference usersDatabaseRef;
     private StorageTask mUploadToStorageTask;
+    private FirebaseAuth mAuth;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,8 +76,9 @@ public class ProfileImageActivity extends AppCompatActivity {
         previewIV = findViewById(R.id.image_view);
         mProgressBar = findViewById(R.id.progress_bar);
 
-        mStorageRef = FirebaseStorage.getInstance().getReference("images");
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
+        imageStorageRef = FirebaseStorage.getInstance().getReference("images");
+        usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
+        mAuth = FirebaseAuth.getInstance();
 
         chooseImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,10 +94,17 @@ public class ProfileImageActivity extends AppCompatActivity {
                     Toast.makeText(ProfileImageActivity.this, "Upload in progress", Toast.LENGTH_SHORT).show();
                 } else {
                     uploadFile();
+                    proceedToMain();
                 }
             }
         });
 
+    }
+
+    private void proceedToMain() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+
+        startActivity(intent);
     }
 
     private void chooseFromImagePicker() {
@@ -113,7 +129,6 @@ public class ProfileImageActivity extends AppCompatActivity {
 
     private void uploadFile() {
         //check if an image was returned from image picker
-        if (mImageUri != null) {
             //upload will store uri into user's db entry, so must get username from SharedPreferences
             final SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
             final SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -122,80 +137,103 @@ public class ProfileImageActivity extends AppCompatActivity {
             //make unique filename for storage with timestamp, and append file extension
             final String newImageFilename = System.currentTimeMillis() + "." + getFileExtension(mImageUri);
             //make storage reference using the new filename
-            final StorageReference newImageReference = mStorageRef.child(newImageFilename);
+            final StorageReference newImageReference = imageStorageRef.child(newImageFilename);
             //put the data from the image into storage using new reference
-            mUploadToStorageTask = newImageReference.putFile(mImageUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            //handle the upload using a progressbar for user feedback
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
+            final String key = mAuth.getCurrentUser().getUid();
+            usersDatabaseRef.child(key).child("imageFilename").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        String oldImageFilename = snapshot.getValue(String.class);
+                        if (oldImageFilename != null || !oldImageFilename.isEmpty()) {
+                            final StorageReference oldImageReference = imageStorageRef.child(oldImageFilename);
+                            //delete the old file from storage
+                            oldImageReference.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
-                                public void run() {
-                                    mProgressBar.setProgress(0);
-                                }
-                            }, 500);
-                            //start a task to get the image's downloadURL from storage and save it in user's sharedpreferences
-                            taskSnapshot.getStorage().getDownloadUrl()
-                                    .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    String downloadURI = uri.toString();
-                                    editor.putString(SHARED_PREFS_IMAGE_URL, downloadURI);
-                                    editor.apply();
-                                    //store the downloadURL in the user's database entry
-                                    mDatabaseRef.child(username).child("imageURL").setValue(downloadURI);
-                                    //make database query for user entry
-                                    Query checkUserQuery = mDatabaseRef.orderByChild("username").equalTo(username);
-                                    checkUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            //check if user has entry
-                                            if(snapshot.exists() && snapshot.child("imageFilename").exists()){
-                                                //get the old filename from database
-                                                String oldFilename = snapshot.child("imageFilename").getValue().toString();
-                                                if (!oldFilename.isEmpty()) {
-                                                    StorageReference oldImageReference = mStorageRef.child(oldFilename);
-                                                    //delete the old file from storage
-                                                    oldImageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            //put new image in storage with new filename
-                                                            mDatabaseRef.child(username).child("imageFilename").setValue(newImageFilename);
-                                                            Toast.makeText(ProfileImageActivity.this, R.string.profile_image_upload_success, Toast.LENGTH_LONG).show();
-                                                        }
-                                                    });
-                                                } else {
-                                                    mDatabaseRef.child(username).child("imageFilename").setValue(newImageFilename);
-                                                }
-                                            }
-                                        }
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-                                        }
-                                    });
-
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        mUploadToStorageTask = newImageReference.putFile(mImageUri)
+                                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                        //handl the upload using a progressbar for user feedback
+                                                        Handler handler = new Handler();
+                                                        handler.postDelayed(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                mProgressBar.setProgress(0);
+                                                            }
+                                                        }, 500);
+                                                        taskSnapshot.getStorage().getDownloadUrl()
+                                                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                                    @Override
+                                                                    public void onSuccess(Uri uri) {
+                                                                        final String downloadURI = uri.toString();
+                                                                        usersDatabaseRef.child(key).child("imageURL").setValue(downloadURI)
+                                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                                                        usersDatabaseRef.child(key).child("imageFilename").setValue(newImageFilename)
+                                                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                                    @Override
+                                                                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                                                                        editor.putString(SHARED_PREFS_IMAGE_URL, downloadURI);
+                                                                                                        editor.apply();
+                                                                                                    }
+                                                                                                });
+                                                                                    }
+                                                                                });
+                                                                    }
+                                                                });
+                                                    }
+                                                });
+                                    } else {
+                                        mUploadToStorageTask = newImageReference.putFile(mImageUri)
+                                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                        //handl the upload using a progressbar for user feedback
+                                                        Handler handler = new Handler();
+                                                        handler.postDelayed(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                mProgressBar.setProgress(0);
+                                                            }
+                                                        }, 500);
+                                                        taskSnapshot.getStorage().getDownloadUrl()
+                                                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                                    @Override
+                                                                    public void onSuccess(Uri uri) {
+                                                                        final String downloadURI = uri.toString();
+                                                                        usersDatabaseRef.child(key).child("imageURL").setValue(downloadURI)
+                                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                                                        usersDatabaseRef.child(key).child("imageFilename").setValue(newImageFilename)
+                                                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                                    @Override
+                                                                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                                                                        editor.putString(SHARED_PREFS_IMAGE_URL, downloadURI);
+                                                                                                        editor.apply();
+                                                                                                    }
+                                                                                                });
+                                                                                    }
+                                                                                });
+                                                                    }
+                                                                });
+                                                    }
+                                                });
+                                    }
                                 }
                             });
                         }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(ProfileImageActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-                            mProgressBar.setProgress((int) progress);
-                        }
-                    });
-        } else {
-            Toast.makeText(this, R.string.profile_image_error_none_selected, Toast.LENGTH_SHORT).show();
-        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
     }
 
     private String getFileExtension(Uri uri) {
@@ -203,4 +241,6 @@ public class ProfileImageActivity extends AppCompatActivity {
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
+
+
 }

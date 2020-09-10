@@ -16,7 +16,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,58 +24,35 @@ import java.util.List;
 import pack.jetminister.R;
 import pack.jetminister.data.User;
 
-public class ThemeForLivePageAdapter extends RecyclerView.Adapter<ThemeForLivePageAdapter.themeForLivePageViewHolder>  {
+public class ThemeForLivePageAdapter extends RecyclerView.Adapter<ThemeForLivePageAdapter.ThemeForLivePageViewHolder>  {
 
     private RecyclerView mRecyclerView;
     private LivePictureAdapter mAdapter;
     private DatabaseReference mDatabaseRef;
-
-    public class themeForLivePageViewHolder extends RecyclerView.ViewHolder {
-
-        public TextView titleTheme, readMoreTheme;
-
-        public themeForLivePageViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            titleTheme = itemView.findViewById(R.id.textView_theme);
-            readMoreTheme = itemView.findViewById(R.id.textView_read_more);
-        }
-    }
-
-
     private Context mContext;
     private List<String> mThemes;
-    private List<User> mUsers;
+    private List<User> mUsers = new ArrayList<>();
 
-    public ThemeForLivePageAdapter(Context context, List<String> themes){
+    public ThemeForLivePageAdapter(Context context){
         mContext = context;
         String[] myResArray = context.getResources().getStringArray(R.array.themes);
-        themes = Arrays.asList(myResArray);
-        mThemes = themes;
+        mThemes = Arrays.asList(myResArray);
+
     }
 
     @NonNull
     @Override
-    public ThemeForLivePageAdapter.themeForLivePageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(mContext).inflate(R.layout.cardview_live_page, parent, false);
-
-        return new ThemeForLivePageAdapter.themeForLivePageViewHolder(v);
+    public ThemeForLivePageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View themeCardView = LayoutInflater.from(mContext).inflate(R.layout.cardview_live_page, parent, false);
+        return new ThemeForLivePageViewHolder(themeCardView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ThemeForLivePageAdapter.themeForLivePageViewHolder holder, int position) {
-        String uploadCurrent = mThemes.get(position);
-        holder.titleTheme.setText(uploadCurrent);
-        holder.readMoreTheme.setText("See more " + uploadCurrent);
+    public void onBindViewHolder(@NonNull final ThemeForLivePageViewHolder holder, int position) {
+        final String uploadCurrent = mThemes.get(position);
 
-        mRecyclerView = holder.itemView.findViewById(R.id.recycler_theme_live_page);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-
-        mUsers = new ArrayList<>();
 
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
-
         mDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -84,10 +60,12 @@ public class ThemeForLivePageAdapter extends RecyclerView.Adapter<ThemeForLivePa
                     User user = postSnapshot.getValue(User.class);
                     mUsers.add(user);
                 }
-
+                holder.titleTheme.setText(uploadCurrent);
+                holder.readMoreTheme.setText("See more " + uploadCurrent);
+                holder.livePictureRecyclerView.setHasFixedSize(true);
+                holder.livePictureRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
                 mAdapter = new LivePictureAdapter(mContext, mUsers);
-
-                mRecyclerView.setAdapter(mAdapter);
+                holder.livePictureRecyclerView.setAdapter(mAdapter);
             }
 
             @Override
@@ -101,4 +79,19 @@ public class ThemeForLivePageAdapter extends RecyclerView.Adapter<ThemeForLivePa
     public int getItemCount() {
         return mThemes.size();
     }
+
+    public class ThemeForLivePageViewHolder extends RecyclerView.ViewHolder {
+
+        public TextView titleTheme, readMoreTheme;
+        public RecyclerView livePictureRecyclerView;
+
+        public ThemeForLivePageViewHolder(@NonNull View itemView) {
+            super(itemView);
+            titleTheme = itemView.findViewById(R.id.textView_theme);
+            readMoreTheme = itemView.findViewById(R.id.textView_read_more);
+            livePictureRecyclerView = itemView.findViewById(R.id.recycler_theme_live_page);
+        }
+    }
+
 }
+

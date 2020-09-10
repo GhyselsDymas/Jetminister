@@ -27,8 +27,6 @@ public class User implements Serializable {
         this.password = password;
     }
 
-
-
     public String getUsername() {
         return username;
     }
@@ -108,6 +106,9 @@ public class User implements Serializable {
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
+                ", imageFilename='" + imageFilename + '\'' +
+                ", imageURL='" + imageURL + '\'' +
+                ", streamer=" + streamer +
                 '}';
     }
 }

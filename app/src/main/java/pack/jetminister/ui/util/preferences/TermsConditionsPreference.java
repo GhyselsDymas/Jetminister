@@ -18,13 +18,14 @@ public class TermsConditionsPreference extends Preference {
     public TermsConditionsPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         //set the right XML file
-        setWidgetLayoutResource(R.layout.preference_terms_conditions);}
+        setWidgetLayoutResource(R.layout.preference_terms_conditions);
+    }
 
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         holder.itemView.setClickable(false);
-        View image = holder.findViewById(R.id.imageview_settings_termsconditions);
+        View image = holder.findViewById(R.id.iv_settings_termsconditions);
         image.setClickable(true);
         image.setOnClickListener(new View.OnClickListener() {
             @Override

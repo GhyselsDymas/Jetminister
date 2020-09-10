@@ -23,7 +23,7 @@ public class LiveFragment extends Fragment {
 
     private RecyclerView themeRecyclerView;
     private AppCompatActivity mycontext;
-    private ThemeForLivePageAdapter mAdapter;
+    private ThemeForLivePageAdapter livePageAdapter;
 
     public LiveFragment() {
         // Required empty public constructor
@@ -55,8 +55,8 @@ public class LiveFragment extends Fragment {
         String[] myResArray = getResources().getStringArray(R.array.themes);
         List<String> myResArrayList = Arrays.asList(myResArray);
 
-        mAdapter = new ThemeForLivePageAdapter(mycontext, myResArrayList);
-        themeRecyclerView.setAdapter(mAdapter);
+        livePageAdapter = new ThemeForLivePageAdapter(mycontext);
+        themeRecyclerView.setAdapter(livePageAdapter);
 
         return rootview;
     }
