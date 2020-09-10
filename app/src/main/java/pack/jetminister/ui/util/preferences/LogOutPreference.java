@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceViewHolder;
@@ -47,9 +49,15 @@ public class LogOutPreference extends Preference {
                     editor.clear().apply();
                     mAuth.signOut();
 
+                    Intent intent= new Intent();
+                    intent.setClass(getContext(), MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    getContext().startActivity(intent);
+
                 }
             });
         } else {
+            holder.itemView.setVisibility(View.INVISIBLE);
             logoutIV.setClickable(false);
         }
     }
