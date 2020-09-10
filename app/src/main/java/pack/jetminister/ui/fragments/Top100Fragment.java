@@ -25,14 +25,14 @@ import java.util.List;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
-import pack.jetminister.ui.util.adapter.AllUserAdapter;
+import pack.jetminister.ui.util.adapter.Top100Adapter;
 
 
 public class Top100Fragment extends Fragment {
 
 
     private RecyclerView mRecyclerVew;
-    private AllUserAdapter mAdapter;
+    private Top100Adapter mAdapter;
 
     private DatabaseReference mDatabaseRef;
     private List<User> mUsers;
@@ -71,7 +71,7 @@ public class Top100Fragment extends Fragment {
                     mUsers.add(user);
                 }
 
-                mAdapter = new AllUserAdapter(mycontext, mUsers);
+                mAdapter = new Top100Adapter(mycontext, mUsers);
 
                 mRecyclerVew.setAdapter(mAdapter);
             }

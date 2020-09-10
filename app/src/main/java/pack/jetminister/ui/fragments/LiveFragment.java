@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import pack.jetminister.R;
-import pack.jetminister.ui.util.adapter.AllUserAdapter;
 import pack.jetminister.ui.util.adapter.ThemeForLivePageAdapter;
 
 public class LiveFragment extends Fragment {
