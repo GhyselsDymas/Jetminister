@@ -100,6 +100,16 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
 
  //        loadFragment(new LiveFragment());
+
+        Button buttonTest = findViewById(R.id.testprefs);
+        buttonTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences myPrefs = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+                Toast.makeText(MainActivity.this, myPrefs.getString(SHARED_PREFS_IMAGE_URL, "xx"), Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 
     private User receiveUserData() {
