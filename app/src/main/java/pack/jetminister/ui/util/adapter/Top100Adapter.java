@@ -50,6 +50,7 @@ public class Top100Adapter extends RecyclerView.Adapter<Top100Adapter.Top100Hold
     public Top100Adapter.Top100Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(mContext).inflate(R.layout.cardview_top100_page, parent, false);
         return new Top100Holder(v);
+
     }
 
     @Override
