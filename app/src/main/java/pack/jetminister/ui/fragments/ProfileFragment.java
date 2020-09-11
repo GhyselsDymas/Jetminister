@@ -122,7 +122,11 @@ public class ProfileFragment extends Fragment {
                         usernameTV.setText(currentUser.getUsername());
                         descriptionTV.setText(currentUser.getDescription());
                         if (!currentUser.getImageURL().isEmpty()) {
-                            Picasso.get().load(currentUser.getImageURL()).into(profileImageIV);
+                            Picasso.get()
+                                    .load(currentUser.getImageURL())
+                                    .fit()
+                                    .centerCrop()
+                                    .into(profileImageIV);
                         }
                     }
                 }
