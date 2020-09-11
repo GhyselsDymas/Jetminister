@@ -58,9 +58,13 @@ public class Top100Adapter extends RecyclerView.Adapter<Top100Adapter.Top100Hold
         holder.usernameTop100.setText(uploadCurrent.getUsername());
         holder.followerAmountTop100.setText("0");
 
-//        Picasso.get().load(uploadCurrent.getImageURL())
-//                .fit()
-//                .into(holder.imageTop100);
+        if (uploadCurrent.getImageURL().isEmpty()) {
+            holder.imageTop100.setImageResource(R.drawable.ic_launcher_background);
+        } else{
+            Picasso.get().load(uploadCurrent.getImageURL())
+                    .fit()
+                    .into(holder.imageTop100);
+        }
     }
 
     @Override
