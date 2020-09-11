@@ -125,8 +125,10 @@ public class ProfileFragment extends Fragment {
         descriptionTV.setText(sharedPreferences.getString(SHARED_PREFS_DESCRIPTION, ""));
 
         Uri myUri = Uri.parse(sharedPreferences.getString(SHARED_PREFS_IMAGE_URL, ""));
-//        profileImage.setImageURI(myUri);
-        Picasso.get().load(myUri).into(profileImage);
+
+        Picasso.get().load(myUri)
+                .fit().centerCrop()
+                .into(profileImage);
     }
 
     private void openImagePage() {

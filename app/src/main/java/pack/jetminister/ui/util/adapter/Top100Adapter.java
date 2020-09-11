@@ -62,7 +62,7 @@ public class Top100Adapter extends RecyclerView.Adapter<Top100Adapter.Top100Hold
             holder.imageTop100.setImageResource(R.drawable.ic_launcher_background);
         } else{
             Picasso.get().load(uploadCurrent.getImageURL())
-                    .fit()
+                    .fit().centerCrop()
                     .into(holder.imageTop100);
         }
     }
