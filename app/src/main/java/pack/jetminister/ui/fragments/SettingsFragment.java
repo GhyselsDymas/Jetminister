@@ -13,7 +13,5 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.settings);
     }
-    //TODO: add logout
     //TODO: add Dark Mode functionality
-
 }

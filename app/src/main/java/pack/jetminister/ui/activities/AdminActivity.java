@@ -3,12 +3,9 @@ package pack.jetminister.ui.activities;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.PersistableBundle;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,34 +25,30 @@ public class AdminActivity extends AppCompatActivity {
     private RecyclerView mRecyclerVew;
     private AdminAdapter mAdapter;
 
-    private DatabaseReference mDatabaseRef;
     private List<User> mUsers;
 
     public AdminActivity() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_page);
+        setContentView(R.layout.activity_admin);
 
-        mRecyclerVew = findViewById(R.id.recycler_admin);
+        mRecyclerVew = findViewById(R.id.rv_admin);
         mRecyclerVew.setHasFixedSize(true);
         mRecyclerVew.setLayoutManager(new LinearLayoutManager(this));
 
         mUsers = new ArrayList<>();
+        DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
 
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
-
-        mDatabaseRef.addValueEventListener(new ValueEventListener() {
+        usersDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     User user = postSnapshot.getValue(User.class);
                     mUsers.add(user);
                 }
-
                 mAdapter = new AdminAdapter(AdminActivity.this, mUsers);
                 mRecyclerVew.setAdapter(mAdapter);
             }

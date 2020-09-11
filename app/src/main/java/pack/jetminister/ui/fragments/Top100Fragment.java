@@ -33,21 +33,16 @@ public class Top100Fragment extends Fragment {
 
     private RecyclerView mRecyclerVew;
     private Top100Adapter mAdapter;
-
-    private DatabaseReference mDatabaseRef;
     private List<User> mUsers;
-
-    private AppCompatActivity mycontext;
+    private AppCompatActivity mContext;
 
     public Top100Fragment() {
-        // Required empty public constructor
     }
-
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        mycontext = (AppCompatActivity)context;
+        mContext = (AppCompatActivity)context;
     }
 
     @Override
@@ -55,30 +50,27 @@ public class Top100Fragment extends Fragment {
         // Inflate the layout for this fragment
         View rootview =  inflater.inflate(R.layout.fragment_top100, container, false);
 
-        mRecyclerVew = rootview.findViewById(R.id.recycler_view_top100);
+        mRecyclerVew = rootview.findViewById(R.id.rv_top100);
         mRecyclerVew.setHasFixedSize(true);
-        mRecyclerVew.setLayoutManager(new LinearLayoutManager(mycontext));
+        mRecyclerVew.setLayoutManager(new LinearLayoutManager(mContext));
 
         mUsers = new ArrayList<>();
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
-
-        mDatabaseRef.addValueEventListener(new ValueEventListener() {
+        usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()){
                     User user = postSnapshot.getValue(User.class);
                     mUsers.add(user);
                 }
-
-                mAdapter = new Top100Adapter(mycontext, mUsers);
-
+                mAdapter = new Top100Adapter(mContext, mUsers);
                 mRecyclerVew.setAdapter(mAdapter);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(mycontext, error.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext, error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
 

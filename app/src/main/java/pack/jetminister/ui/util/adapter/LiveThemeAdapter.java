@@ -24,16 +24,14 @@ import java.util.List;
 import pack.jetminister.R;
 import pack.jetminister.data.User;
 
-public class ThemeForLivePageAdapter extends RecyclerView.Adapter<ThemeForLivePageAdapter.ThemeForLivePageViewHolder>  {
+public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.LiveThemeHolder>  {
 
-    private RecyclerView mRecyclerView;
     private LivePictureAdapter mAdapter;
-    private DatabaseReference mDatabaseRef;
     private Context mContext;
     private List<String> mThemes;
-    private List<User> mUsers = new ArrayList<>();
+    private List<User> mUsers;
 
-    public ThemeForLivePageAdapter(Context context){
+    public LiveThemeAdapter(Context context){
         mContext = context;
         String[] myResArray = context.getResources().getStringArray(R.array.themes);
         mThemes = Arrays.asList(myResArray);
@@ -41,28 +39,30 @@ public class ThemeForLivePageAdapter extends RecyclerView.Adapter<ThemeForLivePa
 
     @NonNull
     @Override
-    public ThemeForLivePageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View themeCardView = LayoutInflater.from(mContext).inflate(R.layout.cardview_live_page, parent, false);
-        return new ThemeForLivePageViewHolder(themeCardView);
+    public LiveThemeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View themeCardView = LayoutInflater.from(mContext).inflate(R.layout.cardview_live_theme, parent, false);
+        return new LiveThemeHolder(themeCardView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ThemeForLivePageViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final LiveThemeHolder holder, int position) {
         final String uploadCurrent = mThemes.get(position);
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
-        mDatabaseRef.addValueEventListener(new ValueEventListener() {
+        mUsers = new ArrayList<>();
+        DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
+        usersDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     User user = postSnapshot.getValue(User.class);
                     mUsers.add(user);
                 }
-                holder.titleTheme.setText(uploadCurrent);
-                holder.readMoreTheme.setText("See more " + uploadCurrent);
-                holder.livePictureRecyclerView.setHasFixedSize(true);
-                holder.livePictureRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
+
+                holder.titleLiveTheme.setText(uploadCurrent);
+                holder.readMoreLiveTheme.setText(String.format("%s %s", mContext.getResources().getString(R.string.tv_see_more), uploadCurrent));
+                holder.recyclerViewLive.setHasFixedSize(true);
+                holder.recyclerViewLive.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
                 mAdapter = new LivePictureAdapter(mContext, mUsers);
-                holder.livePictureRecyclerView.setAdapter(mAdapter);
+                holder.recyclerViewLive.setAdapter(mAdapter);
             }
 
             @Override
@@ -77,16 +77,16 @@ public class ThemeForLivePageAdapter extends RecyclerView.Adapter<ThemeForLivePa
         return mThemes.size();
     }
 
-    public class ThemeForLivePageViewHolder extends RecyclerView.ViewHolder {
+    public static class LiveThemeHolder extends RecyclerView.ViewHolder {
 
-        public TextView titleTheme, readMoreTheme;
-        public RecyclerView livePictureRecyclerView;
+        public TextView titleLiveTheme, readMoreLiveTheme;
+        public RecyclerView recyclerViewLive;
 
-        public ThemeForLivePageViewHolder(@NonNull View itemView) {
+        public LiveThemeHolder(@NonNull View itemView) {
             super(itemView);
-            titleTheme = itemView.findViewById(R.id.textView_theme);
-            readMoreTheme = itemView.findViewById(R.id.textView_read_more);
-            livePictureRecyclerView = itemView.findViewById(R.id.recycler_theme_live_page);
+            titleLiveTheme = itemView.findViewById(R.id.textView_theme);
+            readMoreLiveTheme = itemView.findViewById(R.id.textView_read_more);
+            recyclerViewLive = itemView.findViewById(R.id.rv_live_picture);
         }
     }
 

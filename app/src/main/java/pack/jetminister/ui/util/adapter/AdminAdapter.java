@@ -16,16 +16,6 @@ import pack.jetminister.data.User;
 
 public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder> {
 
-    public class AdminHolder extends RecyclerView.ViewHolder {
-
-        public TextView usernameAdmin;
-
-        public AdminHolder(@NonNull View itemView) {
-            super(itemView);
-
-            usernameAdmin = itemView.findViewById(R.id.Textview_admin);
-        }
-    }
 
     private Context mContext;
     private List<User> mUsers;
@@ -38,9 +28,9 @@ public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder>
     @NonNull
     @Override
     public AdminAdapter.AdminHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(mContext).inflate(R.layout.cardview_admin_page, parent, false);
+        View v = LayoutInflater.from(mContext).inflate(R.layout.cardview_admin, parent, false);
 
-        return new AdminAdapter.AdminHolder(v);
+        return new AdminHolder(v);
     }
 
     @Override
@@ -52,5 +42,15 @@ public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder>
     @Override
     public int getItemCount() {
         return mUsers.size();
+    }
+
+    public static class AdminHolder extends RecyclerView.ViewHolder {
+
+        public TextView usernameAdmin;
+
+        public AdminHolder(@NonNull View itemView) {
+            super(itemView);
+            usernameAdmin = itemView.findViewById(R.id.Textview_admin);
+        }
     }
 }

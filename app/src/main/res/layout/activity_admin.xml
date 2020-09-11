@@ -22,7 +22,7 @@
         </SearchView>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_admin"
+            android:id="@+id/rv_admin"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -30,6 +30,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/searchView2"
             tools:itemCount="50"
-            tools:listitem="@layout/cardview_admin_page" />
+            tools:listitem="@layout/cardview_admin" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -33,7 +33,7 @@
 <!--                tools:itemCount="6"-->
 <!--                tools:layout_conversion_absoluteHeight="507dp"-->
 <!--                tools:layout_conversion_absoluteWidth="411dp"-->
-<!--                tools:listitem="@layout/cardview_live_page" />-->
+<!--                tools:listitem="@layout/cardview_live_theme" />-->
 
 <!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 <!--    </ScrollView>-->
@@ -54,7 +54,7 @@
         </SearchView>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/theme_recycler_view"
+            android:id="@+id/rv_live_theme"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:scrollbars="vertical"
@@ -62,7 +62,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/searchView3"
-            tools:listitem="@layout/cardview_live_page" />
+            tools:listitem="@layout/cardview_live_theme" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

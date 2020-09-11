@@ -17,24 +17,20 @@ import java.util.Arrays;
 import java.util.List;
 
 import pack.jetminister.R;
-import pack.jetminister.ui.util.adapter.ThemeForLivePageAdapter;
+import pack.jetminister.ui.util.adapter.LiveThemeAdapter;
 
 public class LiveFragment extends Fragment {
 
-    private RecyclerView themeRecyclerView;
-    private AppCompatActivity mycontext;
-    private ThemeForLivePageAdapter livePageAdapter;
+    private AppCompatActivity mContext;
 
     public LiveFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        mycontext = (AppCompatActivity)context;
+        mContext = (AppCompatActivity)context;
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,18 +40,17 @@ public class LiveFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View rootview =  inflater.inflate(R.layout.fragment_live_, container, false);
 
-        themeRecyclerView = rootview.findViewById(R.id.theme_recycler_view);
+        RecyclerView themeRecyclerView = rootview.findViewById(R.id.rv_live_theme);
         themeRecyclerView.setHasFixedSize(true);
-        themeRecyclerView.setLayoutManager(new LinearLayoutManager(mycontext));
+        themeRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
 
 
-        String[] myResArray = getResources().getStringArray(R.array.themes);
-        List<String> myResArrayList = Arrays.asList(myResArray);
+        String[] mResArray = getResources().getStringArray(R.array.themes);
+        List<String> myResArrayList = Arrays.asList(mResArray);
 
-        livePageAdapter = new ThemeForLivePageAdapter(mycontext);
+        LiveThemeAdapter livePageAdapter = new LiveThemeAdapter(mContext);
         themeRecyclerView.setAdapter(livePageAdapter);
 
         return rootview;

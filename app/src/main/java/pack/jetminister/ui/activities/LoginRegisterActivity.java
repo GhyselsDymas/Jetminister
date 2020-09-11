@@ -40,10 +40,8 @@ public class LoginRegisterActivity extends AppCompatActivity {
     private static final String URI_JETMINISTER = "https://jetminister.com/";
 
     //get an instance of Firebase and a reference to the collection
-    private FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
-    private DatabaseReference usersRef = rootNode.getReference("users");
+    private DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
 
     private TextInputLayout emailLoginTIL, passwordLoginTIL, emailRegisterTIL, usernameRegisterTIL, passwordRegisterTIL, passwordConfirmRegisterTIL;
     private CheckBox termsConditionCB;
@@ -116,7 +114,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
     private void isDuplicateUsername(final String usernameFromInput) {
         final CharSequence duplicateUsernameError = getResources().getString(R.string.register_error_username_duplicate);
         //make reference to users in database
-        usersRef.addValueEventListener(new ValueEventListener() {
+        usersDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 //initialise temporary unique String
@@ -215,7 +213,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
         if (mAuth.getCurrentUser() != null) {
             final String newUID = mAuth.getCurrentUser().getUid();
             //create new database entry with unique ID as key
-            usersRef.child(newUID).setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+            usersDatabaseRef.child(newUID).setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {

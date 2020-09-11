@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,12 +19,12 @@ import pack.jetminister.R;
 
 public class ThemeChooserDialog extends androidx.fragment.app.DialogFragment {
 
-    private AppCompatActivity mycontext;
+    private AppCompatActivity mContext;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        mycontext = (AppCompatActivity)context;
+        mContext = (AppCompatActivity)context;
     }
 
     @NonNull
@@ -40,7 +39,7 @@ public class ThemeChooserDialog extends androidx.fragment.app.DialogFragment {
                         String[] myResArray = getResources().getStringArray(R.array.themes);
                         List<String> myResArrayList = Arrays.asList(myResArray);
 
-                        Toast.makeText(mycontext , myResArrayList.get(which) , Toast.LENGTH_LONG).show();
+                        Toast.makeText(mContext, myResArrayList.get(which) , Toast.LENGTH_LONG).show();
                         dialog.dismiss();
                     }
                 })

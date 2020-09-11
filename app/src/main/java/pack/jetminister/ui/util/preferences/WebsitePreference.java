@@ -17,20 +17,23 @@ public class WebsitePreference extends Preference {
     public WebsitePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         //set the right XML file
-        setWidgetLayoutResource(R.layout.preference_website);}
+        setWidgetLayoutResource(R.layout.preference_website);
+    }
+
+    View.OnClickListener websiteListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            loadWebPage();
+        }
+    };
 
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         holder.itemView.setClickable(false);
-        View image = holder.findViewById(R.id.textview_settings_website);
-        image.setClickable(true);
-        image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadWebPage();
-            }
-        });
+        View websiteIV = holder.findViewById(R.id.textview_settings_website);
+        websiteIV.setClickable(true);
+        websiteIV.setOnClickListener(websiteListener);
     }
 
     private void loadWebPage() {

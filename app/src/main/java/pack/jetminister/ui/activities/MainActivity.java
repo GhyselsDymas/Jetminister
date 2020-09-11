@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ActionBar toolbar;
 
-
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -60,12 +59,6 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -73,9 +66,11 @@ public class MainActivity extends AppCompatActivity {
         toolbar = getSupportActionBar();
         toolbar.setTitle(R.string.fragment_live);
         toolbar.hide();
+
         BottomNavigationView bottomNavigationView;
         bottomNavigationView = findViewById(R.id.bottom_nav);
         bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavListener);
+
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
 

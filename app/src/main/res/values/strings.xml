@@ -71,8 +71,8 @@
     <string name="tv_profile_description">Channel description</string>
     <string name="cb_terms_conditions">I accept the Terms and Conditions</string>
     <string name="tv_register_no_account">No account yet?</string>
+    <string name="tv_see_more">See more</string>
     <string name="tv_read_more">Read more</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="btn_choose_image">Choose image</string>
     <string name="iv_profile_image_preview">A preview of the image you selcted</string>
 

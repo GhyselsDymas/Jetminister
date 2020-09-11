@@ -43,10 +43,7 @@ public class ProfileFragment extends Fragment {
     private TextView usernameTV;
     private TextView descriptionTV;
 
-    private Button startStreamBtn;
-
     public ProfileFragment() {
-        // Required empty public constructor
     }
 
     View.OnClickListener startStreamListener = new View.OnClickListener() {
@@ -75,19 +72,19 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootview = inflater.inflate(R.layout.support_simple_spinner_dropdown_item, container, false);
-        rootview = inflater.inflate(R.layout.fragment_profile, container, false);
-        profileImageIV = rootview.findViewById(R.id.iv_profile_image);
-        usernameTV = rootview.findViewById(R.id.tv_profile_username);
-        descriptionTV = rootview.findViewById(R.id.tv_profile_description);
-        startStreamBtn = rootview.findViewById(R.id.btn_start_livestream);
+        View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        usernameTV = rootView.findViewById(R.id.tv_profile_username);
+        descriptionTV = rootView.findViewById(R.id.tv_profile_description);
+        profileImageIV = rootView.findViewById(R.id.iv_profile_image);
+        Button startStreamBtn = rootView.findViewById(R.id.btn_start_livestream);
 
         profileImageIV.setOnLongClickListener(profileImageListener);
         startStreamBtn.setOnClickListener(startStreamListener);
 
         updateUI();
 
-        return rootview;
+        return rootView;
     }
 
     @Override

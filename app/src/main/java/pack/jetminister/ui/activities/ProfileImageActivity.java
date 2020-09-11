@@ -43,9 +43,6 @@ public class ProfileImageActivity extends AppCompatActivity {
     }
 
     private static final int PICK_IMAGE_REQUEST = 1;
-    private Button chooseImageBtn;
-    private Button uploadImageBtn;
-    private Button cancelBtn;
     private ImageView previewIV;
     private ProgressBar uploadImagePB;
     private Uri mImageUri;
@@ -89,9 +86,9 @@ public class ProfileImageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_image);
 
-        chooseImageBtn = findViewById(R.id.btn_choose_image);
-        uploadImageBtn = findViewById(R.id.btn_upload);
-        cancelBtn = findViewById(R.id.btn_cancel);
+        Button chooseImageBtn = findViewById(R.id.btn_choose_image);
+        Button uploadImageBtn = findViewById(R.id.btn_upload);
+        Button cancelBtn = findViewById(R.id.btn_cancel);
         previewIV = findViewById(R.id.iv_image_preview);
 //        mProgressBar = findViewById(R.id.progress_bar);
         uploadImagePB = findViewById(R.id.progressbar_image_upload);
