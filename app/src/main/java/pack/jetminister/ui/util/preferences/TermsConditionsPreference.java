@@ -21,18 +21,20 @@ public class TermsConditionsPreference extends Preference {
         setWidgetLayoutResource(R.layout.preference_terms_conditions);
     }
 
+    private View.OnClickListener termsConditionsListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            loadWebPage();
+        }
+    };
+
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         holder.itemView.setClickable(false);
-        View image = holder.findViewById(R.id.iv_settings_termsconditions);
-        image.setClickable(true);
-        image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadWebPage();
-            }
-        });
+        View termsConditionsIV = holder.findViewById(R.id.iv_settings_termsconditions);
+        termsConditionsIV.setClickable(true);
+        termsConditionsIV.setOnClickListener(termsConditionsListener);
     }
 
     private void loadWebPage() {

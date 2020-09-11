@@ -49,6 +49,22 @@ public class ProfileFragment extends Fragment {
         // Required empty public constructor
     }
 
+    View.OnClickListener startStreamListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            ThemeChooserDialog newThemeChooserDialog = new ThemeChooserDialog();
+            newThemeChooserDialog.show(getParentFragmentManager(), "themes");
+        }
+    };
+
+    View.OnLongClickListener profileImageListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+            openImagePage();
+            return true;
+        }
+    };
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -66,24 +82,11 @@ public class ProfileFragment extends Fragment {
         descriptionTV = rootview.findViewById(R.id.tv_profile_description);
         startStreamBtn = rootview.findViewById(R.id.btn_start_livestream);
 
-        profileImageIV.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                openImagePage();
-                return true;
-            }
-        });
-
-        startStreamBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ThemeChooserDialog newThemeChooserDialog = new ThemeChooserDialog();
-                newThemeChooserDialog.show(getParentFragmentManager(), "themes");
-            }
-        });
+        profileImageIV.setOnLongClickListener(profileImageListener);
+        startStreamBtn.setOnClickListener(startStreamListener);
 
         updateUI();
-        //        }
+
         return rootview;
     }
 
@@ -98,7 +101,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void updateUI() {
-        Context context = usernameTV.getContext();
         if (currentUser != null) {
             String uID = currentUser.getUid();
             usersRef.child(uID).addValueEventListener(new ValueEventListener() {

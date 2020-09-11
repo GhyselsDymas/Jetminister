@@ -27,52 +27,49 @@ public class AdminPreference extends Preference {
     private FirebaseUser currentUser = mAuth.getCurrentUser();
     private DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
 
-
     public AdminPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         //set the right XML file
         setWidgetLayoutResource(R.layout.preference_admin);
     }
 
+    private View.OnClickListener adminListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent();
+            intent.setClass(getContext(), AdminActivity.class);
+            getContext().startActivity(intent);
+        }
+    };
+
+
     @Override
     public void onBindViewHolder(final PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
+
+        final View adminIV = holder.findViewById(R.id.admin_button);
         if (currentUser != null) {
             final String uID = currentUser.getUid();
             final DatabaseReference currentUserDatabaseRef = usersDatabaseRef.child(uID);
-
             currentUserDatabaseRef.child("username")
                     .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-
                             if (snapshot.exists() && snapshot.getValue().toString().equals("Hackermann")) {
-                                View logoutIV = holder.findViewById(R.id.admin_button);
-                                logoutIV.setClickable(true);
-                                logoutIV.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        Intent intent = new Intent();
-                                        intent.setClass(getContext(), AdminActivity.class);
-                                        getContext().startActivity(intent);
-                                    }
-                                });
+                                adminIV.setClickable(true);
+                                adminIV.setOnClickListener(adminListener);
                             } else {
-                                View logoutIV = holder.findViewById(R.id.admin_button);
                                 holder.itemView.setVisibility(View.INVISIBLE);
-                                logoutIV.setClickable(false);
+                                adminIV.setClickable(false);
                             }
                         }
-
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
-
                         }
                     });
         } else {
-            View logoutIV = holder.findViewById(R.id.admin_button);
             holder.itemView.setVisibility(View.INVISIBLE);
-            logoutIV.setClickable(false);
+            adminIV.setClickable(false);
         }
     }
 }

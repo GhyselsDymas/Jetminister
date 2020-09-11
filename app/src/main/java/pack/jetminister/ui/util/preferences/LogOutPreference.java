@@ -19,6 +19,18 @@ import pack.jetminister.ui.activities.MainActivity;
 public class LogOutPreference extends Preference {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
+
+    private View.OnClickListener logoutListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            mAuth.signOut();
+            Intent intent= new Intent();
+            intent.setClass(getContext(), MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            getContext().startActivity(intent);
+        }
+    };
+
     public LogOutPreference(Context context, AttributeSet attrs) {
         super(context, attrs );
         //set the right XML file
@@ -33,18 +45,7 @@ public class LogOutPreference extends Preference {
         View logoutIV = holder.findViewById(R.id.iv_settings_logout);
         if (currentUser != null) {
             logoutIV.setClickable(true);
-            logoutIV.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mAuth.signOut();
-
-                    Intent intent= new Intent();
-                    intent.setClass(getContext(), MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    getContext().startActivity(intent);
-
-                }
-            });
+            logoutIV.setOnClickListener(logoutListener);
         } else {
             holder.itemView.setVisibility(View.INVISIBLE);
             logoutIV.setClickable(false);

@@ -3,7 +3,6 @@ package pack.jetminister.ui.activities;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
-import android.opengl.Visibility;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -88,7 +87,7 @@ public class ProfileImageActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile_image_page);
+        setContentView(R.layout.activity_profile_image);
 
         chooseImageBtn = findViewById(R.id.btn_choose_image);
         uploadImageBtn = findViewById(R.id.btn_upload);
