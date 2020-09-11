@@ -34,7 +34,7 @@
         android:name="pack.jetminister.ui.fragments.SettingsFragment" />
     <activity
         android:id="@+id/activity_main"
-        android:name="pack.jetminister.ui.MainActivity" >
+        android:name="pack.jetminister.ui.activities.MainActivity" >
         <argument
             android:name="authenticated_user"
             app:argType="pack.jetminister.data.User" />

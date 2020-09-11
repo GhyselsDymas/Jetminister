@@ -1,10 +1,9 @@
-package pack.jetminister.ui;
+package pack.jetminister.ui.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,7 +24,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import pack.jetminister.R;
@@ -95,34 +93,88 @@ public class LoginOrRegister extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (mAuth.getCurrentUser() != null){
+        if (mAuth.getCurrentUser() != null) {
 
         }
     }
 
     private void registerUser() {
-        final String newEmail = emailRegisterTIL.getEditText().getText().toString().trim();
         final String newUsername = usernameRegisterTIL.getEditText().getText().toString().trim();
+        isDuplicateUsername(newUsername);
+    }
+
+    private void isDuplicateUsername(final String username) {
+        final CharSequence duplicateUsernameError = getResources().getString(R.string.register_error_username_duplicate);
+        usersRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String checkUsername = "";
+                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                            if (userSnapshot.exists() && userSnapshot.child("username").exists()) {
+                                String snapshotUsername = userSnapshot.child("username").getValue(String.class);
+                                if (username.equals(snapshotUsername)) {
+                                    checkUsername = snapshotUsername;
+                                }
+                            }
+                        }
+                        if (checkUsername.isEmpty() && validateUsername(username)){
+                            usernameRegisterTIL.setError(null);
+                            usernameRegisterTIL.setErrorEnabled(false);
+                            authenticateRegisteredUser(username);
+                        } else {
+                            usernameRegisterTIL.setError(duplicateUsernameError);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+
+                });
+    }
+    private boolean validateUsername(final String username) {
+        final CharSequence emptyFieldError = getResources().getString(R.string.register_error_empty_field);
+        final CharSequence whitespaceUsernameError = getResources().getString(R.string.register_error_username_whitespace);
+        final CharSequence characterLimitUsernameError = getResources().getString(R.string.register_error_username_limit);
+
+        if (username.isEmpty()) {
+            usernameRegisterTIL.setError(emptyFieldError);
+            return false;
+        } else if (username.length() > 16) {
+            usernameRegisterTIL.setError(characterLimitUsernameError);
+            return false;
+        } else if (username.contains(" ")) {
+            usernameRegisterTIL.setError(whitespaceUsernameError);
+            return false;
+        } else {
+            usernameRegisterTIL.setError(null);
+            usernameRegisterTIL.setErrorEnabled(false);
+            return true;
+        }
+    }
+
+    private void authenticateRegisteredUser(final String username) {
+        final String newEmail = emailRegisterTIL.getEditText().getText().toString().trim();
         final String newPassword = passwordRegisterTIL.getEditText().getText().toString();
         final String newConfirmPassword = passwordConfirmRegisterTIL.getEditText().getText().toString();
         boolean checkTermsConditions = termsConditionCB.isChecked();
-        authenticateRegisteredUser(newEmail, newUsername, newPassword, newConfirmPassword, checkTermsConditions);
-    }
-
-    private void authenticateRegisteredUser(final String email, final String username, final String password, String confirmPassword, boolean termsConditions) {
-        if (validateEmail(email) && validatePassword(password) && confirmPasswordMatch(password, confirmPassword) && checkedTermsConditions(termsConditions)) {
-            mAuth.createUserWithEmailAndPassword(email, password)
+        if (validateEmail(newEmail) &&
+                validatePassword(newPassword) &&
+                confirmPasswordMatch(newPassword, newConfirmPassword) &&
+                confirmTermsConditions(checkTermsConditions)) {
+            mAuth.createUserWithEmailAndPassword(newEmail, newPassword)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                User newUser = new User(email, password);
+                                User newUser = new User(newEmail, newPassword);
                                 newUser.setUsername(username);
                                 addUserToDatabase(newUser);
                                 proceedToMain();
                             } else if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                                CharSequence duplicateEmailError = getResources().getString(R.string.register_error_email_duplicate);
+                                emailRegisterTIL.setError(duplicateEmailError);
                                 emailRegisterTIL.getEditText().requestFocus();
-                                Toast.makeText(LoginOrRegister.this, R.string.register_error_email_duplicate, Toast.LENGTH_SHORT).show();
+
                             } else {
                                 Log.d(TAG, task.getException().getMessage());
                                 emailRegisterTIL.getEditText().requestFocus();
@@ -136,16 +188,14 @@ public class LoginOrRegister extends AppCompatActivity {
     }
 
     private void addUserToDatabase(User user) {
-        if (mAuth.getCurrentUser() != null){
+        if (mAuth.getCurrentUser() != null) {
             final String newUID = mAuth.getCurrentUser().getUid();
             usersRef.child(newUID).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()){
-//                        saveUserInfo(newUID);
+                    if (task.isSuccessful()) {
                         Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
-                    }
-                    else {
+                    } else {
                         Log.d(TAG, task.getException().getMessage());
                     }
                 }
@@ -201,27 +251,8 @@ public class LoginOrRegister extends AppCompatActivity {
         return true;
     }
 
-    private boolean isDuplicate(DataSnapshot dataSnapshot, String newUsername) {
-        CharSequence duplicateUsernameError = getResources().getString(R.string.register_error_username_duplicate);
-        //loop over the database, convert each entry to User and get username to check for duplicates
-        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-            if (snapshot.exists()) {
-                User checkUser = snapshot.getValue(User.class);
-                if (checkUser != null) {
-                    if (newUsername.equals(checkUser.getUsername())) {
-                        usernameRegisterTIL.setError(duplicateUsernameError);
-                        return false;
-                    }
-                }
-            }
-        }
-        usernameRegisterTIL.setError(null);
-        usernameRegisterTIL.setErrorEnabled(false);
-        return true;
-    }
-
-    private boolean checkedTermsConditions(boolean termsConditions){
-        if (!termsConditions){
+    private boolean confirmTermsConditions(boolean termsConditions) {
+        if (!termsConditions) {
             Toast.makeText(this, R.string.register_error_termsconditions_unchecked, Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -236,21 +267,21 @@ public class LoginOrRegister extends AppCompatActivity {
     }
 
     private void authenticateUserLogin(String email, String password) {
-        if (validateEmail(email) && validatePassword(password)){
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()){
-                            proceedToMain();
-                            Toast.makeText(LoginOrRegister.this, R.string.login_success, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.d(TAG, task.getException().getMessage());
+        if (validateEmail(email) && validatePassword(password)) {
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                proceedToMain();
+                                Toast.makeText(LoginOrRegister.this, R.string.login_success, Toast.LENGTH_SHORT).show();
+                            } else {
+                                Log.d(TAG, task.getException().getMessage());
 
-                            Toast.makeText(LoginOrRegister.this, R.string.login_fail, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginOrRegister.this, R.string.login_fail, Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
+                    });
         }
         emailLoginTIL.getEditText().requestFocus();
     }

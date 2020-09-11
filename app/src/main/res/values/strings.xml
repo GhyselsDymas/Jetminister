@@ -50,11 +50,11 @@
     <string name="register_error">Something went wrong, please try again</string>
     <string name="register_authentication_error">Authentication failed</string>
     <string name="register_error_username_limit">Username cannot exceed 16 characters</string>
-    <string name="register_error_username_duplicate">Username already exists, please choose another</string>
+    <string name="register_error_username_whitespace">Username cannot contain whitespace</string>
+    <string name="register_error_username_duplicate">Username already exists</string>
     <string name="register_error_email_invalid">Please enter a valid email address</string>
     <string name="register_error_email_duplicate">Email already registered</string>
     <string name="register_error_empty_field">Field cannot be empty</string>
-    <string name="register_error_username_whitespace">Username cannot contain whitespace</string>
     <string name="register_error_password_invalid">Password must be at least six characters and include one digit</string>
     <string name="register_error_confirmpassword">Passwords do not match</string>
     <string name="register_error_termsconditions_unchecked">You must agree to our Terms and Conditions</string>

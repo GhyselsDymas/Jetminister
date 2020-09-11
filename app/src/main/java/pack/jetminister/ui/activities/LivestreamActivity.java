@@ -1,4 +1,4 @@
-package pack.jetminister.ui;
+package pack.jetminister.ui.activities;
 
 import android.os.Bundle;
 

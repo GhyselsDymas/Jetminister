@@ -6,8 +6,6 @@ import android.content.SharedPreferences;
 import android.util.AttributeSet;
 import android.view.View;
 
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceViewHolder;
@@ -16,7 +14,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import pack.jetminister.R;
-import pack.jetminister.ui.MainActivity;
+import pack.jetminister.ui.activities.MainActivity;
 
 public class LogOutPreference extends Preference {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();

@@ -2,8 +2,6 @@ package pack.jetminister.ui.fragments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -29,8 +27,8 @@ import com.squareup.picasso.Picasso;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
-import pack.jetminister.ui.LoginOrRegister;
-import pack.jetminister.ui.ProfileImageActivity;
+import pack.jetminister.ui.activities.LoginOrRegister;
+import pack.jetminister.ui.activities.ProfileImageActivity;
 
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
