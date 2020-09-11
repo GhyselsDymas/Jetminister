@@ -28,6 +28,8 @@
     <string name="page_start">Start</string>
     <string name="settings_dark">dark_mode</string>
     <string name="settings_dark_title">Enable Dark mode</string>
+    <string name="settings_admin_page">Admin</string>
+    <string name="settings_admin_page_title">Open Admin Page</string>
     <string name="settings_website">View website</string>
     <string name="settings_website_title">Visit our web page</string>
     <string name="settings_termsconditions">Terms and Conditions</string>

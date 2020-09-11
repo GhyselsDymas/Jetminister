@@ -19,10 +19,6 @@ import pack.jetminister.ui.activities.MainActivity;
 public class LogOutPreference extends Preference {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
-    private static final String SHARED_PREFS = "SharedPreferences";
-    private static final String SHARED_PREFS_USERNAME = "username";
-    private static final String SHARED_PREFS_DESCRIPTION = "description";
-    private static final String SHARED_PREFS_IMAGE_URL = "imageURL";
 
     public LogOutPreference(Context context, AttributeSet attrs) {
         super(context, attrs );

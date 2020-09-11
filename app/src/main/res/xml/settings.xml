@@ -21,5 +21,8 @@
 <!--        <intent android:action="com.example.myapp.activities.MyActivity"/>-->
     </pack.jetminister.ui.util.preferences.LogOutPreference>
 
+    <pack.jetminister.ui.util.preferences.AdminPageReference
+        android:key="@string/settings_admin_page"
+        android:title="@string/settings_admin_page_title"/>
 
 </PreferenceScreen>
