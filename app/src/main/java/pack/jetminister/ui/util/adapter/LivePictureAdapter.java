@@ -58,12 +58,11 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
         holder.liveUsername.setText(uploadCurrent.getUsername());
         holder.liveFollowers.setText("0");
 
-
         if (uploadCurrent.getImageURL().isEmpty()) {
             holder.livePicture.setImageResource(R.drawable.ic_launcher_background);
         } else{
             Picasso.get().load(uploadCurrent.getImageURL())
-                    .fit()
+                    .fit().centerCrop()
                     .into(holder.livePicture);
         }
     }
