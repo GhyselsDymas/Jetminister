@@ -66,7 +66,6 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
                     .fit()
                     .into(holder.livePicture);
         }
-
     }
 
     @Override

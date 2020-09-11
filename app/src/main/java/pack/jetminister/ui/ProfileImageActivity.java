@@ -53,10 +53,6 @@ public class ProfileImageActivity extends AppCompatActivity {
     }
 
     private static final int PICK_IMAGE_REQUEST = 1;
-    private static final String SHARED_PREFS = "SharedPreferences";
-    private static final String SHARED_PREFS_USERNAME = "username";
-    private static final String SHARED_PREFS_IMAGE_URL = "imageURL";
-    private static final String SHARED_PREFS_IMAGE_FILENAME = "imageFilename";
     private Button chooseImageBtn;
     private Button uploadImageBtn;
     private Button cancelBtn;
@@ -64,7 +60,7 @@ public class ProfileImageActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private Uri mImageUri;
 
-    private DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");;
+    private DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
     private StorageTask mUploadToStorageTask;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
@@ -103,69 +99,65 @@ public class ProfileImageActivity extends AppCompatActivity {
         final FirebaseUser currentUser = mAuth.getCurrentUser();
         final String uID = currentUser.getUid();
         final DatabaseReference currentUserDatabaseRef = usersDatabaseRef.child(uID);
-            final String newImageFilename = System.currentTimeMillis() + "." + getFileExtension(mImageUri);
-            StorageReference imageStorageReference = FirebaseStorage.getInstance().getReference("images/"+newImageFilename);
-            if (mImageUri != null){
-                imageStorageReference.putFile(mImageUri)
-                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
-                        taskSnapshot.getStorage().getDownloadUrl()
-                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(final Uri uri) {
-                                UserProfileChangeRequest newProfile = new UserProfileChangeRequest.Builder()
-                                        .setPhotoUri(uri)
-                                        .build();
-                                currentUser.updateProfile(newProfile)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                currentUserDatabaseRef.child("imageFilename").setValue(newImageFilename);
-                                                currentUserDatabaseRef.child("imageURL").setValue(uri.toString())
-                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task<Void> task) {
-                                                                if (task.isSuccessful()){
-                                                                    SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-                                                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                                    editor.putString(SHARED_PREFS_IMAGE_URL, uri.toString());
-                                                                    editor.apply();
-                                                                    proceedToMain();
+        final String newImageFilename = System.currentTimeMillis() + "." + getFileExtension(mImageUri);
+        StorageReference imageStorageReference = FirebaseStorage.getInstance().getReference("images/" + newImageFilename);
+        if (mImageUri != null) {
+            imageStorageReference.putFile(mImageUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
+                            taskSnapshot.getStorage().getDownloadUrl()
+                                    .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(final Uri uri) {
+                                            UserProfileChangeRequest newProfile = new UserProfileChangeRequest.Builder()
+                                                    .setPhotoUri(uri)
+                                                    .build();
+                                            currentUser.updateProfile(newProfile)
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            currentUserDatabaseRef.child("imageFilename").setValue(newImageFilename);
+                                                            currentUserDatabaseRef.child("imageURL").setValue(uri.toString())
+                                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                        @Override
+                                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                                            if (task.isSuccessful()) {
+                                                                                proceedToMain();
+                                                                            }
+                                                                        }
+                                                                    }).addOnFailureListener(new OnFailureListener() {
+                                                                @Override
+                                                                public void onFailure(@NonNull Exception e) {
+                                                                    Toast.makeText(ProfileImageActivity.this, "Could not update database entry for imageUrl", Toast.LENGTH_SHORT).show();
                                                                 }
-                                                            }
-                                                        }).addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                        Toast.makeText(ProfileImageActivity.this,   "Could not update database entry for imageUrl", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
-                                                Toast.makeText(ProfileImageActivity.this, R.string.profile_image_upload_success, Toast.LENGTH_SHORT).show();
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(ProfileImageActivity.this, "Profile update failed", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                            }
-                        })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(ProfileImageActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
-                })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(ProfileImageActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            }
+                                                            });
+                                                            Toast.makeText(ProfileImageActivity.this, R.string.profile_image_upload_success, Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            Toast.makeText(ProfileImageActivity.this, "Profile update failed", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(ProfileImageActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(ProfileImageActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 
     private void proceedToMain() {
@@ -193,122 +185,9 @@ public class ProfileImageActivity extends AppCompatActivity {
         }
     }
 
-
-
-//    private void uploadFile() {
-//        //check if an image was returned from image picker
-//            //upload will store uri into user's db entry, so must get username from SharedPreferences
-//            final SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-//            final SharedPreferences.Editor editor = sharedPreferences.edit();
-//            final String username = sharedPreferences.getString(SHARED_PREFS_USERNAME, null);
-//
-//            //make unique filename for storage with timestamp, and append file extension
-//            final String newImageFilename = System.currentTimeMillis() + "." + getFileExtension(mImageUri);
-//            //make storage reference using the new filename
-//            final StorageReference newImageReference = imageStorageRef.child(newImageFilename);
-//            //put the data from the image into storage using new reference
-//            final String key = mAuth.getCurrentUser().getUid();
-//            usersDatabaseRef.child(key).child("imageFilename").addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                    if (snapshot.exists()) {
-//                        String oldImageFilename = snapshot.getValue(String.class);
-//                        if (oldImageFilename != null || !oldImageFilename.isEmpty()) {
-//                            final StorageReference oldImageReference = imageStorageRef.child(oldImageFilename);
-//                            //delete the old file from storage
-//                            oldImageReference.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<Void> task) {
-//                                    if (task.isSuccessful()) {
-//                                        mUploadToStorageTask = newImageReference.putFile(mImageUri)
-//                                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                                                    @Override
-//                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                                                        //handl the upload using a progressbar for user feedback
-//                                                        Handler handler = new Handler();
-//                                                        handler.postDelayed(new Runnable() {
-//                                                            @Override
-//                                                            public void run() {
-//                                                                mProgressBar.setProgress(0);
-//                                                            }
-//                                                        }, 500);
-//                                                        taskSnapshot.getStorage().getDownloadUrl()
-//                                                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                                                                    @Override
-//                                                                    public void onSuccess(Uri uri) {
-//                                                                        final String downloadURI = uri.toString();
-//                                                                        usersDatabaseRef.child(key).child("imageURL").setValue(downloadURI)
-//                                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                                                                    @Override
-//                                                                                    public void onComplete(@NonNull Task<Void> task) {
-//                                                                                        usersDatabaseRef.child(key).child("imageFilename").setValue(newImageFilename)
-//                                                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                                                                                    @Override
-//                                                                                                    public void onComplete(@NonNull Task<Void> task) {
-//                                                                                                        editor.putString(SHARED_PREFS_IMAGE_URL, downloadURI);
-//                                                                                                        editor.apply();
-//                                                                                                    }
-//                                                                                                });
-//                                                                                    }
-//                                                                                });
-//                                                                    }
-//                                                                });
-//                                                    }
-//                                                });
-//                                    } else {
-//                                        mUploadToStorageTask = newImageReference.putFile(mImageUri)
-//                                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                                                    @Override
-//                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                                                        //handl the upload using a progressbar for user feedback
-//                                                        Handler handler = new Handler();
-//                                                        handler.postDelayed(new Runnable() {
-//                                                            @Override
-//                                                            public void run() {
-//                                                                mProgressBar.setProgress(0);
-//                                                            }
-//                                                        }, 500);
-//                                                        taskSnapshot.getStorage().getDownloadUrl()
-//                                                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                                                                    @Override
-//                                                                    public void onSuccess(Uri uri) {
-//                                                                        final String downloadURI = uri.toString();
-//                                                                        usersDatabaseRef.child(key).child("imageURL").setValue(downloadURI)
-//                                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                                                                    @Override
-//                                                                                    public void onComplete(@NonNull Task<Void> task) {
-//                                                                                        usersDatabaseRef.child(key).child("imageFilename").setValue(newImageFilename)
-//                                                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                                                                                    @Override
-//                                                                                                    public void onComplete(@NonNull Task<Void> task) {
-//                                                                                                        editor.putString(SHARED_PREFS_IMAGE_URL, downloadURI);
-//                                                                                                        editor.apply();
-//                                                                                                    }
-//                                                                                                });
-//                                                                                    }
-//                                                                                });
-//                                                                    }
-//                                                                });
-//                                                    }
-//                                                });
-//                                    }
-//                                }
-//                            });
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//                }
-//            });
-//    }
-
     private String getFileExtension(Uri uri) {
         ContentResolver cR = getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
-
-
 }

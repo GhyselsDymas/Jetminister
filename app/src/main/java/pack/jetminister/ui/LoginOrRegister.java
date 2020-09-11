@@ -38,13 +38,6 @@ public class LoginOrRegister extends AppCompatActivity {
     private static final String TAG = "LoginOrRegister";
 
     //Keys for the shared preferences
-    private static final String SHARED_PREFS = "SharedPreferences";
-    private static final String SHARED_PREFS_USERNAME = "username";
-    private static final String SHARED_PREFS_EMAIL = "email";
-    private static final String SHARED_PREFS_DESCRIPTION = "description";
-    private static final String SHARED_PREFS_THEME = "theme";
-    private static final String SHARED_PREFS_IMAGE_URL = "imageURL";
-    private static final String SHARED_PREFS_STREAMER = "streamer";
     private static final String URI_JETMINISTER = "https://jetminister.com/";
 
     //get an instance of Firebase and a reference to the collection
@@ -113,10 +106,10 @@ public class LoginOrRegister extends AppCompatActivity {
         final String newPassword = passwordRegisterTIL.getEditText().getText().toString();
         final String newConfirmPassword = passwordConfirmRegisterTIL.getEditText().getText().toString();
         boolean checkTermsConditions = termsConditionCB.isChecked();
-        authenticateRegisteredUser(newEmail, newPassword, newConfirmPassword, checkTermsConditions);
+        authenticateRegisteredUser(newEmail, newUsername, newPassword, newConfirmPassword, checkTermsConditions);
     }
 
-    private void authenticateRegisteredUser(final String email, final String password, String confirmPassword, boolean termsConditions) {
+    private void authenticateRegisteredUser(final String email, final String username, final String password, String confirmPassword, boolean termsConditions) {
         if (validateEmail(email) && validatePassword(password) && confirmPasswordMatch(password, confirmPassword) && checkedTermsConditions(termsConditions)) {
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -124,7 +117,7 @@ public class LoginOrRegister extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 User newUser = new User(email, password);
-                                newUser.setUsername(usernameRegisterTIL.getEditText().getText().toString());
+                                newUser.setUsername(username);
                                 addUserToDatabase(newUser);
                                 proceedToMain();
                             } else if (task.getException() instanceof FirebaseAuthUserCollisionException) {
@@ -149,7 +142,7 @@ public class LoginOrRegister extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
-                        saveUserInfo(newUID);
+//                        saveUserInfo(newUID);
                         Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
                     }
                     else {
@@ -240,26 +233,6 @@ public class LoginOrRegister extends AppCompatActivity {
         final String inputPassword = passwordLoginTIL.getEditText().getText().toString();
 
         authenticateUserLogin(inputEmail, inputPassword);
-
-//        Query checkUserQuery = usersRef.orderByChild("email").equalTo(inputEmail);
-//        checkUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot userSnapshot) {
-//                if (!isRegisteredUser(userSnapshot)) {
-//                    Toast.makeText(LoginOrRegister.this, "Not a registered user", Toast.LENGTH_SHORT).show();
-//                    return;
-//                } else if (!isCorrectPassword(userSnapshot, inputEmail, inputPassword)) {
-//                    Toast.makeText(LoginOrRegister.this, "Incorrect password", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                saveUserInfo(inputEmail);
-//                proceedToMain();
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//            }
-//        });
     }
 
     private void authenticateUserLogin(String email, String password) {
@@ -308,60 +281,10 @@ public class LoginOrRegister extends AppCompatActivity {
         }
     }
 
-    private void saveUserInfo(final String uID) {
-        if (uID != null) {
-            usersRef.child(uID).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(SHARED_PREFS_USERNAME, snapshot.child("username").getValue(String.class));
-                    editor.putString(SHARED_PREFS_EMAIL, snapshot.child("email").getValue(String.class));
-                    editor.putString(SHARED_PREFS_DESCRIPTION, snapshot.child("description").getValue(String.class));
-                    editor.putString(SHARED_PREFS_THEME, snapshot.child("theme").getValue(String.class));
-                    editor.putString(SHARED_PREFS_IMAGE_URL, snapshot.child("imageURL").getValue(String.class));
-                    editor.putBoolean(SHARED_PREFS_STREAMER, snapshot.child("streamer").getValue(Boolean.class));
-                    editor.apply();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                }
-            });
-        } else {
-            Log.d(TAG, "saveUserInfo does not work");
-        }
-    }
-
     private void proceedToMain() {
-//        String usernameFromDatabase = snapshot.child(username).child("username").getValue(String.class);
-//        String passwordFromDatabase = snapshot.child(username).child("password").getValue(String.class);
-//        String emailFromDatabase = snapshot.child(username).child("email").getValue(String.class);
-//        String descriptionFromDatabase = snapshot.child(username).child("description").getValue(String.class);
-//        String themeFromDatabase = snapshot.child(username).child("theme").getValue(String.class);
-//        String imageURLFromDatabase = snapshot.child(username).child("imageURL").getValue(String.class);
-//        boolean streamerFromDatabase = snapshot.child(username).child("streamer").getValue(Boolean.class);
-
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//        intent.putExtra("username", usernameFromDatabase);
-//        intent.putExtra("password", passwordFromDatabase);
-//        intent.putExtra("email", emailFromDatabase);
-//        intent.putExtra("description", descriptionFromDatabase);
-//        intent.putExtra("theme", themeFromDatabase);
-//        intent.putExtra("imageURL", imageURLFromDatabase);
-//        intent.putExtra("streamer", streamerFromDatabase);
-
         //clear all activities from stack so when user hits 'back' on phone, he will not return to loginactivity
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
-
 }
-
-//                //check if the password fields match AND the email address is valid AND there is no duplicate username AND the tersms and conditions have been accepted
-//                if (    !validatePassword(newPassword)
-//                        | (confirmPasswordMatch(newPassword, newConfirmPassword))
-//                        | validateEmail(newEmail)
-////                        | isDuplicate(dataSnapshot, newUsername)
-//                        | !checkedTermsConditions(termsConditionCB)) {
-//                }
