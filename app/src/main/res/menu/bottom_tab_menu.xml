@@ -3,17 +3,17 @@
     <item
         android:id="@+id/live_fragment"
         android:icon="@drawable/ic_home_24"
-        android:title="@string/page_start" />
+        android:title="@string/fragment_live" />
     <item
         android:id="@+id/top100_fragment"
         android:icon="@drawable/ic_top100_24"
-        android:title="@string/page_top100" />
+        android:title="@string/fragment_top100" />
     <item
         android:id="@+id/profile_fragment"
         android:icon="@drawable/ic_user_profile_24"
-        android:title="@string/page_profile" />
+        android:title="@string/fragment_profile" />
     <item
         android:id="@+id/settings_fragment"
         android:icon="@drawable/ic_settings_24"
-        android:title="@string/page_settings" />
+        android:title="@string/fragment_settings" />
 </menu>

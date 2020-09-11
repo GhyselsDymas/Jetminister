@@ -27,8 +27,9 @@ import com.squareup.picasso.Picasso;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
-import pack.jetminister.ui.activities.LoginOrRegister;
+import pack.jetminister.ui.activities.LoginRegisterActivity;
 import pack.jetminister.ui.activities.ProfileImageActivity;
+import pack.jetminister.ui.dialogs.ThemeChooserDialog;
 
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
@@ -60,23 +61,10 @@ public class ProfileFragment extends Fragment {
 
         View rootview = inflater.inflate(R.layout.support_simple_spinner_dropdown_item, container, false);
         rootview = inflater.inflate(R.layout.fragment_profile, container, false);
-        Button testBtn = rootview.findViewById(R.id.btn_test_auth);
         profileImageIV = rootview.findViewById(R.id.iv_profile_image);
         usernameTV = rootview.findViewById(R.id.tv_profile_username);
         descriptionTV = rootview.findViewById(R.id.tv_profile_description);
         startStreamBtn = rootview.findViewById(R.id.btn_start_livestream);
-
-        testBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (currentUser != null) {
-                    Toast.makeText(mContext, mAuth.getCurrentUser().getUid(), Toast.LENGTH_SHORT).show();
-                    ;
-                } else {
-                    Toast.makeText(mContext, "NOAUTH", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
 
         profileImageIV.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -89,8 +77,8 @@ public class ProfileFragment extends Fragment {
         startStreamBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogFragment newDialogFragment = new DialogFragment();
-                newDialogFragment.show(getParentFragmentManager(), "themes");
+                ThemeChooserDialog newThemeChooserDialog = new ThemeChooserDialog();
+                newThemeChooserDialog.show(getParentFragmentManager(), "themes");
             }
         });
 
@@ -104,7 +92,7 @@ public class ProfileFragment extends Fragment {
         super.onStart();
         if (currentUser == null) {
             mContext.finish();
-            Intent intent = new Intent(mContext, LoginOrRegister.class);
+            Intent intent = new Intent(mContext, LoginRegisterActivity.class);
             startActivity(intent);
         }
     }

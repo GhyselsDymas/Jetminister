@@ -33,7 +33,7 @@ import pack.jetminister.data.User;
 import pack.jetminister.ui.util.validators.EmailValidator;
 import pack.jetminister.ui.util.validators.PasswordValidator;
 
-public class LoginOrRegister extends AppCompatActivity {
+public class LoginRegisterActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginOrRegister";
     private static final String UNIQUE_USERNAME = "Input username is unique";
@@ -201,7 +201,7 @@ public class LoginOrRegister extends AppCompatActivity {
                             } else {
                                 Log.d(TAG, task.getException().getMessage());
                                 emailRegisterTIL.getEditText().requestFocus();
-                                Toast.makeText(LoginOrRegister.this, R.string.register_authentication_error, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginRegisterActivity.this, R.string.register_authentication_error, Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -219,7 +219,7 @@ public class LoginOrRegister extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginRegisterActivity.this, R.string.register_success, Toast.LENGTH_SHORT).show();
                     } else {
                         Log.d(TAG, task.getException().getMessage());
                     }
@@ -292,7 +292,7 @@ public class LoginOrRegister extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             proceedToMain();
-                            Toast.makeText(LoginOrRegister.this, R.string.login_success, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginRegisterActivity.this, R.string.login_success, Toast.LENGTH_SHORT).show();
                         //if user enters email that does not exist, display specific error message
                         } else if (task.getException() instanceof FirebaseAuthInvalidUserException) {
                             CharSequence unknownUserError = getResources().getString(R.string.login_error_email_unknown);
@@ -304,7 +304,7 @@ public class LoginOrRegister extends AppCompatActivity {
                         //if something else went wrong, display generic error message
                         } else {
                             Log.d(TAG, task.getException().getMessage());
-                            Toast.makeText(LoginOrRegister.this, R.string.login_fail, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginRegisterActivity.this, R.string.login_fail, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

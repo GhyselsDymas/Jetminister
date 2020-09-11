@@ -21,17 +21,17 @@ import com.google.firebase.database.ValueEventListener;
 import pack.jetminister.R;
 import pack.jetminister.ui.activities.AdminActivity;
 
-public class AdminPageReference extends Preference {
+public class AdminPreference extends Preference {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
     private DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
 
 
-    public AdminPageReference(Context context, AttributeSet attrs) {
+    public AdminPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         //set the right XML file
-        setWidgetLayoutResource(R.layout.preference_admin_page);
+        setWidgetLayoutResource(R.layout.preference_admin);
     }
 
     @Override

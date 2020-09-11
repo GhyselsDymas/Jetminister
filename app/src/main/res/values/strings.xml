@@ -17,15 +17,17 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
 
 
+    <string name="app_name">EricMinister</string>
+    <string name="cancel">Cancel</string>
+    <string name="upload">Upload</string>
     <string name="et_login_email">Email</string>
     <string name="et_login_password">Password</string>
     <string name="et_register_descr">Description</string>
     <string name="et_register_username">Username</string>
-    <string name="app_name">JetMinister</string>
-    <string name="page_top100">Top 100</string>
-    <string name="page_settings">Settings</string>
-    <string name="page_profile">Profile</string>
-    <string name="page_start">Start</string>
+    <string name="fragment_top100">Top 100</string>
+    <string name="fragment_settings">Settings</string>
+    <string name="fragment_profile">Profile</string>
+    <string name="fragment_live">Live</string>
     <string name="settings_dark">dark_mode</string>
     <string name="settings_dark_title">Enable Dark mode</string>
     <string name="settings_admin_page">Admin</string>
@@ -72,8 +74,6 @@
     <string name="tv_read_more">Read more</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="btn_choose_image">Choose image</string>
-    <string name="cancel">Cancel</string>
-    <string name="upload">Upload</string>
     <string name="iv_profile_image_preview">A preview of the image you selcted</string>
 
 </resources>

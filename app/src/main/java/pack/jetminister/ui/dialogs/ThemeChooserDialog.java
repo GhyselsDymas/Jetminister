@@ -1,4 +1,4 @@
-package pack.jetminister.ui.fragments;
+package pack.jetminister.ui.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -18,7 +18,7 @@ import java.util.List;
 
 import pack.jetminister.R;
 
-public class DialogFragment extends androidx.fragment.app.DialogFragment {
+public class ThemeChooserDialog extends androidx.fragment.app.DialogFragment {
 
     private AppCompatActivity mycontext;
 
