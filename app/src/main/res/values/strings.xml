@@ -61,6 +61,7 @@
     <string name="register_error_confirmpassword">Passwords do not match</string>
     <string name="register_error_termsconditions_unchecked">You must agree to our Terms and Conditions</string>
     <string name="profile_image_error_none_selected">No image selected</string>
+    <string name="profile_image_error_duplicate">Upload in progress</string>
     <string name="profile_image_upload_success">Upload successful</string>
     <string name="iv_profile_image_descr">User\'s profile image</string>
     <string name="tv_profile_followers">followers</string>
@@ -69,7 +70,10 @@
     <string name="cb_terms_conditions">I accept the Terms and Conditions</string>
     <string name="tv_register_no_account">No account yet?</string>
     <string name="tv_read_more">Read more</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="btn_choose_image">Choose image</string>
+    <string name="cancel">Cancel</string>
+    <string name="upload">Upload</string>
+    <string name="iv_profile_image_preview">A preview of the image you selcted</string>
 
 </resources>
