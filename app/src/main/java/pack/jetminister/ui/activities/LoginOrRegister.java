@@ -19,6 +19,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,8 +36,7 @@ import pack.jetminister.ui.util.validators.PasswordValidator;
 public class LoginOrRegister extends AppCompatActivity {
 
     private static final String TAG = "LoginOrRegister";
-
-    //Keys for the shared preferences
+    private static final String UNIQUE_USERNAME = "Input username is unique";
     private static final String URI_JETMINISTER = "https://jetminister.com/";
 
     //get an instance of Firebase and a reference to the collection
@@ -53,6 +54,7 @@ public class LoginOrRegister extends AppCompatActivity {
             loginUser();
         }
     };
+
     View.OnClickListener termsConditionsListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -93,56 +95,73 @@ public class LoginOrRegister extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        //check if user is already logged in
         if (mAuth.getCurrentUser() != null) {
-
+            //make sure user does not return to this activity when hitting 'back'
+            finish();
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         }
     }
 
     private void registerUser() {
-        final String newUsername = usernameRegisterTIL.getEditText().getText().toString().trim();
-        isDuplicateUsername(newUsername);
+        final String usernameFromInput = usernameRegisterTIL.getEditText().getText().toString().trim();
+        //if username is valid, check if it already exists in database
+        if (validateUsername(usernameFromInput)) {
+            isDuplicateUsername(usernameFromInput);
+        }
     }
 
-    private void isDuplicateUsername(final String username) {
+    private void isDuplicateUsername(final String usernameFromInput) {
         final CharSequence duplicateUsernameError = getResources().getString(R.string.register_error_username_duplicate);
+        //make reference to users in database
         usersRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        String checkUsername = "";
-                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                            if (userSnapshot.exists() && userSnapshot.child("username").exists()) {
-                                String snapshotUsername = userSnapshot.child("username").getValue(String.class);
-                                if (username.equals(snapshotUsername)) {
-                                    checkUsername = snapshotUsername;
-                                }
-                            }
-                        }
-                        if (checkUsername.isEmpty() && validateUsername(username)){
-                            usernameRegisterTIL.setError(null);
-                            usernameRegisterTIL.setErrorEnabled(false);
-                            authenticateRegisteredUser(username);
-                        } else {
-                            usernameRegisterTIL.setError(duplicateUsernameError);
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //initialise temporary unique String
+                String tempCheck = UNIQUE_USERNAME;
+                //loop opver user objects in database
+                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                    if (userSnapshot.exists() && userSnapshot.child("username").exists()) {
+                        //get the String value of the username field
+                        String snapshotUsername = userSnapshot.child("username").getValue(String.class);
+                        if (usernameFromInput.equals(snapshotUsername)) {
+                            //if user input equals username already in database, assign username to temporary string
+                            tempCheck = snapshotUsername;
                         }
                     }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                    }
+                }
+                //if temp string is still unique, no duplicate was found in database
+                if (tempCheck.equals(UNIQUE_USERNAME)) {
+                    usernameRegisterTIL.setError(null);
+                    usernameRegisterTIL.setErrorEnabled(false);
+                    //proceed with authentication
+                    authenticateRegisteredUser(usernameFromInput);
+                } else {
+                    //temp string is no longer unique, show error
+                    usernameRegisterTIL.setError(duplicateUsernameError);
+                }
+            }
 
-                });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
     }
-    private boolean validateUsername(final String username) {
+
+    private boolean validateUsername(final String usernameFromInput) {
         final CharSequence emptyFieldError = getResources().getString(R.string.register_error_empty_field);
         final CharSequence whitespaceUsernameError = getResources().getString(R.string.register_error_username_whitespace);
         final CharSequence characterLimitUsernameError = getResources().getString(R.string.register_error_username_limit);
 
-        if (username.isEmpty()) {
+        if (usernameFromInput.isEmpty()) {
             usernameRegisterTIL.setError(emptyFieldError);
             return false;
-        } else if (username.length() > 16) {
+        } else if (usernameFromInput.length() > 16) {
             usernameRegisterTIL.setError(characterLimitUsernameError);
             return false;
-        } else if (username.contains(" ")) {
+        } else if (usernameFromInput.contains(" ")) {
             usernameRegisterTIL.setError(whitespaceUsernameError);
             return false;
         } else {
@@ -152,29 +171,33 @@ public class LoginOrRegister extends AppCompatActivity {
         }
     }
 
-    private void authenticateRegisteredUser(final String username) {
-        final String newEmail = emailRegisterTIL.getEditText().getText().toString().trim();
-        final String newPassword = passwordRegisterTIL.getEditText().getText().toString();
+    private void authenticateRegisteredUser(final String usernameFromInput) {
+        final String emailFromInput = emailRegisterTIL.getEditText().getText().toString().trim();
+        final String passwordFromInput = passwordRegisterTIL.getEditText().getText().toString();
         final String newConfirmPassword = passwordConfirmRegisterTIL.getEditText().getText().toString();
         boolean checkTermsConditions = termsConditionCB.isChecked();
-        if (validateEmail(newEmail) &&
-                validatePassword(newPassword) &&
-                confirmPasswordMatch(newPassword, newConfirmPassword) &&
+        //check if email and password are valid, password is confirmed and terms and conditions are checked
+        if (validateEmail(emailFromInput) &&
+                validatePassword(passwordFromInput) &&
+                confirmPasswordMatch(passwordFromInput, newConfirmPassword) &&
                 confirmTermsConditions(checkTermsConditions)) {
-            mAuth.createUserWithEmailAndPassword(newEmail, newPassword)
+            //register with firebase Auth
+            mAuth.createUserWithEmailAndPassword(emailFromInput, passwordFromInput)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                User newUser = new User(newEmail, newPassword);
-                                newUser.setUsername(username);
+                                //create new User object to store into firebase Database
+                                User newUser = new User(emailFromInput, passwordFromInput);
+                                newUser.setUsername(usernameFromInput);
+                                //add user to database
                                 addUserToDatabase(newUser);
                                 proceedToMain();
+                            //if email is already registered, display specific error message
                             } else if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                                 CharSequence duplicateEmailError = getResources().getString(R.string.register_error_email_duplicate);
                                 emailRegisterTIL.setError(duplicateEmailError);
-                                emailRegisterTIL.getEditText().requestFocus();
-
+                            //if something else went wrong, display generic error message
                             } else {
                                 Log.d(TAG, task.getException().getMessage());
                                 emailRegisterTIL.getEditText().requestFocus();
@@ -187,10 +210,12 @@ public class LoginOrRegister extends AppCompatActivity {
         }
     }
 
-    private void addUserToDatabase(User user) {
+    private void addUserToDatabase(User newUser) {
+        //check if registered user is logged in and retrieve unique ID
         if (mAuth.getCurrentUser() != null) {
             final String newUID = mAuth.getCurrentUser().getUid();
-            usersRef.child(newUID).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            //create new database entry with unique ID as key
+            usersRef.child(newUID).setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
@@ -200,10 +225,8 @@ public class LoginOrRegister extends AppCompatActivity {
                     }
                 }
             });
-            Toast.makeText(LoginOrRegister.this, R.string.register_success, Toast.LENGTH_SHORT).show();
-
         } else {
-            Log.d(TAG, "mAuth.getCurrentUser() == null");
+            Log.d(TAG, String.valueOf(R.string.register_authentication_error));
         }
     }
 
@@ -262,59 +285,35 @@ public class LoginOrRegister extends AppCompatActivity {
     private void loginUser() {
         final String inputEmail = emailLoginTIL.getEditText().getText().toString().trim();
         final String inputPassword = passwordLoginTIL.getEditText().getText().toString();
-
-        authenticateUserLogin(inputEmail, inputPassword);
-    }
-
-    private void authenticateUserLogin(String email, String password) {
-        if (validateEmail(email) && validatePassword(password)) {
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                proceedToMain();
-                                Toast.makeText(LoginOrRegister.this, R.string.login_success, Toast.LENGTH_SHORT).show();
-                            } else {
-                                Log.d(TAG, task.getException().getMessage());
-
-                                Toast.makeText(LoginOrRegister.this, R.string.login_fail, Toast.LENGTH_SHORT).show();
-                            }
+        //log user into firebase Auth
+        mAuth.signInWithEmailAndPassword(inputEmail, inputPassword)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            proceedToMain();
+                            Toast.makeText(LoginOrRegister.this, R.string.login_success, Toast.LENGTH_SHORT).show();
+                        //if user enters email that does not exist, display specific error message
+                        } else if (task.getException() instanceof FirebaseAuthInvalidUserException) {
+                            CharSequence unknownUserError = getResources().getString(R.string.login_error_email_unknown);
+                            emailLoginTIL.setError(unknownUserError);
+                        //if user enters password that does not correspond to the email, display specific error message
+                        } else if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                            CharSequence wrongPasswordError = getResources().getString(R.string.login_error_wrong_password);
+                            passwordLoginTIL.setError(wrongPasswordError);
+                        //if something else went wrong, display generic error message
+                        } else {
+                            Log.d(TAG, task.getException().getMessage());
+                            Toast.makeText(LoginOrRegister.this, R.string.login_fail, Toast.LENGTH_SHORT).show();
                         }
-                    });
-        }
-        emailLoginTIL.getEditText().requestFocus();
-    }
-
-    private boolean isRegisteredUser(DataSnapshot snapshot) {
-        CharSequence unknownUserError = getResources().getString(R.string.login_error_user_unknown);
-        if (!snapshot.exists()) {
-            emailLoginTIL.setError(unknownUserError);
-            return false;
-        } else {
-            emailLoginTIL.setError(null);
-            emailLoginTIL.setErrorEnabled(false);
-            return true;
-        }
-    }
-
-    private boolean isCorrectPassword(DataSnapshot snapshot, String username, String password) {
-        CharSequence wrongPasswordError = getResources().getString(R.string.login_error_wrong_password);
-        String passwordFromDatabase = snapshot.child(username).child("password").getValue(String.class);
-
-        if (passwordFromDatabase == null || !passwordFromDatabase.equals(password)) {
-            passwordLoginTIL.setError(wrongPasswordError);
-            return false;
-        } else {
-            passwordLoginTIL.setError(null);
-            passwordLoginTIL.setErrorEnabled(false);
-            return true;
-        }
+                    }
+                });
     }
 
     private void proceedToMain() {
+        finish();
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        //clear all activities from stack so when user hits 'back' on phone, he will not return to loginactivity
+        //clear all activities from stack so user will not navigate to register/login when hitting 'back' button
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }

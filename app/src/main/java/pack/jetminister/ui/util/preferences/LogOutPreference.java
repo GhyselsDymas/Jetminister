@@ -19,7 +19,6 @@ import pack.jetminister.ui.activities.MainActivity;
 public class LogOutPreference extends Preference {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
-
     public LogOutPreference(Context context, AttributeSet attrs) {
         super(context, attrs );
         //set the right XML file
@@ -30,7 +29,6 @@ public class LogOutPreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-
         holder.itemView.setClickable(false);
         View logoutIV = holder.findViewById(R.id.iv_settings_logout);
         if (currentUser != null) {
@@ -38,9 +36,6 @@ public class LogOutPreference extends Preference {
             logoutIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    SharedPreferences mySharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-                    SharedPreferences.Editor editor = mySharedPreferences.edit();
-                    editor.clear().apply();
                     mAuth.signOut();
 
                     Intent intent= new Intent();

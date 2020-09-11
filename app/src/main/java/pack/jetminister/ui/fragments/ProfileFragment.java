@@ -103,6 +103,7 @@ public class ProfileFragment extends Fragment {
     public void onStart() {
         super.onStart();
         if (currentUser == null) {
+            mContext.finish();
             Intent intent = new Intent(mContext, LoginOrRegister.class);
             startActivity(intent);
         }
