@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,25 +20,27 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import pack.jetminister.R;
+import pack.jetminister.data.User;
 import pack.jetminister.ui.LoginOrRegister;
 import pack.jetminister.ui.ProfileImageActivity;
 
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
-    private static final String SHARED_PREFS = "SharedPreferences";
-    private static final String SHARED_PREFS_USERNAME = "username";
-    private static final String SHARED_PREFS_DESCRIPTION = "description";
-    private static final String SHARED_PREFS_IMAGE_URL = "imageURL";
-    private SharedPreferences mSharedPreferences;
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentuser = mAuth.getCurrentUser();
+    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
     private AppCompatActivity mContext;
 
-    private ImageView profileImage;
+    private ImageView profileImageIV;
     private TextView usernameTV;
     private TextView descriptionTV;
 
@@ -60,25 +61,17 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootview = inflater.inflate(R.layout.support_simple_spinner_dropdown_item, container, false);
-        mSharedPreferences = mContext.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        final String currentUsername = mSharedPreferences.getString(SHARED_PREFS_USERNAME, null);
-        final String currentImageURL = mSharedPreferences.getString(SHARED_PREFS_IMAGE_URL, "xXxXx");
-
-//        if (currentUsername == null) {
-//            Intent intent = new Intent(mContext, LoginOrRegister.class);
-//            startActivity(intent);
-//
-//        } else {
         rootview = inflater.inflate(R.layout.fragment_profile, container, false);
         Button testBtn = rootview.findViewById(R.id.btn_test_auth);
-        profileImage = rootview.findViewById(R.id.iv_profile_image);
+        profileImageIV = rootview.findViewById(R.id.iv_profile_image);
         usernameTV = rootview.findViewById(R.id.tv_profile_username);
         descriptionTV = rootview.findViewById(R.id.tv_profile_description);
         startStreamBtn = rootview.findViewById(R.id.btn_start_livestream);
+
         testBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (currentuser != null) {
+                if (currentUser != null) {
                     Toast.makeText(mContext, mAuth.getCurrentUser().getUid(), Toast.LENGTH_SHORT).show();
                     ;
                 } else {
@@ -87,7 +80,7 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        profileImage.setOnLongClickListener(new View.OnLongClickListener() {
+        profileImageIV.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 openImagePage();
@@ -103,16 +96,15 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-
         updateUI();
-//        }
+        //        }
         return rootview;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (currentuser == null) {
+        if (currentUser == null) {
             Intent intent = new Intent(mContext, LoginOrRegister.class);
             startActivity(intent);
         }
@@ -120,15 +112,30 @@ public class ProfileFragment extends Fragment {
 
     private void updateUI() {
         Context context = usernameTV.getContext();
-        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        usernameTV.setText(sharedPreferences.getString(SHARED_PREFS_USERNAME, ""));
-        descriptionTV.setText(sharedPreferences.getString(SHARED_PREFS_DESCRIPTION, ""));
+        if (currentUser != null) {
+            String uID = currentUser.getUid();
+            usersRef.child(uID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        User currentUser = snapshot.getValue(User.class);
+                        usernameTV.setText(currentUser.getUsername());
+                        descriptionTV.setText(currentUser.getDescription());
+                        if (!currentUser.getImageURL().isEmpty()) {
+                            Picasso.get()
+                                    .load(currentUser.getImageURL())
+                                    .fit()
+                                    .centerCrop()
+                                    .into(profileImageIV);
+                        }
+                    }
+                }
 
-        Uri myUri = Uri.parse(sharedPreferences.getString(SHARED_PREFS_IMAGE_URL, ""));
-
-        Picasso.get().load(myUri)
-                .fit().centerCrop()
-                .into(profileImage);
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
+        }
     }
 
     private void openImagePage() {

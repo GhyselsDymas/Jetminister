@@ -37,7 +37,6 @@ public class ThemeForLivePageAdapter extends RecyclerView.Adapter<ThemeForLivePa
         mContext = context;
         String[] myResArray = context.getResources().getStringArray(R.array.themes);
         mThemes = Arrays.asList(myResArray);
-
     }
 
     @NonNull
@@ -50,8 +49,6 @@ public class ThemeForLivePageAdapter extends RecyclerView.Adapter<ThemeForLivePa
     @Override
     public void onBindViewHolder(@NonNull final ThemeForLivePageViewHolder holder, int position) {
         final String uploadCurrent = mThemes.get(position);
-
-
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
         mDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override

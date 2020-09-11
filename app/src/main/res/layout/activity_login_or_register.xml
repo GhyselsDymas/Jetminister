@@ -53,7 +53,7 @@
                     android:focusable="true"
                     android:hint="@string/et_login_email"
                     android:importantForAutofill="no"
-                    android:inputType="text" />
+                    android:inputType="textEmailAddress" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

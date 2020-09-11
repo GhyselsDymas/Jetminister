@@ -65,7 +65,6 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
                     .fit().centerCrop()
                     .into(holder.livePicture);
         }
-
     }
 
     @Override

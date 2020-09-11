@@ -18,7 +18,7 @@
         android:key="@string/settings_logout"
         android:title="@string/settings_logout_title">
 
-        <intent android:action="com.example.myapp.activities.MyActivity"/>
+<!--        <intent android:action="com.example.myapp.activities.MyActivity"/>-->
     </pack.jetminister.ui.util.preferences.LogOutPreference>
 
 
