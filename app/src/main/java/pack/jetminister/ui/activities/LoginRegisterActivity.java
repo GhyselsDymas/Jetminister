@@ -1,5 +1,6 @@
 package pack.jetminister.ui.activities;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -68,10 +69,17 @@ public class LoginRegisterActivity extends AppCompatActivity {
         }
     };
 
+    OnBackPressedCallback callBack = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            proceedToMain();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_or_register);
+        setContentView(R.layout.activity_login_register);
 
         emailLoginTIL = findViewById(R.id.til_login_email);
         passwordLoginTIL = findViewById(R.id.til_login_password);
@@ -93,6 +101,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        getOnBackPressedDispatcher().addCallback(this, callBack);
         //check if user is already logged in
         if (mAuth.getCurrentUser() != null) {
             //make sure user does not return to this activity when hitting 'back'

@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-feature android:name="andreoid.hardware.camera2.full"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -14,13 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ui.activities.LoginRegisterActivity"></activity>
-        <activity android:name=".ui.activities.ProfileImageActivity"></activity>
-        <activity android:name=".ui.activities.AdminActivity"></activity>
+        <activity android:name=".ui.activities.LoginRegisterActivity" />
+        <activity android:name=".ui.activities.ProfileImageActivity" />
+        <activity android:name=".ui.activities.AdminActivity" />
         <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

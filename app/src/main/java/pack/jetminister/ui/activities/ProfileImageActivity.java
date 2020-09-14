@@ -1,11 +1,15 @@
 package pack.jetminister.ui.activities;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -64,7 +68,7 @@ public class ProfileImageActivity extends AppCompatActivity {
     View.OnClickListener chooseImageListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            chooseFromImagePicker();
+            openFileChooser();
         }
     };
 
@@ -177,7 +181,7 @@ public class ProfileImageActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void chooseFromImagePicker() {
+    private void openFileChooser() {
         //request access to and open Android's image picker
         Intent intent = new Intent();
         intent.setType("image/*");

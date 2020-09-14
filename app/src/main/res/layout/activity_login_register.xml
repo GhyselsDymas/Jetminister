@@ -190,10 +190,10 @@
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
                 app:errorEnabled="true"
-                app:passwordToggleEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/til_register_password">
+                app:layout_constraintTop_toBottomOf="@+id/til_register_password"
+                app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edittext_register_password_confirm"
@@ -203,45 +203,45 @@
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <CheckBox
+                android:id="@+id/action_checkbox_terms_conditions"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/cb_terms_conditions"
+                app:layout_constraintBottom_toTopOf="@+id/btn_register"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/til_register_password_confirm" />
+
+            <TextView
+                android:id="@+id/tv_register_terms_cond"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="40dp"
+                android:layout_marginRight="40dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/tv_read_more"
+                app:layout_constraintBottom_toTopOf="@+id/btn_register"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/til_register_password_confirm" />
+
             <Button
                 android:id="@+id/btn_register"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginLeft="40dp"
-                android:layout_marginTop="10dp"
                 android:layout_marginEnd="40dp"
                 android:layout_marginRight="40dp"
+                android:layout_marginBottom="10dp"
                 android:text="@string/btn_register"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/til_register_password_confirm" />
-
-            <CheckBox
-                android:id="@+id/action_checkbox_terms_conditions"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="8dp"
-                android:text="@string/cb_terms_conditions"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/tv_register_terms_cond"
-                app:layout_constraintTop_toBottomOf="@id/btn_register" />
-
-            <TextView
-                android:id="@+id/tv_register_terms_cond"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
-                android:clickable="true"
-                android:text="@string/tv_read_more"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_register"
-                android:focusable="true" />
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
