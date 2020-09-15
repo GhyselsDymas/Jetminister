@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,18 @@ import pack.jetminister.data.User;
 
 public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder> {
 
+    public class AdminHolder extends RecyclerView.ViewHolder {
+
+        public TextView usernameAdmin;
+        public Switch streamerSwitch;
+
+        public AdminHolder(@NonNull View itemView) {
+            super(itemView);
+
+            usernameAdmin = itemView.findViewById(R.id.Textview_admin);
+            streamerSwitch = itemView.findViewById(R.id.switch_streamer_admin_page);
+        }
+    }
 
     private Context mContext;
     private List<User> mUsers;
@@ -44,13 +57,4 @@ public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder>
         return mUsers.size();
     }
 
-    public static class AdminHolder extends RecyclerView.ViewHolder {
-
-        public TextView usernameAdmin;
-
-        public AdminHolder(@NonNull View itemView) {
-            super(itemView);
-            usernameAdmin = itemView.findViewById(R.id.Textview_admin);
-        }
-    }
 }
