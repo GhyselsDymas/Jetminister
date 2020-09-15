@@ -33,14 +33,13 @@
         <activity android:name=".ui.activities.PermissionsActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activities.VideoTestActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <activity android:name=".ui.activities.LoginRegisterActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activities.ProfileImageActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activities.AdminActivity"
             android:screenOrientation="portrait"/>
-
 
         <service android:name="com.google.android.gms.measurement.AppMeasurementService"
             android:enabled="true"
