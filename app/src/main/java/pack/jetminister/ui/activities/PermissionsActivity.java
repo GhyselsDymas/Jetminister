@@ -30,7 +30,7 @@ public class PermissionsActivity extends AppCompatActivity {
         @Override
         public void onPermissionsChecked(MultiplePermissionsReport report) {
             if (report.areAllPermissionsGranted()) {
-                Intent intent = new Intent(PermissionsActivity.this, LivestreamBroadcastActivity.class);
+                Intent intent = new Intent(PermissionsActivity.this, LiveBroadcastActivity.class);
                 startActivity(intent);
                 PermissionsActivity.this.finish();
             } else {

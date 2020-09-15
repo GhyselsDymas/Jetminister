@@ -80,5 +80,7 @@
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="profile_btn_start_broadcast" >Start broadcast</string>
+    <string name="prof_iv_edit_description">Edit description of channel</string>
 
 </resources>

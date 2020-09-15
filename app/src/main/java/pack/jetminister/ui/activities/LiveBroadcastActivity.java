@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.TextView;
@@ -26,7 +25,7 @@ import java.net.SocketException;
 
 import pack.jetminister.R;
 
-public class LivestreamBroadcastActivity
+public class LiveBroadcastActivity
             extends AppCompatActivity
             implements RtmpHandler.RtmpListener,
                     RecordHandler.RecordListener,
@@ -37,7 +36,7 @@ public class LivestreamBroadcastActivity
     public final static int WIDTH = 720;
     public final static int HEIGHT = 1280;
 
-    private StreamaxiaPublisher streamBroadcastPublisher;
+    private StreamaxiaPublisher broadcastPublisher;
     private CameraPreview previewCameraBroadcast;
     private TextView startStopBroadcastTV, stateBroadcastTV;
     private Chronometer broadcastChronometer;
@@ -46,17 +45,17 @@ public class LivestreamBroadcastActivity
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_livestream_broadcast);
+        setContentView(R.layout.activity_live_broadcast);
         startStopBroadcastTV = findViewById(R.id.tv_live_broadcast_startstop);
         stateBroadcastTV = findViewById(R.id.tv_live_broadcast_state);
         broadcastChronometer = findViewById(R.id.chronometer_live_broadcast);
         previewCameraBroadcast = findViewById(R.id.cam_preview_live_broadcast);
 
-        streamBroadcastPublisher = new StreamaxiaPublisher(previewCameraBroadcast, this);
+        broadcastPublisher = new StreamaxiaPublisher(previewCameraBroadcast, this);
 
-        streamBroadcastPublisher.setEncoderHandler(new EncoderHandler(this));
-        streamBroadcastPublisher.setRtmpHandler(new RtmpHandler(this));
-        streamBroadcastPublisher.setRecordEventHandler(new RecordHandler(this));
+        broadcastPublisher.setEncoderHandler(new EncoderHandler(this));
+        broadcastPublisher.setRtmpHandler(new RtmpHandler(this));
+        broadcastPublisher.setRecordEventHandler(new RecordHandler(this));
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
         previewCameraBroadcast.startCamera();
@@ -88,25 +87,25 @@ public class LivestreamBroadcastActivity
     protected void onPause() {
         super.onPause();
         previewCameraBroadcast.stopCamera();
-        streamBroadcastPublisher.stopPublish();
-        streamBroadcastPublisher.pauseRecord();
+        broadcastPublisher.stopPublish();
+        broadcastPublisher.pauseRecord();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        streamBroadcastPublisher.stopPublish();
-        streamBroadcastPublisher.stopRecord();
+        broadcastPublisher.stopPublish();
+        broadcastPublisher.stopRecord();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        streamBroadcastPublisher.setScreenOrientation(newConfig.orientation);
+        broadcastPublisher.setScreenOrientation(newConfig.orientation);
     }
 
     private void stopStreaming() {
-        streamBroadcastPublisher.stopPublish();
+        broadcastPublisher.stopPublish();
     }
 
 
@@ -236,7 +235,7 @@ public class LivestreamBroadcastActivity
     private void handleException(Exception e) {
         try {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            streamBroadcastPublisher.stopPublish();
+            broadcastPublisher.stopPublish();
         } catch (Exception e1) {
             // Ignore
         }

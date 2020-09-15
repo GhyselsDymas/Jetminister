@@ -17,7 +17,7 @@ import java.util.List;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
-import pack.jetminister.ui.activities.VideoTestActivity;
+import pack.jetminister.ui.activities.LivePlayerActivity;
 
 public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.LivePictureHolder> {
 
@@ -76,7 +76,7 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
 
                     String currentUsername = currentUser.getUsername();
 
-                    Intent intent = new Intent(mContext , VideoTestActivity.class);
+                    Intent intent = new Intent(mContext , LivePlayerActivity.class);
                     intent.putExtra("username", currentUsername);
                     mContext.startActivity(intent);
                 }

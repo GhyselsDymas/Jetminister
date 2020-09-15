@@ -28,11 +28,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activities.LivestreamBroadcastActivity"
+        <activity android:name=".ui.activities.LiveBroadcastActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activities.PermissionsActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activities.VideoTestActivity"
+        <activity android:name=".ui.activities.LivePlayerActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activities.LoginRegisterActivity"
             android:screenOrientation="portrait"/>
