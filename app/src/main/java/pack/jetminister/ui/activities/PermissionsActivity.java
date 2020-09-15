@@ -3,12 +3,9 @@ package pack.jetminister.ui.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
-import android.app.Application;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.karumi.dexter.Dexter;
@@ -64,7 +61,6 @@ public class PermissionsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final ImageView logoIV = findViewById(R.id.permissions_logo_iv);
         setContentView(R.layout.activity_permissions);
         Dexter.withContext(this)
                 .withPermissions(
