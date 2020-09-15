@@ -23,7 +23,7 @@ public class VideoTestActivity extends AppCompatActivity {
     private ImageView profileImage, likeImage, shareImage;
 
     private ActionBar toolbar;
-    private boolean testBoolean;
+    private boolean isLiked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +46,7 @@ public class VideoTestActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        testBoolean = false;
+        isLiked = false;
 
         likeImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
     //        String imagePath = "android.resource://pack.jetminister/" + R.drawable.ic_baseline_favorite_border_24;
@@ -108,14 +108,14 @@ public class VideoTestActivity extends AppCompatActivity {
     }
 
     private void likeUnlike() {
-        if (testBoolean == false){
+        if (isLiked == false){
             likesText.setText("252");
             likeImage.setImageResource(R.drawable.ic_baseline_favorite_24);
-            testBoolean = true;
+            isLiked = true;
         } else {
             likesText.setText("251");
             likeImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
-            testBoolean = false;
+            isLiked = false;
         }
 
     }
