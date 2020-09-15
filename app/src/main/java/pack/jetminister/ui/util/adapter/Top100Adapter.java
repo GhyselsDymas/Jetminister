@@ -1,6 +1,7 @@
 package pack.jetminister.ui.util.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
+import pack.jetminister.ui.activities.VideoTestActivity;
 
 public class Top100Adapter extends RecyclerView.Adapter<Top100Adapter.Top100Holder> {
 
@@ -55,7 +57,7 @@ public class Top100Adapter extends RecyclerView.Adapter<Top100Adapter.Top100Hold
         return mUsers.size();
     }
 
-    public static class Top100Holder extends RecyclerView.ViewHolder {
+    public class Top100Holder extends RecyclerView.ViewHolder {
 
         public TextView usernameTop100, followersTop100;
         public ImageView imageTop100;
@@ -66,6 +68,20 @@ public class Top100Adapter extends RecyclerView.Adapter<Top100Adapter.Top100Hold
             usernameTop100 = itemView.findViewById(R.id.username_top100);
             followersTop100 = itemView.findViewById(R.id.followerAmount_top100);
             imageTop100 = itemView.findViewById(R.id.imageView_top100);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    User currentUser = mUsers.get(position);
+
+                    String currentUsername = currentUser.getUsername();
+
+                    Intent intent = new Intent(mContext , VideoTestActivity.class);
+                    intent.putExtra("username", currentUsername);
+                    mContext.startActivity(intent);
+                }
+            });
         }
     }
 }

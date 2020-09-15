@@ -57,7 +57,5 @@ public class AdminActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-
     }
-
 }

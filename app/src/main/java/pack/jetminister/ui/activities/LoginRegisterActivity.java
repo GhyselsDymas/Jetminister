@@ -2,6 +2,7 @@ package pack.jetminister.ui.activities;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -10,6 +11,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -47,6 +50,8 @@ public class LoginRegisterActivity extends AppCompatActivity {
     private TextInputLayout emailLoginTIL, passwordLoginTIL, emailRegisterTIL, usernameRegisterTIL, passwordRegisterTIL, passwordConfirmRegisterTIL;
     private CheckBox termsConditionCB;
 
+    private ActionBar toolbar;
+
     View.OnClickListener loginListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -79,7 +84,15 @@ public class LoginRegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login_register);
+
+        toolbar = getSupportActionBar();
+        toolbar.setTitle(R.string.fragment_live);
+        toolbar.hide();
+
 
         emailLoginTIL = findViewById(R.id.til_login_email);
         passwordLoginTIL = findViewById(R.id.til_login_password);
