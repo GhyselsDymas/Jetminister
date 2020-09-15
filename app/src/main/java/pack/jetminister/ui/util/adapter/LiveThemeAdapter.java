@@ -58,7 +58,7 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
                 }
 
                 holder.titleLiveTheme.setText(uploadCurrent);
-                holder.readMoreLiveTheme.setText(String.format("%s %s", mContext.getResources().getString(R.string.tv_see_more), uploadCurrent));
+                holder.readMoreLiveTheme.setText(String.format("%s %s", mContext.getResources().getString(R.string.see_more_tv), uploadCurrent));
                 holder.recyclerViewLive.setHasFixedSize(true);
                 holder.recyclerViewLive.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
                 mAdapter = new LivePictureAdapter(mContext, mUsers);

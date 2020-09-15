@@ -24,11 +24,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
-                android:text="@string/tv_login"
+                android:text="@string/login_tv"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +49,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="true"
-                    android:hint="@string/et_login_email"
+                    android:hint="@string/register_et_email"
                     android:importantForAutofill="no"
                     android:inputType="textEmailAddress" />
 
@@ -74,7 +72,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:hint="@string/et_login_password"
+                    android:hint="@string/register_et_password"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -83,11 +81,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
-                android:text="@string/btn_login"
+                android:text="@string/login_btn"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_login_password" />
@@ -97,11 +93,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
-                android:text="@string/tv_register_no_account"
+                android:text="@string/register_no_account_tv"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btn_login" />
@@ -111,10 +105,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
                 android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
-                android:text="@string/tv_register"
+                android:text="@string/register_tv_"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -137,7 +129,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:hint="@string/et_register_email"
+                    android:hint="@string/register_et_email"
                     android:inputType="textEmailAddress" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -159,7 +151,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:hint="@string/et_register_username"
+                    android:hint="@string/register_et_username"
                     android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -179,7 +171,7 @@
                     android:id="@+id/edittext_register_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/et_login_password"
+                    android:hint="@string/register_et_password"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -199,7 +191,7 @@
                     android:id="@+id/edittext_register_password_confirm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/et_register_password_confirm"
+                    android:hint="@string/register_et_password_confirm"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -208,10 +200,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                android:text="@string/cb_terms_conditions"
+                android:text="@string/register_cb_terms_conditions"
                 app:layout_constraintBottom_toTopOf="@+id/btn_register"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_register_password_confirm" />
@@ -221,10 +212,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:text="@string/tv_read_more"
+                android:text="@string/read_more_tv"
                 app:layout_constraintBottom_toTopOf="@+id/btn_register"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_register_password_confirm" />
@@ -234,11 +224,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
                 android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
                 android:layout_marginBottom="10dp"
-                android:text="@string/btn_register"
+                android:text="@string/login_btn"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

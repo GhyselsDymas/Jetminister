@@ -12,18 +12,15 @@
     <!-- Sync Preferences -->
     <string name="sync_title">Sync email periodically</string>
     <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails</string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
-
-
     <string name="app_name">EricMinister</string>
     <string name="cancel">Cancel</string>
     <string name="upload">Upload</string>
-    <string name="et_login_email">Email</string>
-    <string name="et_login_password">Password</string>
-    <string name="et_register_descr">Description</string>
-    <string name="et_register_username">Username</string>
+    <string name="register_et_password">Password</string>
+    <string name="register_et_password_confirm">Confirm password</string>
+    <string name="register_et_descr">Description</string>
+    <string name="register_et_username">Username</string>
     <string name="fragment_top100">Top 100</string>
     <string name="fragment_settings">Settings</string>
     <string name="fragment_profile">Profile</string>
@@ -40,16 +37,15 @@
     <string name="settings_logout">Logout</string>
     <string name="settings_logout_title">Log out of the application</string>
     <string name="settings_logout_descr">Click here to log out</string>
-    <string name="et_register_password_confirm">Confirm password</string>
-    <string name="et_register_email">Email address</string>
-    <string name="tv_register">Register here</string>
-    <string name="tv_login">Login here</string>
-    <string name="btn_login">Log in</string>
+    <string name="register_et_email">Email</string>
+    <string name="register_tv_">Register here</string>
+    <string name="login_tv">Login here</string>
+    <string name="login_btn">Log in</string>
     <string name="login_success">Successfully logged in, welcome back!</string>
     <string name="login_fail">Login failed, please try again</string>
     <string name="login_error_email_unknown">Unknown email address, please register</string>
     <string name="login_error_wrong_password">Wrong password, please try again</string>
-    <string name="btn_register">Register</string>
+    <string name="register_btn">Register</string>
     <string name="register_success">Registration successful. Welcome!</string>
     <string name="register_error">Something went wrong, please try again</string>
     <string name="register_authentication_error">Authentication failed</string>
@@ -65,15 +61,24 @@
     <string name="profile_image_error_none_selected">No image selected</string>
     <string name="profile_image_error_duplicate">Upload in progress</string>
     <string name="profile_image_upload_success">Upload successful</string>
-    <string name="iv_profile_image_descr">User\'s profile image</string>
-    <string name="tv_profile_followers">followers</string>
-    <string name="tv_profile_following">following</string>
-    <string name="tv_profile_description">Channel description</string>
-    <string name="cb_terms_conditions">I accept the Terms and Conditions</string>
-    <string name="tv_register_no_account">No account yet?</string>
-    <string name="tv_see_more">See more</string>
-    <string name="tv_read_more">Read more</string>
+    <string name="profile_image_descr_iv">User\'s profile image</string>
+    <string name="profile_followers_tv">followers</string>
+    <string name="profile_following_tv">following</string>
+    <string name="profile_description_tv">Channel description</string>
+    <string name="register_cb_terms_conditions">I accept the Terms and Conditions</string>
+    <string name="register_no_account_tv">No account yet?</string>
+    <string name="see_more_tv">See more</string>
+    <string name="read_more_tv">Read more</string>
     <string name="btn_choose_image">Choose image</string>
-    <string name="iv_profile_image_preview">A preview of the image you selcted</string>
+    <string name="profile_iv_preview">A preview of the image you selcted</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="stopped">[Stopped]</string>
+    <string name="permission_dialog_title">Camera and Audio</string>
+    <string name="permission_dialog_message">"Both camera and audio permissions are needed for broadcasting</string>
+    <string name="broadcast_permission_notification">You need to grant persmissions in order to begin streaming</string>
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

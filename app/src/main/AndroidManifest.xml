@@ -3,8 +3,14 @@
     package="pack.jetminister">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -12,26 +18,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".ui.activities.LoginRegisterActivity" />
-        <activity android:name=".ui.activities.ProfileImageActivity" />
-        <activity android:name=".ui.activities.AdminActivity" />
+        <activity android:name=".ui.activities.PermissionsActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.activities.LoginRegisterActivity" />
+        <activity android:name=".ui.activities.ProfileImageActivity" />
+        <activity android:name=".ui.activities.LivestreamBroadcastActivity" />
+        <activity android:name=".ui.activities.AdminActivity" />
 
-        <service android:name="com.google.android.gms.measurement.AppMeasurementService"
+        <service
+            android:name="com.google.android.gms.measurement.AppMeasurementService"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
 
-        <receiver android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
+        <receiver
+            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.measurement.UPLOAD" />
             </intent-filter>
         </receiver>
     </application>
+
 </manifest>

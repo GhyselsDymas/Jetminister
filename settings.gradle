@@ -1,2 +1,3 @@
+include ':streamaxia-opensdk'
 include ':app'
 rootProject.name = "Jetminister"
