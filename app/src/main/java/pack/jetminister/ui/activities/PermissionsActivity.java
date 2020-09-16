@@ -12,6 +12,7 @@ import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.DexterError;
+import com.karumi.dexter.listener.OnDialogButtonClickListener;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.PermissionRequestErrorListener;
 import com.karumi.dexter.listener.multi.CompositeMultiplePermissionsListener;
@@ -49,6 +50,12 @@ public class PermissionsActivity extends AppCompatActivity {
                     .withContext(this)
                     .withTitle("Camera and Audio")
                     .withMessage("You need both Camera and Audio permission to broadcast")
+                    .withButtonText("OK", new OnDialogButtonClickListener() {
+                        @Override
+                        public void onClick() {
+                            askUserPermissions();
+                        }
+                    })
                     .build();
 
     MultiplePermissionsListener compositePermissionsListener = new CompositeMultiplePermissionsListener(permissionsListener, dialogPermissionsListener);
@@ -56,12 +63,17 @@ public class PermissionsActivity extends AppCompatActivity {
     PermissionRequestErrorListener errorListener = new PermissionRequestErrorListener() {
         @Override public void onError(DexterError error) {
             Log.e(TAG,  error.toString());
-        }};
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permissions);
+        askUserPermissions();
+    }
+
+    private void askUserPermissions() {
         Dexter.withContext(this)
                 .withPermissions(
                         Manifest.permission.RECORD_AUDIO,

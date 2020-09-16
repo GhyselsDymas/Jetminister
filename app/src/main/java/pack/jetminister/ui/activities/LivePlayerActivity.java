@@ -53,8 +53,15 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private View.OnClickListener playPauseListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            playPauseIV.setVisibility(View.VISIBLE);
-            //TODO: pause video
+            if (playPauseIV.getVisibility() == View.GONE){
+                playPauseIV.setVisibility(View.VISIBLE);
+                streamPlayer.pause();
+                playerProgressBar.setVisibility(View.VISIBLE);
+            } else {
+                playPauseIV.setVisibility(View.GONE);
+                playerProgressBar.setVisibility(View.GONE );
+                streamPlayer.play(broadcastURI, STREAM_TYPE);
+            }
         }
     };
 
