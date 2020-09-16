@@ -10,11 +10,14 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -84,12 +87,16 @@ public class ProfileImageActivity extends AppCompatActivity {
         }
     };
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_profile_image);
-
+        ActionBar toolbar = getSupportActionBar();
+        if (toolbar != null) {
+            toolbar.hide();
+        }
         Button chooseImageBtn = findViewById(R.id.btn_choose_image);
         Button uploadImageBtn = findViewById(R.id.btn_upload);
         Button cancelBtn = findViewById(R.id.btn_cancel);

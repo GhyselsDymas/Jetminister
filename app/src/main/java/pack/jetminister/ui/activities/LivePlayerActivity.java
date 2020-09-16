@@ -26,7 +26,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private ProgressBar playerProgressBar;
     private ImageView profilePlayerIV, likePlayerIV, sharePlayerIV, playPauseIV;
     private SurfaceView playerSurfaceView;
-    private AspectRatioFrameLayout broadcastFrameLayout;
+    private AspectRatioFrameLayout playerAspectRatioLayout;
 
     private StreamaxiaPlayer streamPlayer = new StreamaxiaPlayer();
 
@@ -76,7 +76,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         if (toolbar != null) {
             toolbar.hide();
         }
-
+        hideStatusBar();
         usernamePlayerTV = findViewById(R.id.player_tv_username);
         likesPlayerTV = findViewById(R.id.player_tv_amount_likes);
         statePlayerTV = findViewById(R.id.tv_live_player_state);
@@ -85,15 +85,18 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         sharePlayerIV = findViewById(R.id.player_iv_share);
         playPauseIV = findViewById(R.id.player_iv_play);
         playerSurfaceView = findViewById(R.id.player_surface_view);
+        playerAspectRatioLayout = findViewById(R.id.player_aspect_ratio);
+        playerProgressBar = findViewById(R.id.player_progress_bar);
 
         getExtras();
+
         isLiked = false;
         likePlayerIV.setImageResource(R.drawable.ic_like_border_white_24);
         likesPlayerTV.setVisibility(View.INVISIBLE);
         likesPlayerTV.setText(String.valueOf(amountLikes));
         likePlayerIV.setOnClickListener(likeListener);
         usernamePlayerTV.setText(usernameBroadcast);
-//        broadcastFrameLayout.setOnClickListener(playPauseListener);
+        playerAspectRatioLayout.setOnClickListener(playPauseListener);
 
         initRTMPExoPlayer();
     }
@@ -147,7 +150,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
     private void initRTMPExoPlayer() {
         streamPlayer.initStreamaxiaPlayer(playerSurfaceView,
-                broadcastFrameLayout,
+                playerAspectRatioLayout,
                 statePlayerTV,
                 this,
                 this,
@@ -168,5 +171,13 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         }
 
     }
+
+    private void hideStatusBar() {
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+    }
+
 
 }

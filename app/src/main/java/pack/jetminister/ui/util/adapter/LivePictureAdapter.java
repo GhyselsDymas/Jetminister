@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
+import com.streamaxia.player.StreamaxiaPlayer;
 
 import java.util.List;
 
@@ -25,6 +26,10 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
     public static final String KEY_LIKES = "likes";
     public static final String KEY_URI = "uri";
     public static final String KEY_TYPE = "type";
+    private static final String STREAM_URI_RTMP = "rtmp://10.11.12.202:5000/";
+    public static final int STREAM_TYPE_RTMP = StreamaxiaPlayer.TYPE_RTMP;
+
+
     private Context mContext;
     private List<User> mUsers;
 
@@ -80,13 +85,11 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
                     int amountLikes = 0;
                     String currentUsername = currentUser.getUsername();
 
-                    final String RTMP_URL = "rtmp://184.72.239.149/vod/mp4:bigbuckbunny_1500.mp4";
-
                     Intent intent = new Intent(mContext , LivePlayerActivity.class);
                     intent.putExtra(KEY_LIKES, amountLikes);
                     intent.putExtra("username", currentUsername);
-                    intent.putExtra(KEY_TYPE, currentUsername);
-                    intent.putExtra(KEY_URI, RTMP_URL);;
+                    intent.putExtra(KEY_TYPE, STREAM_TYPE_RTMP);
+                    intent.putExtra(KEY_URI, STREAM_URI_RTMP + "JetMinister/" + currentUsername);
 
                     mContext.startActivity(intent);
                 }

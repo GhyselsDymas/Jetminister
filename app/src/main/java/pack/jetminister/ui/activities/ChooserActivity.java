@@ -10,7 +10,7 @@ public class ChooserActivity extends AppCompatActivity {
 
     public static final String INTENT_KEY_URI = "uri";
     public static final String INTENT_KEY_TYPE = "type";
-    public static final String RTMP_URL = "rtmp://184.72.239.149/vod/mp4:bigbuckbunny_1500.mp4";
+    public static final String RTMP_URL = "rtmp://10.11.12.202:5000/JetStream";
 
     public static final String HLS_URL = "https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8";
     public static final String DASH_URL = "http://www.youtube.com/api/manifest/dash/id/3aa39fa2cc27967f/source/youtube?as=fmp4_audio_clear,fmp4_sd_hd_clear&sparams="

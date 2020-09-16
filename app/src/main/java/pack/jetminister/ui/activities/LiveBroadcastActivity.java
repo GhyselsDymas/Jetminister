@@ -12,11 +12,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.streamaxia.android.CameraPreview;
 import com.streamaxia.android.StreamaxiaPublisher;
 import com.streamaxia.android.handlers.EncoderHandler;
@@ -31,15 +39,20 @@ import java.util.List;
 import pack.jetminister.R;
 
 public class LiveBroadcastActivity
-            extends AppCompatActivity
-            implements RtmpHandler.RtmpListener,
-                    RecordHandler.RecordListener,
-                    EncoderHandler.EncodeListener{
+        extends AppCompatActivity
+        implements RtmpHandler.RtmpListener,
+        RecordHandler.RecordListener,
+        EncoderHandler.EncodeListener {
 
-    public final static String STREAM_NAME = "demo"; //change to AppName
-        public final static int BITRATE = 500;
-        public final static int WIDTH = 720;
-        public final static int HEIGHT = 1280;
+    private static final String STREAM_URI_RTMP = "Hackermann:1234azer@10.11.12.202:5000/";
+    public final static int BITRATE = 500;
+    public final static int WIDTH = 720;
+    public final static int HEIGHT = 1280;
+
+
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
     private StreamaxiaPublisher broadcastPublisher;
     private CameraPreview previewCameraBroadcast;
@@ -280,20 +293,36 @@ public class LiveBroadcastActivity
     }
 
     private void startStopStream() {
-        if (startStopBroadcastTV.getText().toString().trim().equals(getResources().getString(R.string.start))) {
-            startStopBroadcastTV.setText(getResources().getString(R.string.stop));
-            liveIconIV.setVisibility(View.VISIBLE);
-            broadcastChronometer.setBase(SystemClock.elapsedRealtime());
-            broadcastChronometer.start();
-//            broadcastPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + STREAM_NAME);
-            //takeSnapshot();
-        } else {
-            startStopBroadcastTV.setText(getResources().getString(R.string.start));
-            liveIconIV.setVisibility(View.GONE);
-            stopChronometer();
-            stopStreaming();
+        if (currentUser != null) {
+            String uID = currentUser.getUid();
+            usersRef.child(uID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists() && snapshot.child("username").exists()) {
+                        String broadcastUsername = snapshot.child("username").getValue(String.class);
+                        if (startStopBroadcastTV.getText().toString().trim().equals(getResources().getString(R.string.start))) {
+                            startStopBroadcastTV.setText(getResources().getString(R.string.stop));
+                            liveIconIV.setVisibility(View.VISIBLE);
+                            broadcastChronometer.setBase(SystemClock.elapsedRealtime());
+                            broadcastChronometer.start();
+                            broadcastPublisher.startPublish(STREAM_URI_RTMP + "JetMinister/" + broadcastUsername);
+                            //takeSnapshot();
+                        } else {
+                            startStopBroadcastTV.setText(getResources().getString(R.string.start));
+                            liveIconIV.setVisibility(View.GONE);
+                            stopChronometer();
+                            stopStreaming();
+                        }
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
     }
+
     private void stopStreaming() {
         broadcastPublisher.stopPublish();
     }

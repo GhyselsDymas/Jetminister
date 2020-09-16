@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
 
     <!-- Preference Titles -->
@@ -14,7 +14,7 @@
     <string name="attachment_title">Download incoming attachments</string>
     <string name="attachment_summary_on">Automatically download attachments for incoming emails</string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <string name="app_name">EricMinister</string>
+    <string name="app_name" tools:ignore="PrivateResource">EinsteinTV</string>
     <string name="cancel">Cancel</string>
     <string name="upload">Upload</string>
     <string name="register_et_password">Password</string>
