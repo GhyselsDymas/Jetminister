@@ -3,13 +3,11 @@ package pack.jetminister.ui.activities;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -20,6 +18,7 @@ import com.streamaxia.player.StreamaxiaPlayer;
 import com.streamaxia.player.listener.StreamaxiaPlayerState;
 
 import pack.jetminister.R;
+import pack.jetminister.ui.util.adapter.LivePictureAdapter;
 
 public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaPlayerState {
     private static final String TAG = "LivePlayerActivity";
@@ -30,8 +29,10 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private AspectRatioFrameLayout broadcastFrameLayout;
 
     private StreamaxiaPlayer streamPlayer = new StreamaxiaPlayer();
+
     private boolean isLiked;
 
+    private String usernameBroadcast;
     private Uri broadcastURI;
     private int amountLikes;
     private int STREAM_TYPE = 0;
@@ -89,9 +90,11 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         isLiked = false;
         likePlayerIV.setImageResource(R.drawable.ic_like_border_white_24);
         likesPlayerTV.setVisibility(View.INVISIBLE);
-        likesPlayerTV.setText(amountLikes);
+        likesPlayerTV.setText(String.valueOf(amountLikes));
         likePlayerIV.setOnClickListener(likeListener);
-        broadcastFrameLayout.setOnClickListener(playPauseListener);
+        usernamePlayerTV.setText(usernameBroadcast);
+//        broadcastFrameLayout.setOnClickListener(playPauseListener);
+
         initRTMPExoPlayer();
     }
 
@@ -134,8 +137,12 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
     private void getExtras() {
         Bundle extras = getIntent().getExtras();
-        broadcastURI = Uri.parse(extras.getString(ChooserActivity.URI));
-        STREAM_TYPE = extras.getInt(ChooserActivity.TYPE);
+        usernameBroadcast = extras.getString(LivePictureAdapter.KEY_USERNAME);
+        amountLikes = extras.getInt(LivePictureAdapter.KEY_LIKES);
+        broadcastURI = Uri.parse(extras.getString(LivePictureAdapter.KEY_URI));
+        STREAM_TYPE = extras.getInt(LivePictureAdapter.KEY_TYPE);
+
+        //TODO: add username and amount of likes
     }
 
     private void initRTMPExoPlayer() {

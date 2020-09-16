@@ -21,6 +21,10 @@ import pack.jetminister.ui.activities.LivePlayerActivity;
 
 public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.LivePictureHolder> {
 
+    public static final String KEY_USERNAME = "username";
+    public static final String KEY_LIKES = "likes";
+    public static final String KEY_URI = "uri";
+    public static final String KEY_TYPE = "type";
     private Context mContext;
     private List<User> mUsers;
 
@@ -73,11 +77,17 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
                 public void onClick(View view) {
                     int position = getAdapterPosition();
                     User currentUser = mUsers.get(position);
-
+                    int amountLikes = 0;
                     String currentUsername = currentUser.getUsername();
 
+                    final String RTMP_URL = "rtmp://184.72.239.149/vod/mp4:bigbuckbunny_1500.mp4";
+
                     Intent intent = new Intent(mContext , LivePlayerActivity.class);
+                    intent.putExtra(KEY_LIKES, amountLikes);
                     intent.putExtra("username", currentUsername);
+                    intent.putExtra(KEY_TYPE, currentUsername);
+                    intent.putExtra(KEY_URI, RTMP_URL);;
+
                     mContext.startActivity(intent);
                 }
             });

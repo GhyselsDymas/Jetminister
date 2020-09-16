@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +45,7 @@ public class LiveBroadcastActivity
     private CameraPreview previewCameraBroadcast;
     private TextView startStopBroadcastTV, stateBroadcastTV;
     private Chronometer broadcastChronometer;
+    ImageView liveIconIV;
 
     private View.OnClickListener startStopListener = new View.OnClickListener() {
         @Override
@@ -67,6 +69,7 @@ public class LiveBroadcastActivity
         stateBroadcastTV = findViewById(R.id.tv_live_broadcast_state);
         broadcastChronometer = findViewById(R.id.chronometer_live_broadcast);
         previewCameraBroadcast = findViewById(R.id.cam_preview_live_broadcast);
+        liveIconIV = findViewById(R.id.broadcast_iv_live);
         startStopBroadcastTV.setOnClickListener(startStopListener);
 
         hideStatusBar();
@@ -114,6 +117,14 @@ public class LiveBroadcastActivity
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        previewCameraBroadcast.stopCamera();
+        broadcastPublisher.stopPublish();
+        broadcastPublisher.pauseRecord();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         broadcastPublisher.stopPublish();
@@ -125,7 +136,6 @@ public class LiveBroadcastActivity
         super.onConfigurationChanged(newConfig);
         broadcastPublisher.setScreenOrientation(newConfig.orientation);
     }
-
 
     @Override
     public void onNetworkWeak() {
@@ -272,12 +282,14 @@ public class LiveBroadcastActivity
     private void startStopStream() {
         if (startStopBroadcastTV.getText().toString().trim().equals(getResources().getString(R.string.start))) {
             startStopBroadcastTV.setText(getResources().getString(R.string.stop));
+            liveIconIV.setVisibility(View.VISIBLE);
             broadcastChronometer.setBase(SystemClock.elapsedRealtime());
             broadcastChronometer.start();
 //            broadcastPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + STREAM_NAME);
             //takeSnapshot();
         } else {
             startStopBroadcastTV.setText(getResources().getString(R.string.start));
+            liveIconIV.setVisibility(View.GONE);
             stopChronometer();
             stopStreaming();
         }
