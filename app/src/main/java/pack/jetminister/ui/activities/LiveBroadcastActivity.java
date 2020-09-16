@@ -44,7 +44,7 @@ public class LiveBroadcastActivity
         RecordHandler.RecordListener,
         EncoderHandler.EncodeListener {
 
-    private static final String STREAM_URI_RTMP = "Hackermann:1234azer@10.11.12.202:5000/";
+    private static final String STREAM_URI_RTMP = "rtmp://Hackermann:1234azer@10.11.12.202:5000/";
     public final static int BITRATE = 500;
     public final static int WIDTH = 720;
     public final static int HEIGHT = 1280;
@@ -142,6 +142,79 @@ public class LiveBroadcastActivity
         super.onDestroy();
         broadcastPublisher.stopPublish();
         broadcastPublisher.stopRecord();
+    }
+
+
+    private void hideStatusBar() {
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+    }
+
+    private void handleException(Exception e) {
+        try {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            broadcastPublisher.stopPublish();
+        } catch (Exception e1) {
+            // Ignore
+        }
+    }
+
+    private void setStatusMessage(final String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                stateBroadcastTV.setText("[" + msg + "]");
+            }
+        });
+    }
+
+    private void startStopStream() {
+        if (currentUser != null) {
+            String uID = currentUser.getUid();
+            usersRef.child(uID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists() && snapshot.child("username").exists()) {
+                        String broadcastUsername = snapshot.child("username").getValue(String.class);
+                        if (startStopBroadcastTV.getText().toString().trim().equals(getResources().getString(R.string.start))) {
+                            startStopBroadcastTV.setText(getResources().getString(R.string.stop));
+                            liveIconIV.setVisibility(View.VISIBLE);
+                            broadcastChronometer.setBase(SystemClock.elapsedRealtime());
+                            broadcastChronometer.start();
+                            broadcastPublisher.startPublish(STREAM_URI_RTMP + "JetMinister/" + broadcastUsername);
+                            //takeSnapshot();
+                        } else {
+                            startStopBroadcastTV.setText(getResources().getString(R.string.start));
+                            liveIconIV.setVisibility(View.GONE);
+                            stopChronometer();
+                            stopStreaming();
+                        }
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+    }
+
+    private void stopStreaming() {
+        broadcastPublisher.stopPublish();
+    }
+
+    private void stopChronometer() {
+        broadcastChronometer.setBase(SystemClock.elapsedRealtime());
+        broadcastChronometer.stop();
+    }
+
+    private void setStreamerDefaultValues() {
+        // Set one of the available resolutions
+        List<Size> sizes = broadcastPublisher.getSupportedPictureSizes(getResources().getConfiguration().orientation);
+        Size resolution = sizes.get(0);
+        broadcastPublisher.setVideoOutputResolution(resolution.width, resolution.height, this.getResources().getConfiguration().orientation);
     }
 
     @Override
@@ -265,77 +338,5 @@ public class LiveBroadcastActivity
     @Override
     public void onRtmpAuthenticationg(String s) {
 
-    }
-
-    private void hideStatusBar() {
-        View decorView = getWindow().getDecorView();
-        // Hide the status bar.
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
-    }
-
-    private void handleException(Exception e) {
-        try {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            broadcastPublisher.stopPublish();
-        } catch (Exception e1) {
-            // Ignore
-        }
-    }
-
-    private void setStatusMessage(final String msg) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                stateBroadcastTV.setText("[" + msg + "]");
-            }
-        });
-    }
-
-    private void startStopStream() {
-        if (currentUser != null) {
-            String uID = currentUser.getUid();
-            usersRef.child(uID).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists() && snapshot.child("username").exists()) {
-                        String broadcastUsername = snapshot.child("username").getValue(String.class);
-                        if (startStopBroadcastTV.getText().toString().trim().equals(getResources().getString(R.string.start))) {
-                            startStopBroadcastTV.setText(getResources().getString(R.string.stop));
-                            liveIconIV.setVisibility(View.VISIBLE);
-                            broadcastChronometer.setBase(SystemClock.elapsedRealtime());
-                            broadcastChronometer.start();
-                            broadcastPublisher.startPublish(STREAM_URI_RTMP + "JetMinister/" + broadcastUsername);
-                            //takeSnapshot();
-                        } else {
-                            startStopBroadcastTV.setText(getResources().getString(R.string.start));
-                            liveIconIV.setVisibility(View.GONE);
-                            stopChronometer();
-                            stopStreaming();
-                        }
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-        }
-    }
-
-    private void stopStreaming() {
-        broadcastPublisher.stopPublish();
-    }
-
-    private void stopChronometer() {
-        broadcastChronometer.setBase(SystemClock.elapsedRealtime());
-        broadcastChronometer.stop();
-    }
-
-    private void setStreamerDefaultValues() {
-        // Set one of the available resolutions
-        List<Size> sizes = broadcastPublisher.getSupportedPictureSizes(getResources().getConfiguration().orientation);
-        Size resolution = sizes.get(0);
-        broadcastPublisher.setVideoOutputResolution(resolution.width, resolution.height, this.getResources().getConfiguration().orientation);
     }
 }
