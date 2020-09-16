@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ECE4E4"
+    android:orientation="vertical">
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal">
+
+        <TableRow>
+            <RelativeLayout
+                android:id="@+id/rtmp_demo"
+                android:layout_width="250dp"
+                android:layout_height="30dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/design_default_color_on_primary">
+
+                <TextView
+                    android:id="@+id/chooser_tv_rmtp_demo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="RTMP Demo"
+                    android:textColor="@color/bgBottomNavigation" />
+            </RelativeLayout>
+        </TableRow>
+
+        <TableRow>
+            <RelativeLayout
+                android:id="@+id/hls_demo"
+                android:layout_width="250dp"
+                android:layout_height="30dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/design_default_color_background">
+
+                <TextView
+                    android:id="@+id/chooser_tv_hls_demo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="HLS Demo"
+                    android:textColor="@color/colorPrimaryDark" />
+            </RelativeLayout>
+        </TableRow>
+
+        <TableRow>
+            <RelativeLayout
+                android:id="@+id/dash_demo"
+                android:layout_width="250dp"
+                android:layout_height="30dp"
+                android:background="@color/design_default_color_background">
+
+                <TextView
+                    android:id="@+id/chooser_tv_dash_demo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="DASH Demo"
+                    android:textColor="@android:color/holo_blue_dark" />
+            </RelativeLayout>
+        </TableRow>
+    </TableLayout>
+
+</RelativeLayout>

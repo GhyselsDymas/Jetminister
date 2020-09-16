@@ -5,12 +5,14 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -19,9 +21,11 @@ import com.streamaxia.android.StreamaxiaPublisher;
 import com.streamaxia.android.handlers.EncoderHandler;
 import com.streamaxia.android.handlers.RecordHandler;
 import com.streamaxia.android.handlers.RtmpHandler;
+import com.streamaxia.android.utils.Size;
 
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.List;
 
 import pack.jetminister.R;
 
@@ -31,35 +35,52 @@ public class LiveBroadcastActivity
                     RecordHandler.RecordListener,
                     EncoderHandler.EncodeListener{
 
-    public final static String STREAM_NAME = "JetStream";
-    public final static int BITRATE = 500;
-    public final static int WIDTH = 720;
-    public final static int HEIGHT = 1280;
+    public final static String STREAM_NAME = "demo"; //change to AppName
+        public final static int BITRATE = 500;
+        public final static int WIDTH = 720;
+        public final static int HEIGHT = 1280;
 
     private StreamaxiaPublisher broadcastPublisher;
     private CameraPreview previewCameraBroadcast;
     private TextView startStopBroadcastTV, stateBroadcastTV;
     private Chronometer broadcastChronometer;
 
+    private View.OnClickListener startStopListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startStopStream();
+        }
+    };
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_live_broadcast);
+        ActionBar toolbar = getSupportActionBar();
+        if (toolbar != null) {
+            toolbar.hide();
+        }
         startStopBroadcastTV = findViewById(R.id.tv_live_broadcast_startstop);
         stateBroadcastTV = findViewById(R.id.tv_live_broadcast_state);
         broadcastChronometer = findViewById(R.id.chronometer_live_broadcast);
         previewCameraBroadcast = findViewById(R.id.cam_preview_live_broadcast);
+        startStopBroadcastTV.setOnClickListener(startStopListener);
+
+        hideStatusBar();
 
         broadcastPublisher = new StreamaxiaPublisher(previewCameraBroadcast, this);
-
         broadcastPublisher.setEncoderHandler(new EncoderHandler(this));
         broadcastPublisher.setRtmpHandler(new RtmpHandler(this));
         broadcastPublisher.setRecordEventHandler(new RecordHandler(this));
+
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
-        previewCameraBroadcast.startCamera();
+            previewCameraBroadcast.startCamera();
         }
+
+        setStreamerDefaultValues();
     }
 
     @Override
@@ -69,7 +90,7 @@ public class LiveBroadcastActivity
                 == PackageManager.PERMISSION_GRANTED) {
             stopStreaming();
             stopChronometer();
-            startStopBroadcastTV.setText("START");
+            startStopBroadcastTV.setText(getResources().getString(R.string.start));
         } else {
             Intent intent = new Intent(this, PermissionsActivity.class);
             startActivity(intent);
@@ -104,19 +125,7 @@ public class LiveBroadcastActivity
         broadcastPublisher.setScreenOrientation(newConfig.orientation);
     }
 
-    private void stopStreaming() {
-        broadcastPublisher.stopPublish();
-    }
 
-
-    private void setStatusMessage(final String msg) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                stateBroadcastTV.setText("[" + msg + "]");
-            }
-        });
-    }
     @Override
     public void onNetworkWeak() {
 
@@ -159,17 +168,18 @@ public class LiveBroadcastActivity
 
     @Override
     public void onRecordIOException(IOException e) {
-
+        handleException(e);
     }
 
     @Override
     public void onRtmpConnecting(String s) {
-
+        setStatusMessage(s);
     }
 
     @Override
     public void onRtmpConnected(String s) {
-
+        setStatusMessage(s);
+        startStopBroadcastTV.setText(getResources().getString(R.string.stop));
     }
 
     @Override
@@ -184,11 +194,12 @@ public class LiveBroadcastActivity
 
     @Override
     public void onRtmpStopped() {
-
+        setStatusMessage("STOPPED");
     }
 
     @Override
     public void onRtmpDisconnected() {
+        setStatusMessage("Disconnected");
 
     }
 
@@ -232,6 +243,13 @@ public class LiveBroadcastActivity
 
     }
 
+    private void hideStatusBar() {
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+    }
+
     private void handleException(Exception e) {
         try {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -241,9 +259,41 @@ public class LiveBroadcastActivity
         }
     }
 
+    private void setStatusMessage(final String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                stateBroadcastTV.setText("[" + msg + "]");
+            }
+        });
+    }
+
+    private void startStopStream() {
+        if (startStopBroadcastTV.getText().toString().toLowerCase().trim().equals(getResources().getString(R.string.start))) {
+            startStopBroadcastTV.setText(getResources().getString(R.string.stop));
+            broadcastChronometer.setBase(SystemClock.elapsedRealtime());
+            broadcastChronometer.start();
+            broadcastPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + STREAM_NAME);
+            //takeSnapshot();
+        } else {
+            startStopBroadcastTV.setText(getResources().getString(R.string.start));
+            stopChronometer();
+            stopStreaming();
+        }
+    }
+    private void stopStreaming() {
+        broadcastPublisher.stopPublish();
+    }
+
     private void stopChronometer() {
         broadcastChronometer.setBase(SystemClock.elapsedRealtime());
         broadcastChronometer.stop();
     }
 
+    private void setStreamerDefaultValues() {
+        // Set one of the available resolutions
+        List<Size> sizes = broadcastPublisher.getSupportedPictureSizes(getResources().getConfiguration().orientation);
+        Size resolution = sizes.get(0);
+        broadcastPublisher.setVideoOutputResolution(resolution.width, resolution.height, this.getResources().getConfiguration().orientation);
+    }
 }

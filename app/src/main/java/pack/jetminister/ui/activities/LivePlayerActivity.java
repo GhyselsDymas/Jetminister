@@ -68,15 +68,14 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_live_player);
-
         ActionBar toolbar = getSupportActionBar();
         if (toolbar != null) {
             toolbar.hide();
         }
+
         usernamePlayerTV = findViewById(R.id.player_tv_username);
         likesPlayerTV = findViewById(R.id.player_tv_amount_likes);
         statePlayerTV = findViewById(R.id.tv_live_player_state);
@@ -86,12 +85,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         playPauseIV = findViewById(R.id.player_iv_play);
         playerSurfaceView = findViewById(R.id.player_surface_view);
 
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        Intent intent = getIntent();
-        if (intent != null){
-            intent.getExtras();
-        }
+        getExtras();
         isLiked = false;
         likePlayerIV.setImageResource(R.drawable.ic_like_border_white_24);
         likesPlayerTV.setVisibility(View.INVISIBLE);
@@ -138,11 +132,11 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         streamPlayer.stop();
     }
 
-//    private void getExtras() {
-//        Bundle extras = getIntent().getExtras();
-//        broadcastURI = Uri.parse(extras.getString(ChooserActivity.URI));
-//        STREAM_TYPE = extras.getInt(ChooserActivity.TYPE);
-//    }
+    private void getExtras() {
+        Bundle extras = getIntent().getExtras();
+        broadcastURI = Uri.parse(extras.getString(ChooserActivity.URI));
+        STREAM_TYPE = extras.getInt(ChooserActivity.TYPE);
+    }
 
     private void initRTMPExoPlayer() {
         streamPlayer.initStreamaxiaPlayer(playerSurfaceView,
