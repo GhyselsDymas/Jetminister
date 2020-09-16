@@ -48,6 +48,7 @@ public class LiveBroadcastActivity
     private View.OnClickListener startStopListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            //TODO: AlertDialog to confirm broadcast
             startStopStream();
         }
     };
@@ -269,11 +270,11 @@ public class LiveBroadcastActivity
     }
 
     private void startStopStream() {
-        if (startStopBroadcastTV.getText().toString().toLowerCase().trim().equals(getResources().getString(R.string.start))) {
+        if (startStopBroadcastTV.getText().toString().trim().equals(getResources().getString(R.string.start))) {
             startStopBroadcastTV.setText(getResources().getString(R.string.stop));
             broadcastChronometer.setBase(SystemClock.elapsedRealtime());
             broadcastChronometer.start();
-            broadcastPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + STREAM_NAME);
+//            broadcastPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + STREAM_NAME);
             //takeSnapshot();
         } else {
             startStopBroadcastTV.setText(getResources().getString(R.string.start));
