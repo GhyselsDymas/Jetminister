@@ -37,6 +37,8 @@ import pack.jetminister.data.User;
 import pack.jetminister.ui.util.validators.EmailValidator;
 import pack.jetminister.ui.util.validators.PasswordValidator;
 
+import static pack.jetminister.data.User.TAG_USERNAME;
+
 public class LoginRegisterActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginOrRegister";
@@ -143,9 +145,9 @@ public class LoginRegisterActivity extends AppCompatActivity {
                 String tempCheck = UNIQUE_USERNAME;
                 //loop opver user objects in database
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    if (userSnapshot.exists() && userSnapshot.child("username").exists()) {
+                    if (userSnapshot.exists() && userSnapshot.child(TAG_USERNAME).exists()) {
                         //get the String value of the username field
-                        String snapshotUsername = userSnapshot.child("username").getValue(String.class);
+                        String snapshotUsername = userSnapshot.child(TAG_USERNAME).getValue(String.class);
                         if (usernameFromInput.equals(snapshotUsername)) {
                             //if user input equals username already in database, assign username to temporary string
                             tempCheck = snapshotUsername;
@@ -210,6 +212,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
                                 //create new User object to store into firebase Database
                                 User newUser = new User(emailFromInput, passwordFromInput);
                                 newUser.setUsername(usernameFromInput);
+                                //TODO: how to store Strings as List in Firebase?
                                 //add user to database
                                 addUserToDatabase(newUser);
                                 proceedToMain();

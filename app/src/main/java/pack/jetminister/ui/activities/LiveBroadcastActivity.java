@@ -212,7 +212,7 @@ public class LiveBroadcastActivity
 
     private void setStreamerDefaultValues() {
         // Set one of the available resolutions
-        List<Size> sizes = broadcastPublisher.getSupportedPictureSizes(getResources().getConfiguration().orientation);
+        List<Size> sizes = broadcastPublisher.getSupportedPictureSizes(this.getResources().getConfiguration().orientation);
         Size resolution = sizes.get(0);
         broadcastPublisher.setVideoOutputResolution(resolution.width, resolution.height, this.getResources().getConfiguration().orientation);
     }
