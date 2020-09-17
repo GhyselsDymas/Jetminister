@@ -44,7 +44,7 @@ public class LiveBroadcastActivity
         RecordHandler.RecordListener,
         EncoderHandler.EncodeListener {
 
-    private static final String STREAM_URI_RTMP = "rtmp://Hackermann:1234azer@10.11.12.202:5000/";
+    private static final String STREAM_URI_RTMP = "rtmp://Hackermann:1234azer@10.11.12.30:5000/";
     public final static int BITRATE = 500;
     public final static int WIDTH = 720;
     public final static int HEIGHT = 1280;
@@ -95,9 +95,10 @@ public class LiveBroadcastActivity
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
             previewCameraBroadcast.startCamera();
+            setStreamerDefaultValues();
         }
 
-        setStreamerDefaultValues();
+
     }
 
     @Override

@@ -26,7 +26,7 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
     public static final String KEY_LIKES = "likes";
     public static final String KEY_URI = "uri";
     public static final String KEY_TYPE = "type";
-    private static final String STREAM_URI_RTMP = "rtmp://10.11.12.202:5000/";
+    private static final String STREAM_URI_RTMP = "jetminister.com:1935/";
     public static final int STREAM_TYPE_RTMP = StreamaxiaPlayer.TYPE_RTMP;
 
 
