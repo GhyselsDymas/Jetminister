@@ -1,2 +1,4 @@
+include ':webrtc-android-framework'
+include ':webrtc-android-sample-app'
 include ':app'
 rootProject.name = "Jetminister"

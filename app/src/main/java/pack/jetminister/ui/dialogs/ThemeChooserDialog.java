@@ -40,6 +40,7 @@ public class ThemeChooserDialog extends androidx.fragment.app.DialogFragment {
                         List<String> myResArrayList = Arrays.asList(myResArray);
 
                         Toast.makeText(mContext, myResArrayList.get(which) , Toast.LENGTH_LONG).show();
+
                         dialog.dismiss();
                     }
                 })

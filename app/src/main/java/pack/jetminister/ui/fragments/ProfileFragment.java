@@ -27,6 +27,7 @@ import com.squareup.picasso.Picasso;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
+import pack.jetminister.ui.activities.BroadcastActivity;
 import pack.jetminister.ui.activities.LoginRegisterActivity;
 import pack.jetminister.ui.activities.ProfileImageActivity;
 import pack.jetminister.ui.dialogs.ThemeChooserDialog;
@@ -49,8 +50,10 @@ public class ProfileFragment extends Fragment {
     View.OnClickListener startStreamListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            ThemeChooserDialog newThemeChooserDialog = new ThemeChooserDialog();
-            newThemeChooserDialog.show(getParentFragmentManager(), "themes");
+//            ThemeChooserDialog newThemeChooserDialog = new ThemeChooserDialog();
+//            newThemeChooserDialog.show(getParentFragmentManager(), "themes");
+            Intent intent = new Intent(mContext, BroadcastActivity.class);
+            startActivity(intent);
         }
     };
 
