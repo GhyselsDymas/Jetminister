@@ -44,7 +44,7 @@ public class LiveBroadcastActivity
         RecordHandler.RecordListener,
         EncoderHandler.EncodeListener {
 
-    private static final String STREAM_URI_RTMP = "rtmp://Hackermann:1234azer@10.11.12.30:5000/";
+    private static final String STREAM_URI_RTMP = "rtmp://Hackermann:1234azer@192.168.56.1:5000/";
     public final static int BITRATE = 500;
     public final static int WIDTH = 720;
     public final static int HEIGHT = 1280;
