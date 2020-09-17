@@ -17,7 +17,6 @@ import java.util.List;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
-import pack.jetminister.ui.activities.VideoTestActivity;
 
 public class Top100Adapter extends RecyclerView.Adapter<Top100Adapter.Top100Holder> {
 
