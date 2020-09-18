@@ -30,6 +30,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activities.BroadcastActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activities.PermissionsActivity"
+            android:screenOrientation="portrait"></activity>
         <activity android:name=".ui.activities.ProfileImageActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activities.AdminActivity"

@@ -30,7 +30,7 @@ import static io.antmedia.webrtcandroidframework.apprtc.CallActivity.EXTRA_VIDEO
 import static io.antmedia.webrtcandroidframework.apprtc.CallActivity.EXTRA_VIDEO_FPS;
 
 public class BroadcastActivity extends AppCompatActivity implements IWebRTCListener {
-    public static final String SERVER_ADDRESS = "127,0,0,1:5080";
+    public static final String SERVER_ADDRESS = "127.0.0.1:5080";
 
 
     private String webRTCMode = IWebRTCClient.MODE_PUBLISH;
