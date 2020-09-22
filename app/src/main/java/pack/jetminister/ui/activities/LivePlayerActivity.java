@@ -18,7 +18,11 @@ import com.streamaxia.player.StreamaxiaPlayer;
 import com.streamaxia.player.listener.StreamaxiaPlayerState;
 
 import pack.jetminister.R;
+import pack.jetminister.data.User;
 import pack.jetminister.ui.util.adapter.LivePictureAdapter;
+
+import static pack.jetminister.data.User.KEY_USERNAME;
+import static pack.jetminister.data.User.KEY_USERS;
 
 public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaPlayerState {
     private static final String TAG = "LivePlayerActivity";
@@ -35,7 +39,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private String usernameBroadcast;
     private Uri broadcastURI;
     private int amountLikes;
-    private int STREAM_TYPE = 0;
+    private int STREAM_TYPE = StreamaxiaPlayer.TYPE_HLS;
 
     Runnable hide = new Runnable() {
         @Override
@@ -140,16 +144,15 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
     private void getExtras() {
         Bundle extras = getIntent().getExtras();
-        usernameBroadcast = extras.getString(LivePictureAdapter.KEY_USERNAME);
-        amountLikes = extras.getInt(LivePictureAdapter.KEY_LIKES);
+//        amountLikes = extras.getInt(KEY_USERS);
+        usernameBroadcast = extras.getString(KEY_USERNAME);
         broadcastURI = Uri.parse(extras.getString(LivePictureAdapter.KEY_URI));
         STREAM_TYPE = extras.getInt(LivePictureAdapter.KEY_TYPE);
-
-        //TODO: add username and amount of likes
     }
 
     private void initRTMPExoPlayer() {
-        streamPlayer.initStreamaxiaPlayer(playerSurfaceView,
+        streamPlayer.initStreamaxiaPlayer(
+                playerSurfaceView,
                 playerAspectRatioLayout,
                 statePlayerTV,
                 this,

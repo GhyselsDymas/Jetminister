@@ -37,7 +37,7 @@ import pack.jetminister.data.User;
 import pack.jetminister.ui.util.validators.EmailValidator;
 import pack.jetminister.ui.util.validators.PasswordValidator;
 
-import static pack.jetminister.data.User.TAG_USERNAME;
+import static pack.jetminister.data.User.KEY_USERNAME;
 
 public class LoginRegisterActivity extends AppCompatActivity {
 
@@ -145,9 +145,9 @@ public class LoginRegisterActivity extends AppCompatActivity {
                 String tempCheck = UNIQUE_USERNAME;
                 //loop opver user objects in database
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    if (userSnapshot.exists() && userSnapshot.child(TAG_USERNAME).exists()) {
+                    if (userSnapshot.exists() && userSnapshot.child(KEY_USERNAME).exists()) {
                         //get the String value of the username field
-                        String snapshotUsername = userSnapshot.child(TAG_USERNAME).getValue(String.class);
+                        String snapshotUsername = userSnapshot.child(KEY_USERNAME).getValue(String.class);
                         if (usernameFromInput.equals(snapshotUsername)) {
                             //if user input equals username already in database, assign username to temporary string
                             tempCheck = snapshotUsername;

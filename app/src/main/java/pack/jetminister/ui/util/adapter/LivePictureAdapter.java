@@ -20,14 +20,15 @@ import pack.jetminister.R;
 import pack.jetminister.data.User;
 import pack.jetminister.ui.activities.LivePlayerActivity;
 
+import static pack.jetminister.data.User.KEY_USERNAME;
+
 public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.LivePictureHolder> {
 
-    public static final String KEY_USERNAME = "username";
-    public static final String KEY_LIKES = "likes";
+//    public static final String KEY_LIKES = "likes";
     public static final String KEY_URI = "uri";
     public static final String KEY_TYPE = "type";
-    private static final String STREAM_URI_RTMP = "rtmp://192.168.56.1:5000/";
-    public static final int STREAM_TYPE_RTMP = StreamaxiaPlayer.TYPE_RTMP;
+    public static final int STREAM_TYPE = StreamaxiaPlayer.TYPE_HLS;
+    private static final String STREAM_URI = "https://cdn3.wowza.com/1/WnV3dmM0MmYzaUtZ/V1hNdmFT/hls/live/playlist.m3u8";
 
 
     private Context mContext;
@@ -82,14 +83,14 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
                 public void onClick(View view) {
                     int position = getAdapterPosition();
                     User currentUser = mUsers.get(position);
-                    int amountLikes = 0;
+//                    int amountLikes = 0;
                     String currentUsername = currentUser.getUsername();
 
                     Intent intent = new Intent(mContext , LivePlayerActivity.class);
-                    intent.putExtra(KEY_LIKES, amountLikes);
-                    intent.putExtra("username", currentUsername);
-                    intent.putExtra(KEY_TYPE, STREAM_TYPE_RTMP);
-                    intent.putExtra(KEY_URI, STREAM_URI_RTMP + "JetMinister/" + currentUsername);
+//                    intent.putExtra(KEY_LIKES, amountLikes);
+                    intent.putExtra(KEY_USERNAME, currentUsername);
+                    intent.putExtra(KEY_TYPE, STREAM_TYPE);
+                    intent.putExtra(KEY_URI, STREAM_URI);
 
                     mContext.startActivity(intent);
                 }

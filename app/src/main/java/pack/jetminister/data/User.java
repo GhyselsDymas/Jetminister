@@ -10,8 +10,8 @@ import pack.jetminister.R;
 
 
 public class User implements Serializable {
-    public static final String TAG_USERS = "users";
-    public static final String TAG_USERNAME = "username";
+    public static final String KEY_USERS = "users";
+    public static final String KEY_USERNAME = "username";
 
     private String username, password, email;
     private String imageFilename = "";
