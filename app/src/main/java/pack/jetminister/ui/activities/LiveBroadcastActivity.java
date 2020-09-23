@@ -37,7 +37,12 @@ import java.net.SocketException;
 import java.util.List;
 
 import pack.jetminister.R;
+import pack.jetminister.data.Broadcast;
+import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.WowzaRestApi;
+import pack.jetminister.data.util.BroadcastLocation;
+import pack.jetminister.data.util.BroadcastLocationConverter;
+import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -47,15 +52,15 @@ public class LiveBroadcastActivity
         RecordHandler.RecordListener,
         EncoderHandler.EncodeListener {
 
-    private static final String STREAM_URI_RTMP = "rtmp://Hackermann:1234azer@3be755.entrypoint.cloud.wowza.com:1935/app-2C019Q9l/MkNXYkM2";
+    private static final String STREAM_URI_RTMP = "rtmp://Hackermann:1234azer@3be755.entrypoint.cloud.wowza.com/app-2C019Q9l/MkNXYkM2";
     public final static int BITRATE = 500;
     public final static int WIDTH = 720;
     public final static int HEIGHT = 1280;
 
-
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+    private WowzaRestApi wowzaRestApi;
 
     private StreamaxiaPublisher broadcastPublisher;
     private CameraPreview previewCameraBroadcast;
@@ -89,11 +94,11 @@ public class LiveBroadcastActivity
         startStopBroadcastTV.setOnClickListener(startStopListener);
         hideStatusBar();
 
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("https://wowza.cloud/api/v1.5/")
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//        retrofit.create(WowzaRestApi.class);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://wowza.cloud/api/v1.5/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        wowzaRestApi = retrofit.create(WowzaRestApi.class);
 
         broadcastPublisher = new StreamaxiaPublisher(previewCameraBroadcast, this);
         broadcastPublisher.setEncoderHandler(new EncoderHandler(this));
@@ -105,8 +110,17 @@ public class LiveBroadcastActivity
             previewCameraBroadcast.startCamera();
             setStreamerDefaultValues();
         }
+        if (currentUser != null){
+            LiveStream currentLiveStream = new LiveStream(currentUser.getUid(), BroadcastLocation.EU_BELGIUM.name().toLowerCase(), "Hackermann", "1234azer");
+            setUpLiveStream(currentLiveStream);
+        }
 
+    }
 
+    private void setUpLiveStream(LiveStream currentLiveStream) {
+        Broadcast broadcast = new Broadcast(currentLiveStream);
+
+        Call<Broadcast>
     }
 
     @Override
@@ -211,6 +225,7 @@ public class LiveBroadcastActivity
             });
         }
     }
+
 
     private void stopStreaming() {
         broadcastPublisher.stopPublish();
