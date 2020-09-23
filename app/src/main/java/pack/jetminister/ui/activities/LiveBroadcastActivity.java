@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
@@ -25,6 +26,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 import com.streamaxia.android.CameraPreview;
 import com.streamaxia.android.StreamaxiaPublisher;
 import com.streamaxia.android.handlers.EncoderHandler;
@@ -41,10 +43,13 @@ import pack.jetminister.data.Broadcast;
 import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.WowzaRestApi;
 import pack.jetminister.data.util.BroadcastLocation;
-import pack.jetminister.data.util.BroadcastLocationConverter;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static pack.jetminister.data.User.KEY_USERNAME;
 
 public class LiveBroadcastActivity
         extends AppCompatActivity
@@ -52,7 +57,9 @@ public class LiveBroadcastActivity
         RecordHandler.RecordListener,
         EncoderHandler.EncodeListener {
 
-    private static final String STREAM_URI_RTMP = "rtmp://Hackermann:1234azer@3be755.entrypoint.cloud.wowza.com/app-2C019Q9l/MkNXYkM2";
+    private static final String TAG = "LiveBroadcastActivity";
+    private static final String API_KEY = "6gs5AUUZ20A7NSQPF3fFMZ3aD2bCOenpqfPQxl5qDIb6V36VW2FPUsnfdbUv3117";
+    private static final String ACCESS_KEY = "9nDkUi9yAe0j0BQIK7n9vaKlLIgMJQ49rHXOdrnMA2cA0iaZCWQQH8APaHJe305c";
     public final static int BITRATE = 500;
     public final static int WIDTH = 720;
     public final static int HEIGHT = 1280;
@@ -60,6 +67,7 @@ public class LiveBroadcastActivity
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+    private Gson gson;
     private WowzaRestApi wowzaRestApi;
 
     private StreamaxiaPublisher broadcastPublisher;
@@ -95,7 +103,7 @@ public class LiveBroadcastActivity
         hideStatusBar();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://wowza.cloud/api/v1.5/")
+                .baseUrl("https://api.cloud.wowza.com/api/v1.5/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         wowzaRestApi = retrofit.create(WowzaRestApi.class);
@@ -110,17 +118,49 @@ public class LiveBroadcastActivity
             previewCameraBroadcast.startCamera();
             setStreamerDefaultValues();
         }
-        if (currentUser != null){
-            LiveStream currentLiveStream = new LiveStream(currentUser.getUid(), BroadcastLocation.EU_BELGIUM.name().toLowerCase(), "Hackermann", "1234azer");
-            setUpLiveStream(currentLiveStream);
-        }
 
+        if (currentUser != null) {
+            usersRef.child(currentUser.getUid()).child(KEY_USERNAME).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String currentUsername = snapshot.getValue(String.class);
+                    LiveStream currentLiveStream = new LiveStream(currentUsername, BroadcastLocation.EU_BELGIUM.name().toLowerCase(), "Hackermann", "1234azer");
+                    Broadcast currentBroadcast = new Broadcast(currentLiveStream);
+                    gson = new Gson();
+                    String json = gson.toJson(currentBroadcast);
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
     }
 
     private void setUpLiveStream(LiveStream currentLiveStream) {
-        Broadcast broadcast = new Broadcast(currentLiveStream);
+        Broadcast currentBroadcast = new Broadcast(currentLiveStream);
+        Call<Broadcast> call = wowzaRestApi.createLiveStream(API_KEY, ACCESS_KEY, currentBroadcast);
+        call.enqueue(new Callback<Broadcast>() {
+            @Override
+            public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code() , Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "ResponseCode " + response.code() +": " + response.toString());
+                    return;
+                }
+                Broadcast broadcastResponse = response.body();
+                if (broadcastResponse != null) {
+                    LiveStream newLiveStream = broadcastResponse.getLiveStream();
+                    String streamId = newLiveStream.getStreamId();
+                    Log.d(TAG, "onResponse: streamId = " + streamId);
+                }
+            }
 
-        Call<Broadcast>
+            @Override
+            public void onFailure(Call<Broadcast> call, Throwable t) {
+                Log.d(TAG, "onFailure: " + t.getMessage());
+            }
+        });
     }
 
     @Override
@@ -206,7 +246,7 @@ public class LiveBroadcastActivity
                             liveIconIV.setVisibility(View.VISIBLE);
                             broadcastChronometer.setBase(SystemClock.elapsedRealtime());
                             broadcastChronometer.start();
-                            broadcastPublisher.startPublish(STREAM_URI_RTMP
+                            broadcastPublisher.startPublish("STREAM_URI_RT"
 //                                    + "JetMinister/" + broadcastUsername
                             );
                             //takeSnapshot();
@@ -218,6 +258,7 @@ public class LiveBroadcastActivity
                         }
                     }
                 }
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
 

@@ -25,27 +25,11 @@
         android:roundIcon="@mipmap/ic_launcher_einsteintv_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <uses-library
-            android:name="com.google.android.wearable"
-            android:required="true" />
-
-        <!--
-               Set to true if your app is Standalone, that is, it does not require the handheld
-               app to run.
-        -->
-        <meta-data
-            android:name="com.google.android.wearable.standalone"
-            android:value="true" />
 
         <activity
             android:name=".ui.activities.AskToStreamActivity"
-            android:label="@string/title_activity_ask_to_stream">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:screenOrientation="portrait"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".ui.activities.MainActivity"
             android:screenOrientation="portrait">
@@ -87,5 +71,4 @@
             </intent-filter>
         </receiver>
     </application>
-
 </manifest>

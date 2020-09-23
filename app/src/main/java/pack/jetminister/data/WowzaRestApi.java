@@ -4,12 +4,15 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 
 public interface WowzaRestApi {
     @POST("live_streams")
-    Call<LiveStream> createLiveStream(@Body Broadcast broadcast);
+    Call<Broadcast> createLiveStream(@Header("wsc-api-key") String APIKey,
+                                     @Header("wcs-access-key") String accessKey,
+                                     @Body Broadcast broadcast);
 
     @PUT("live_streams/{id}/start")
     Call<LiveStream> startLiveStream();
