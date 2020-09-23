@@ -127,16 +127,16 @@
 
     <ImageView
         android:id="@+id/iv_profile_edit"
-        android:clickable="true"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="45dp"
         android:layout_marginEnd="40dp"
+        android:clickable="true"
         android:contentDescription="@string/prof_iv_edit_description"
         android:focusable="true"
-        android:src="@android:drawable/ic_menu_edit"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_profile_following" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_profile_following"
+        app:srcCompat="@drawable/ic_baseline_edit_24" />
 
     <Button
         android:id="@+id/btn_start_livestream"
@@ -146,12 +146,19 @@
         android:layout_marginEnd="40dp"
         android:layout_marginBottom="20dp"
         android:background="@color/colorPrimaryDark"
+        android:text="@string/profile_btn_start_broadcast"
         android:textColor="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:text="@string/profile_btn_start_broadcast"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_profile_description"
         tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_person_add_24"
+        app:layout_constraintEnd_toEndOf="@+id/tv_profile_username"
+        app:layout_constraintTop_toTopOf="@+id/tv_profile_username" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

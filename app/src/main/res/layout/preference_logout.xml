@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/settings_logout_descr"
-        app:srcCompat="@drawable/ic_logout_24"
+        app:srcCompat="@drawable/ic_baseline_exit_to_app_24"
 
         />
 

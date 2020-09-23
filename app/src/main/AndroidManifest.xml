@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pack.jetminister">
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <uses-feature android:name="android.hardware.type.watch" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -21,35 +25,67 @@
         android:roundIcon="@mipmap/ic_launcher_einsteintv_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activities.MainActivity"
-            android:screenOrientation="portrait">
+        <uses-library
+            android:name="com.google.android.wearable"
+            android:required="true" />
+
+        <!--
+               Set to true if your app is Standalone, that is, it does not require the handheld
+               app to run.
+        -->
+        <meta-data
+            android:name="com.google.android.wearable.standalone"
+            android:value="true" />
+
+        <activity
+            android:name=".ui.activities.AskToStreamActivity"
+            android:label="@string/title_activity_ask_to_stream">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activities.LiveBroadcastActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activities.PermissionsActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activities.LivePlayerActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activities.LoginRegisterActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activities.ProfileImageActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activities.AdminActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.activities.MainActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        <service android:name="com.google.android.gms.measurement.AppMeasurementService"
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activities.LiveBroadcastActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.PermissionsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.LivePlayerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.LoginRegisterActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.ProfileImageActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.AdminActivity"
+            android:screenOrientation="portrait" />
+
+        <service
+            android:name="com.google.android.gms.measurement.AppMeasurementService"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
 
-        <receiver android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
+        <receiver
+            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.measurement.UPLOAD" />
             </intent-filter>
         </receiver>
     </application>
+
 </manifest>
