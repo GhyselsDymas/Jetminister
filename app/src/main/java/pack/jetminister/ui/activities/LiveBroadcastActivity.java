@@ -37,7 +37,12 @@ import java.net.SocketException;
 import java.util.List;
 
 import pack.jetminister.R;
+import pack.jetminister.data.Broadcast;
+import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.WowzaRestApi;
+import pack.jetminister.data.util.BroadcastLocation;
+import pack.jetminister.data.util.BroadcastLocationConverter;
+import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -93,7 +98,6 @@ public class LiveBroadcastActivity
                 .baseUrl("https://wowza.cloud/api/v1.5/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
         wowzaRestApi = retrofit.create(WowzaRestApi.class);
 
         broadcastPublisher = new StreamaxiaPublisher(previewCameraBroadcast, this);
@@ -106,7 +110,17 @@ public class LiveBroadcastActivity
             previewCameraBroadcast.startCamera();
             setStreamerDefaultValues();
         }
+        if (currentUser != null){
+            LiveStream currentLiveStream = new LiveStream(currentUser.getUid(), BroadcastLocation.EU_BELGIUM.name().toLowerCase(), "Hackermann", "1234azer");
+            setUpLiveStream(currentLiveStream);
+        }
 
+    }
+
+    private void setUpLiveStream(LiveStream currentLiveStream) {
+        Broadcast broadcast = new Broadcast(currentLiveStream);
+
+        Call<Broadcast>
     }
 
     @Override
