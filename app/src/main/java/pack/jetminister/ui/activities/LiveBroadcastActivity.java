@@ -37,6 +37,9 @@ import java.net.SocketException;
 import java.util.List;
 
 import pack.jetminister.R;
+import pack.jetminister.data.WowzaRestApi;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LiveBroadcastActivity
         extends AppCompatActivity
@@ -44,7 +47,7 @@ public class LiveBroadcastActivity
         RecordHandler.RecordListener,
         EncoderHandler.EncodeListener {
 
-    private static final String STREAM_URI_RTMP = "rtmp://Hackermann:1234azer@192.168.56.1:5000/";
+    private static final String STREAM_URI_RTMP = "rtmp://Hackermann:1234azer@3be755.entrypoint.cloud.wowza.com:1935/app-2C019Q9l/MkNXYkM2";
     public final static int BITRATE = 500;
     public final static int WIDTH = 720;
     public final static int HEIGHT = 1280;
@@ -84,8 +87,13 @@ public class LiveBroadcastActivity
         previewCameraBroadcast = findViewById(R.id.cam_preview_live_broadcast);
         liveIconIV = findViewById(R.id.broadcast_iv_live);
         startStopBroadcastTV.setOnClickListener(startStopListener);
-
         hideStatusBar();
+
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl("https://wowza.cloud/api/v1.5/")
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//        retrofit.create(WowzaRestApi.class);
 
         broadcastPublisher = new StreamaxiaPublisher(previewCameraBroadcast, this);
         broadcastPublisher.setEncoderHandler(new EncoderHandler(this));
@@ -184,7 +192,9 @@ public class LiveBroadcastActivity
                             liveIconIV.setVisibility(View.VISIBLE);
                             broadcastChronometer.setBase(SystemClock.elapsedRealtime());
                             broadcastChronometer.start();
-                            broadcastPublisher.startPublish(STREAM_URI_RTMP + "JetMinister/" + broadcastUsername);
+                            broadcastPublisher.startPublish(STREAM_URI_RTMP
+//                                    + "JetMinister/" + broadcastUsername
+                            );
                             //takeSnapshot();
                         } else {
                             startStopBroadcastTV.setText(getResources().getString(R.string.start));
@@ -338,6 +348,5 @@ public class LiveBroadcastActivity
 
     @Override
     public void onRtmpAuthenticationg(String s) {
-
     }
 }
