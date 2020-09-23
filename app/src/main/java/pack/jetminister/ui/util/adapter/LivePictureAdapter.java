@@ -28,8 +28,7 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
     public static final String KEY_URI = "uri";
     public static final String KEY_TYPE = "type";
     public static final int STREAM_TYPE = StreamaxiaPlayer.TYPE_HLS;
-    private static final String STREAM_URI = "https://cdn3.wowza.com/1/WnV3dmM0MmYzaUtZ/V1hNdmFT/hls/live/playlist.m3u8";
-
+    private static final String STREAM_URI = "https://cdn3.wowza.com/1/S2NSYTNiY2Y2aTYy/MkNXYkM2/hls/live/playlist.m3u8";
 
     private Context mContext;
     private List<User> mUsers;
