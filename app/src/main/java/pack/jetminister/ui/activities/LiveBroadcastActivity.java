@@ -86,6 +86,7 @@ public class LiveBroadcastActivity
         if (toolbar != null) {
             toolbar.hide();
         }
+
         startStopBroadcastTV = findViewById(R.id.tv_live_broadcast_startstop);
         stateBroadcastTV = findViewById(R.id.tv_live_broadcast_state);
         broadcastChronometer = findViewById(R.id.chronometer_live_broadcast);
@@ -110,6 +111,7 @@ public class LiveBroadcastActivity
             previewCameraBroadcast.startCamera();
             setStreamerDefaultValues();
         }
+
         if (currentUser != null){
             LiveStream currentLiveStream = new LiveStream(currentUser.getUid(), BroadcastLocation.EU_BELGIUM.name().toLowerCase(), "Hackermann", "1234azer");
             setUpLiveStream(currentLiveStream);
@@ -120,7 +122,7 @@ public class LiveBroadcastActivity
     private void setUpLiveStream(LiveStream currentLiveStream) {
         Broadcast broadcast = new Broadcast(currentLiveStream);
 
-        Call<Broadcast>
+        //Call<Broadcast>
     }
 
     @Override
