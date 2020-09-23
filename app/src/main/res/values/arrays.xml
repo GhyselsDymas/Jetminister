@@ -7,4 +7,12 @@
         <item>Cooking</item>
         <item>Life</item>
     </array>
+
+    <array name="TargetAudience">
+        <item>All</item>
+        <item>Kids</item>
+        <item>Teens</item>
+        <item>Adults</item>
+        <item>Seniors</item>
+    </array>
 </resources>
