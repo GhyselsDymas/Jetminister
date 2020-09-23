@@ -3,6 +3,8 @@ package pack.jetminister.data;
 import com.google.gson.annotations.SerializedName;
 
 public class LiveStream {
+    @SerializedName("id")
+    private String streamId;
     @SerializedName("name")
     private String streamUsername;
     @SerializedName("broadcast_location")
@@ -12,10 +14,12 @@ public class LiveStream {
     @SerializedName("password")
     private String authPassword;
     @SerializedName("disable_authentication")
-    private boolean authenticationDisabled = false;
+    private boolean authenticationDisabled;
 
+    @SerializedName("source_connection_information")
+    private SourceConnectionInformation sourceConnectionInformation;
     @SerializedName("encoder")
-    private String encoderType = "other_rtmp";
+    private String encoderType;
     @SerializedName("transcoder_type")
     private String transcoderType;
     @SerializedName("delivery_protocol")
@@ -36,6 +40,24 @@ public class LiveStream {
 
     @SerializedName("billing_mode")
     private String billingMode;
+
+    public LiveStream(String streamUsername, String streamLocation, String authUsername, String authPassword) {
+        this.streamUsername = streamUsername;
+        this.streamLocation = streamLocation;
+        this.authUsername = authUsername;
+        this.authPassword = authPassword;
+        this.authenticationDisabled = false;
+        this.encoderType = "other_rtmp";
+        this.transcoderType = "transcoded";
+        this.publishProtocol = "rtmp";
+        this.playbackProtocol = "hls-https";
+        this.lowLatency = true;
+        this.aspectRatioHeight = 1080;
+        this.aspectRatioWidth = 1920;
+        this.hostedPage = false;
+        this.hostedPageSharingIcons = false;
+        this.billingMode = "pay_as_you_go";
+    }
 
     public String getStreamUsername() {
         return streamUsername;

@@ -47,15 +47,15 @@ public class LiveBroadcastActivity
         RecordHandler.RecordListener,
         EncoderHandler.EncodeListener {
 
-    private static final String STREAM_URI_RTMP = "rtmp://Hackermann:1234azer@3be755.entrypoint.cloud.wowza.com:1935/app-2C019Q9l/MkNXYkM2";
+    private static final String STREAM_URI_RTMP = "rtmp://Hackermann:1234azer@3be755.entrypoint.cloud.wowza.com/app-2C019Q9l/MkNXYkM2";
     public final static int BITRATE = 500;
     public final static int WIDTH = 720;
     public final static int HEIGHT = 1280;
 
-
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+    private WowzaRestApi wowzaRestApi;
 
     private StreamaxiaPublisher broadcastPublisher;
     private CameraPreview previewCameraBroadcast;
@@ -89,11 +89,12 @@ public class LiveBroadcastActivity
         startStopBroadcastTV.setOnClickListener(startStopListener);
         hideStatusBar();
 
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("https://wowza.cloud/api/v1.5/")
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//        retrofit.create(WowzaRestApi.class);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://wowza.cloud/api/v1.5/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        wowzaRestApi = retrofit.create(WowzaRestApi.class);
 
         broadcastPublisher = new StreamaxiaPublisher(previewCameraBroadcast, this);
         broadcastPublisher.setEncoderHandler(new EncoderHandler(this));
@@ -105,7 +106,6 @@ public class LiveBroadcastActivity
             previewCameraBroadcast.startCamera();
             setStreamerDefaultValues();
         }
-
 
     }
 
@@ -211,6 +211,7 @@ public class LiveBroadcastActivity
             });
         }
     }
+
 
     private void stopStreaming() {
         broadcastPublisher.stopPublish();
