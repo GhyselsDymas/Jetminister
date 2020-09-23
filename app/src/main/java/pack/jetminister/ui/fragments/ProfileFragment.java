@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,6 +28,7 @@ import com.squareup.picasso.Picasso;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
+import pack.jetminister.ui.activities.AskToStreamActivity;
 import pack.jetminister.ui.activities.LoginRegisterActivity;
 import pack.jetminister.ui.activities.ProfileImageActivity;
 import pack.jetminister.ui.dialogs.ThemeChooserDialog;
@@ -47,11 +49,29 @@ public class ProfileFragment extends Fragment {
     }
 
     View.OnClickListener startStreamListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            ThemeChooserDialog newThemeChooserDialog = new ThemeChooserDialog();
-            newThemeChooserDialog.show(getParentFragmentManager(), "themes");
-        }
+            @Override
+            public void onClick(View view) {
+                usersRef.child(currentUser.getUid()).child("streamer").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()){
+                            boolean streamer = snapshot.getValue(Boolean.class);
+                            if (!streamer){
+                                Intent intent = new Intent(mContext, AskToStreamActivity.class);
+                                startActivity(intent);
+                            }else{
+                                ThemeChooserDialog newThemeChooserDialog = new ThemeChooserDialog();
+                                newThemeChooserDialog.show(getParentFragmentManager(), "themes");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
     };
 
     View.OnLongClickListener profileImageListener = new View.OnLongClickListener() {
