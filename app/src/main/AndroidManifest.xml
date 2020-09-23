@@ -27,10 +27,6 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".ui.activities.AskToStreamActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity
             android:name=".ui.activities.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -39,6 +35,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.activities.AskToStreamActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.activities.LiveBroadcastActivity"
             android:screenOrientation="portrait" />
@@ -71,4 +71,5 @@
             </intent-filter>
         </receiver>
     </application>
+
 </manifest>

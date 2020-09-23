@@ -43,6 +43,7 @@ import pack.jetminister.data.Broadcast;
 import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.WowzaRestApi;
 import pack.jetminister.data.util.BroadcastLocation;
+import pack.jetminister.data.util.BroadcastLocationConverter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -246,7 +247,7 @@ public class LiveBroadcastActivity
                             liveIconIV.setVisibility(View.VISIBLE);
                             broadcastChronometer.setBase(SystemClock.elapsedRealtime());
                             broadcastChronometer.start();
-                            broadcastPublisher.startPublish("STREAM_URI_RT"
+                            broadcastPublisher.startPublish(STREAM_URI_RTMP
 //                                    + "JetMinister/" + broadcastUsername
                             );
                             //takeSnapshot();
@@ -258,7 +259,6 @@ public class LiveBroadcastActivity
                         }
                     }
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
 
