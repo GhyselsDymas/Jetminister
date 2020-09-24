@@ -46,7 +46,6 @@ public class LiveFragment extends Fragment {
         themeRecyclerView.setHasFixedSize(true);
         themeRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
 
-
         String[] mResArray = getResources().getStringArray(R.array.themes);
         List<String> myResArrayList = Arrays.asList(mResArray);
 

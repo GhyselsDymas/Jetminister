@@ -77,19 +77,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
 
-//        Button buttonTest = findViewById(R.id.btn_test);
-//        buttonTest.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-//                    Toast.makeText(MainActivity.this, FirebaseAuth.getInstance().getCurrentUser().getUid(), Toast.LENGTH_SHORT).show();
-//                    ;
-//                } else {
-//                    Toast.makeText(MainActivity.this, "NOAUTH", Toast.LENGTH_SHORT).show();
-//                }
-//
-//            }
-//        });
     }
 
     private void loadFragment(Fragment fragment) {

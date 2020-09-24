@@ -22,7 +22,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import pack.jetminister.R;
+import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.User;
+
+import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAM;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
 
 public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.LiveThemeHolder>  {
 
@@ -30,6 +34,7 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
     private Context mContext;
     private List<String> mThemes;
     private List<User> mUsers;
+    private List<String> mLiveStreams;
 
     public LiveThemeAdapter(Context context){
         mContext = context;
@@ -48,13 +53,17 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
     public void onBindViewHolder(@NonNull final LiveThemeHolder holder, int position) {
         final String uploadCurrent = mThemes.get(position);
         mUsers = new ArrayList<>();
+        mLiveStreams = new ArrayList<>();
         DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
         usersDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     User user = postSnapshot.getValue(User.class);
+                    String playbackURL = postSnapshot.child(KEY_LIVE_STREAM).child(KEY_STREAM_PLAYBACK_URL).getValue(String.class);
                     mUsers.add(user);
+                    mLiveStreams.add(playbackURL);
+
                 }
 
                 holder.titleLiveTheme.setText(uploadCurrent);

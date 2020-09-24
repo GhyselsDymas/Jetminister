@@ -30,10 +30,12 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
     public static final int STREAM_TYPE = StreamaxiaPlayer.TYPE_HLS;
     private Context mContext;
     private List<User> mUsers;
+    private List<String> mLivestreams;
 
-    public LivePictureAdapter(Context context, List<User> users){
+    public LivePictureAdapter(Context context, List<User> users, List<String> liveStreams){
         mContext = context;
         mUsers = users;
+        mLivestreams = liveStreams;
     }
 
     @NonNull
@@ -46,6 +48,7 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
     @Override
     public void onBindViewHolder(@NonNull LivePictureAdapter.LivePictureHolder holder, int position) {
         User uploadCurrent = mUsers.get(position);
+        String currentPlaybackURL = mLivestreams.get(position);
         holder.usernameLive.setText(uploadCurrent.getUsername());
         holder.followersLive.setText("0");
 
@@ -80,6 +83,7 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
                 public void onClick(View view) {
                     int position = getAdapterPosition();
                     User currentUser = mUsers.get(position);
+                    String currentPlaybackURL = mLivestreams.get(position);
 //                    int amountLikes = 0;
                     String currentUsername = currentUser.getUsername();
 
@@ -87,7 +91,7 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
 //                    intent.putExtra(KEY_LIKES, amountLikes);
                     intent.putExtra(KEY_USERNAME, currentUsername);
                     intent.putExtra(KEY_TYPE, STREAM_TYPE);
-                    intent.putExtra(KEY_URI, currentUser.getPublishURL());
+                    intent.putExtra(KEY_URI, currentPlaybackURL);
 
                     mContext.startActivity(intent);
                 }
