@@ -48,10 +48,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAM;
 import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_ID;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
-import static pack.jetminister.data.LiveStream.KEY_STREAM_USERNAME;
 import static pack.jetminister.data.SourceConnectionInformation.KEY_STREAM_PUBLISH_URL;
 import static pack.jetminister.data.User.KEY_LOCATION;
 import static pack.jetminister.data.User.KEY_USERNAME;
@@ -83,13 +83,7 @@ public class LiveBroadcastActivity
     private Chronometer broadcastChronometer;
     ImageView liveIconIV;
 
-    private View.OnClickListener startStopListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            //TODO: AlertDialog to confirm broadcast
-            startStopPublishing();
-        }
-    };
+    private View.OnClickListener startStopListener = v -> startStopPublishing();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -131,7 +125,9 @@ public class LiveBroadcastActivity
             usersRef.child(uID).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists() && snapshot.hasChild(KEY_USERNAME) && snapshot.hasChild(KEY_LOCATION)){
+                    if (snapshot.exists() && snapshot.hasChild(KEY_LIVE_STREAM)) {
+                        activateStream();
+                    } else {
                         String userLocation = snapshot.child(KEY_LOCATION).getValue(String.class);
                         String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
                         LiveStream newLiveStream = new LiveStream(currentUsername, userLocation, "Hackermann", "1234azer");
@@ -152,6 +148,7 @@ public class LiveBroadcastActivity
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
             stopPublishing();
+            deactivateStream();
             stopChronometer();
             startStopBroadcastTV.setText(getResources().getString(R.string.start));
         } else {
@@ -173,6 +170,7 @@ public class LiveBroadcastActivity
         previewCameraBroadcast.stopCamera();
         broadcastPublisher.stopPublish();
         broadcastPublisher.pauseRecord();
+        deactivateStream();
     }
 
     @Override
@@ -180,6 +178,7 @@ public class LiveBroadcastActivity
         super.onStop();
         previewCameraBroadcast.stopCamera();
         broadcastPublisher.stopPublish();
+        deactivateStream();
         broadcastPublisher.pauseRecord();
     }
 
@@ -187,6 +186,7 @@ public class LiveBroadcastActivity
     protected void onDestroy() {
         super.onDestroy();
         broadcastPublisher.stopPublish();
+        deactivateStream();
         broadcastPublisher.stopRecord();
     }
 
@@ -216,13 +216,13 @@ public class LiveBroadcastActivity
         });
     }
 
-    private void createLiveStream(Broadcast newBroadcast) {;
+    private void createLiveStream(Broadcast newBroadcast) {
         Call<Broadcast> call = wowzaRestApi.createLiveStream(API_KEY, ACCESS_KEY, newBroadcast);
         call.enqueue(new Callback<Broadcast>() {
             @Override
             public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code() , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         Log.d(TAG, "Response " + response.code() + ": " + response.errorBody().string());
                     } catch (IOException e) {
@@ -235,6 +235,7 @@ public class LiveBroadcastActivity
                     addLiveStreamToDatabase(broadcastResponse);
                 }
             }
+
             @Override
             public void onFailure(Call<Broadcast> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t.getMessage());
@@ -245,18 +246,17 @@ public class LiveBroadcastActivity
     private void addLiveStreamToDatabase(Broadcast broadcastResponse) {
         LiveStream currentLiveStream = broadcastResponse.getLiveStream();
         SourceConnectionInformation currentSourceInfo = currentLiveStream.getSourceConnectionInformation();
-        liveStreamsRef.child(currentLiveStream.getStreamUsername()).child(KEY_STREAM_ID).setValue(currentLiveStream.getStreamId());
-        liveStreamsRef.child(currentLiveStream.getStreamUsername()).child(KEY_STREAM_PLAYBACK_URL).setValue(currentLiveStream.getPlaybackURL());
-        liveStreamsRef.child(currentLiveStream.getStreamUsername()).child(KEY_STREAM_PUBLISH_URL).setValue(currentSourceInfo.toString());
+        usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_ID).setValue(currentLiveStream.getStreamId());
+        usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_PLAYBACK_URL).setValue(currentLiveStream.getPlaybackURL());
+        usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_PUBLISH_URL).setValue(currentSourceInfo.toString());
         Log.d(TAG, "onResponse:\nstreamId = " + currentLiveStream.getStreamId() + "\nplaybackUrl = " + currentLiveStream.getPlaybackURL() + "\npublishUrl = " + currentSourceInfo.toString());
     }
 
-    private void activateStream(){
-        liveStreamsRef.child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
+    private void activateStream() {
+        usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_ID).addValueEventListener(new ValueEventListener() {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists() && snapshot.child(KEY_STREAM_ID).exists()){
-                    String currentStreamID = snapshot.child(KEY_STREAM_ID).getValue(String.class);
+                if (snapshot.exists()) {
+                    String currentStreamID = snapshot.getValue(String.class);
                     Call<Broadcast> call = wowzaRestApi.startLiveStream(API_KEY, ACCESS_KEY, currentStreamID);
                     call.enqueue(new Callback<Broadcast>() {
                         @Override
@@ -269,28 +269,29 @@ public class LiveBroadcastActivity
                                     e.printStackTrace();
                                 }
                             } else {
-                                startStopPublishing();
                             }
                         }
+
                         @Override
                         public void onFailure(Call<Broadcast> call, Throwable t) {
+                            Log.d(TAG, "onFailure: " + t.getMessage());
                         }
                     });
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-
     }
 
-    private void deactivateStream(){
-        liveStreamsRef.child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+    private void deactivateStream() {
+        usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_ID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists() && snapshot.child(KEY_STREAM_ID).exists()){
-                    String currentStreamID = snapshot.child(KEY_STREAM_ID).getValue(String.class);
+                if (snapshot.exists()) {
+                    String currentStreamID = snapshot.getValue(String.class);
                     Call<Broadcast> call = wowzaRestApi.stopLiveStream(API_KEY, ACCESS_KEY, currentStreamID);
                     call.enqueue(new Callback<Broadcast>() {
                         @Override
@@ -302,12 +303,11 @@ public class LiveBroadcastActivity
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-                            } else {
-                                startStopPublishing();
                             }
                         }
                         @Override
                         public void onFailure(Call<Broadcast> call, Throwable t) {
+                            Log.d(TAG, "onFailure: " + t.getMessage());
                         }
                     });
                 }
@@ -317,41 +317,47 @@ public class LiveBroadcastActivity
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+
     }
 
     private void startStopPublishing() {
-            liveStreamsRef.child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists() && snapshot.child(KEY_STREAM_PUBLISH_URL).exists()) {
-                        String currentPublishURL = snapshot.child(KEY_STREAM_PUBLISH_URL).getValue(String.class);
-                        if (startStopBroadcastTV.getText().toString().trim().equals(getResources().getString(R.string.start))) {
-                            startStopBroadcastTV.setText(getResources().getString(R.string.stop));
-                            liveIconIV.setVisibility(View.GONE);
-                            stopChronometer();
-                            stopPublishing();
-                            deactivateStream();
-                        } else {
-                            startStopBroadcastTV.setText(getResources().getString(R.string.start));
-                            liveIconIV.setVisibility(View.VISIBLE);
-                            broadcastChronometer.setBase(SystemClock.elapsedRealtime());
-                            broadcastChronometer.start();
-                            activateStream();
-                            broadcastPublisher.startPublish(currentPublishURL);
-                        }
+        usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_PUBLISH_URL).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String currentPublishURL = snapshot.getValue(String.class);
+                    if (startStopBroadcastTV.getText().toString().trim().equals(getResources().getString(R.string.start))) {
+                        startStopBroadcastTV.setText(getResources().getString(R.string.stop));
+                        liveIconIV.setVisibility(View.GONE);
+                        stopChronometer();
+                        stopPublishing();
+                        deactivateStream();
+                    } else {
+                        startStopBroadcastTV.setText(getResources().getString(R.string.start));
+                        liveIconIV.setVisibility(View.VISIBLE);
+                        broadcastChronometer.setBase(SystemClock.elapsedRealtime());
+                        broadcastChronometer.start();
+                        activateStream();
+                        startPublishing(currentPublishURL);
+
                     }
                 }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+            }
 
-                }
-            });
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
+            }
+        });
+    }
+
+
+    private void startPublishing(String publishURL) {
+        broadcastPublisher.startPublish(publishURL);
+    }
 
     private void stopPublishing() {
         broadcastPublisher.stopPublish();
-
     }
 
     private void stopChronometer() {
