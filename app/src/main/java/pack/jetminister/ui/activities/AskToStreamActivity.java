@@ -2,18 +2,26 @@ package pack.jetminister.ui.activities;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import pack.jetminister.R;
+import pack.jetminister.data.util.BroadcastLocation;
 
 public class AskToStreamActivity extends AppCompatActivity {
 
     private TextInputLayout nameTIL , familyNameTIL , contentTIL , aboutYourselfTIL , moreTIL;
     private Button confirmButton;
+    private Spinner spinnerServerLocation;
+    private BroadcastLocation broadcastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +34,12 @@ public class AskToStreamActivity extends AppCompatActivity {
         aboutYourselfTIL = findViewById(R.id.til_streamer_aboutyourself);
         moreTIL = findViewById(R.id.til_streamer_more);
         confirmButton = findViewById(R.id.btn_ask_to_stream);
+        spinnerServerLocation = findViewById(R.id.spinner_server_location);
+
+        List<String> list = broadcastLocation.getValues();
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerServerLocation.setAdapter(adapter);
 
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
