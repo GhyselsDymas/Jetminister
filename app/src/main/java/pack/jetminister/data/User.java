@@ -20,6 +20,9 @@ public class User implements Serializable {
     private String theme = "Blank";
     private ArrayList<String> followers, following;
     private boolean streamer = false;
+    private String regionServer = "eu_belguim";
+    private String creditCard = "";
+    private Integer reportedNumber = 0;
 
     public User() {
     }
@@ -65,6 +68,11 @@ public class User implements Serializable {
         return streamer;
     }
 
+    public String getRegionServer() { return regionServer; }
+
+    public String getCreditCard() { return creditCard; }
+
+    public Integer getReportedNumber() { return reportedNumber; }
 
     public void setUsername(String username) {
         this.username = username;
@@ -102,15 +110,21 @@ public class User implements Serializable {
         this.streamer = streamer;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", imageFilename='" + imageFilename + '\'' +
-                ", imageURL='" + imageURL + '\'' +
-                ", streamer=" + streamer +
-                '}';
-    }
+    public void setRegionServer(String regionServer) { this.regionServer = regionServer; }
+
+    public void setCreditCard(String creditCard) { this.creditCard = creditCard; }
+
+    public void setReportedNumber(Integer reportedNumber) { this.reportedNumber = reportedNumber; }
+
+//    @Override
+//    public String toString() {
+//        return "User{" +
+//                "username='" + username + '\'' +
+//                ", password='" + password + '\'' +
+//                ", email='" + email + '\'' +
+//                ", imageFilename='" + imageFilename + '\'' +
+//                ", imageURL='" + imageURL + '\'' +
+//                ", streamer=" + streamer +
+//                '}';
+//    }
 }
