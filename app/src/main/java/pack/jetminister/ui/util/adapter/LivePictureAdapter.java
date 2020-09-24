@@ -11,11 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.streamaxia.player.StreamaxiaPlayer;
 
@@ -25,8 +20,6 @@ import pack.jetminister.R;
 import pack.jetminister.data.User;
 import pack.jetminister.ui.activities.LivePlayerActivity;
 
-import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
-import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
 import static pack.jetminister.data.User.KEY_USERNAME;
 
 public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.LivePictureHolder> {
@@ -35,7 +28,6 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
     public static final String KEY_URI = "uri";
     public static final String KEY_TYPE = "type";
     public static final int STREAM_TYPE = StreamaxiaPlayer.TYPE_HLS;
-
     private Context mContext;
     private List<User> mUsers;
 
@@ -87,29 +79,17 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
-                    User selectedUser = mUsers.get(position);
-//                                int amountLikes = 0;
-                    String selectedUserUsername = selectedUser.getUsername();
-                    FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS).child(selectedUserUsername).child(KEY_STREAM_PLAYBACK_URL).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot.exists()){
-                                String playbackURL = snapshot.getValue(String.class);
-                                Intent intent = new Intent(mContext , LivePlayerActivity.class);
-//                                intent.putExtra(KEY_LIKES, amountLikes);
-                                intent.putExtra(KEY_TYPE, STREAM_TYPE);
-                                intent.putExtra(KEY_URI, playbackURL);
+                    User currentUser = mUsers.get(position);
+//                    int amountLikes = 0;
+                    String currentUsername = currentUser.getUsername();
 
-                                mContext.startActivity(intent);
-                            }
-                        }
+                    Intent intent = new Intent(mContext , LivePlayerActivity.class);
+//                    intent.putExtra(KEY_LIKES, amountLikes);
+                    intent.putExtra(KEY_USERNAME, currentUsername);
+                    intent.putExtra(KEY_TYPE, STREAM_TYPE);
+                    intent.putExtra(KEY_URI, currentUser.getPublishURL());
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-
+                    mContext.startActivity(intent);
                 }
             });
         }

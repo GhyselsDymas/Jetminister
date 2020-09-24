@@ -41,6 +41,7 @@ import pack.jetminister.R;
 import pack.jetminister.data.Broadcast;
 import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.SourceConnectionInformation;
+import pack.jetminister.data.User;
 import pack.jetminister.data.WowzaRestApi;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -79,11 +80,21 @@ public class LiveBroadcastActivity
     private LiveStream liveStream;
     private StreamaxiaPublisher broadcastPublisher;
     private CameraPreview previewCameraBroadcast;
-    private TextView startStopBroadcastTV, stateBroadcastTV;
+    private TextView startBroadcastTV, stopBroadcastTV, stateBroadcastTV;
     private Chronometer broadcastChronometer;
     ImageView liveIconIV;
 
-    private View.OnClickListener startStopListener = v -> startStopPublishing();
+    private View.OnClickListener startListener = v -> {
+        startBroadcast();
+        stopBroadcastTV.setClickable(true);
+        startBroadcastTV.setClickable(false);
+    };
+
+    private View.OnClickListener stopListener = v -> {
+        stopBroadcast();
+        startBroadcastTV.setClickable(true);
+        stopBroadcastTV.setClickable(false);
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,12 +107,14 @@ public class LiveBroadcastActivity
         }
         hideStatusBar();
 
-        startStopBroadcastTV = findViewById(R.id.tv_live_broadcast_startstop);
+        startBroadcastTV = findViewById(R.id.tv_live_broadcast_start);
+        stopBroadcastTV = findViewById(R.id.tv_live_broadcast_stop);
         stateBroadcastTV = findViewById(R.id.tv_live_broadcast_state);
         broadcastChronometer = findViewById(R.id.chronometer_live_broadcast);
         previewCameraBroadcast = findViewById(R.id.cam_preview_live_broadcast);
         liveIconIV = findViewById(R.id.broadcast_iv_live);
-        startStopBroadcastTV.setOnClickListener(startStopListener);
+        startBroadcastTV.setOnClickListener(startListener);
+        stopBroadcastTV.setOnClickListener(stopListener);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.cloud.wowza.com/api/v1.5/")
@@ -150,7 +163,6 @@ public class LiveBroadcastActivity
             stopPublishing();
             deactivateStream();
             stopChronometer();
-            startStopBroadcastTV.setText(getResources().getString(R.string.start));
         } else {
             Intent intent = new Intent(this, PermissionsActivity.class);
             startActivity(intent);
@@ -246,6 +258,18 @@ public class LiveBroadcastActivity
     private void addLiveStreamToDatabase(Broadcast broadcastResponse) {
         LiveStream currentLiveStream = broadcastResponse.getLiveStream();
         SourceConnectionInformation currentSourceInfo = currentLiveStream.getSourceConnectionInformation();
+        usersRef.child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                user.setPlaybackURL(currentLiveStream.getPlaybackURL());
+                user.setPublishURL(currentSourceInfo.getPrimaryServerAddress());
+                user.setStreamID(currentLiveStream.getStreamId());
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
         usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_ID).setValue(currentLiveStream.getStreamId());
         usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_PLAYBACK_URL).setValue(currentLiveStream.getPlaybackURL());
         usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_PUBLISH_URL).setValue(currentSourceInfo.toString());
@@ -268,7 +292,6 @@ public class LiveBroadcastActivity
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-                            } else {
                             }
                         }
 
@@ -320,42 +343,32 @@ public class LiveBroadcastActivity
 
     }
 
-    private void startStopPublishing() {
+    private void startBroadcast() {
         usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_PUBLISH_URL).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     String currentPublishURL = snapshot.getValue(String.class);
-                    if (startStopBroadcastTV.getText().toString().trim().equals(getResources().getString(R.string.start))) {
-                        startStopBroadcastTV.setText(getResources().getString(R.string.stop));
-                        liveIconIV.setVisibility(View.GONE);
-                        stopChronometer();
-                        stopPublishing();
-                        deactivateStream();
-                    } else {
-                        startStopBroadcastTV.setText(getResources().getString(R.string.start));
                         liveIconIV.setVisibility(View.VISIBLE);
                         broadcastChronometer.setBase(SystemClock.elapsedRealtime());
                         broadcastChronometer.start();
                         activateStream();
-                        startPublishing(currentPublishURL);
-
+                        broadcastPublisher.startPublish(currentPublishURL);
                     }
                 }
-            }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
 
-
-    private void startPublishing(String publishURL) {
-        broadcastPublisher.startPublish(publishURL);
+    private void stopBroadcast(){
+            liveIconIV.setVisibility(View.GONE);
+            stopChronometer();
+            stopPublishing();
+            deactivateStream();
     }
-
     private void stopPublishing() {
         broadcastPublisher.stopPublish();
     }
@@ -431,7 +444,7 @@ public class LiveBroadcastActivity
     @Override
     public void onRtmpConnected(String s) {
         setStatusMessage(s);
-        startStopBroadcastTV.setText(getResources().getString(R.string.stop));
+        stopBroadcastTV.setClickable(true);
     }
 
     @Override

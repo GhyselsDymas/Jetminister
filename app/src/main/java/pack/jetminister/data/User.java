@@ -24,6 +24,9 @@ public class User implements Serializable {
     private String location = "eu_belgium";
     private String creditCard = "";
     private Integer reportedNumber = 0;
+    public String streamID;
+    private String publishURL;
+    private String playbackURL;
 
     public User() {
     }
@@ -75,6 +78,18 @@ public class User implements Serializable {
 
     public Integer getReportedNumber() { return reportedNumber; }
 
+    public String getStreamID() {
+        return streamID;
+    }
+
+    public String getPublishURL() {
+        return publishURL;
+    }
+
+    public String getPlaybackURL() {
+        return playbackURL;
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -117,7 +132,19 @@ public class User implements Serializable {
 
     public void setReportedNumber(Integer reportedNumber) { this.reportedNumber = reportedNumber; }
 
-//    @Override
+    public void setStreamID(String streamID) {
+        this.streamID = streamID;
+    }
+
+    public void setPublishURL(String publishURL) {
+        this.publishURL = publishURL;
+    }
+
+    public void setPlaybackURL(String playbackURL) {
+        this.playbackURL = playbackURL;
+    }
+
+    //    @Override
 //    public String toString() {
 //        return "User{" +
 //                "username='" + username + '\'' +

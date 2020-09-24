@@ -17,9 +17,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-    </com.streamaxia.android.CameraPreview>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <Chronometer
         android:id="@+id/chronometer_live_broadcast"
@@ -35,22 +33,43 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_live_broadcast_startstop"
-        android:layout_width="match_parent"
+        android:id="@+id/tv_live_broadcast_start"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="50dp"
         android:clickable="true"
         android:focusable="true"
         android:padding="10dp"
+        android:paddingStart="50dp"
+        android:paddingEnd="50dp"
         android:text="@string/start"
         android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="@android:color/white"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/cam_preview_live_broadcast"
-        app:layout_constraintStart_toEndOf="@+id/cam_preview_live_broadcast" />
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_live_broadcast_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginEnd="50dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="10dp"
+        android:paddingStart="50dp"
+        android:paddingEnd="50dp"
+        android:text="@string/stop"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 
     <TextView
         android:id="@+id/tv_live_broadcast_state"
