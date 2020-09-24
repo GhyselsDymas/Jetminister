@@ -38,6 +38,7 @@ import pack.jetminister.ui.util.validators.EmailValidator;
 import pack.jetminister.ui.util.validators.PasswordValidator;
 
 import static pack.jetminister.data.User.KEY_USERNAME;
+import static pack.jetminister.data.User.KEY_USERS;
 
 public class LoginRegisterActivity extends AppCompatActivity {
 
@@ -46,7 +47,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
     private static final String URI_JETMINISTER = "https://jetminister.com/";
 
     //get an instance of Firebase and a reference to the collection
-    private DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
+    private DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private TextInputLayout emailLoginTIL, passwordLoginTIL, emailRegisterTIL, usernameRegisterTIL, passwordRegisterTIL, passwordConfirmRegisterTIL;

@@ -11,34 +11,33 @@ public enum BroadcastLocation {
     ASIA_PACIFIC_SINGAPORE("Asia Pacific Singapore"),
     ASIA_PACIFIC_S_KOREA("Asia Pacific South Korea"),
     ASIA_PACIFIC_TAIWAN("Asia Pacific Taiwan"),
-    EU_BELGIUM("Europe Belguim"),
+    EU_BELGIUM("Europe Belgium"),
     EU_GERMANY("Europe Germany"),
     EU_IRELAND("Europe Ireland"),
     SOUTH_AMERICA_BRAZIL("South America Brazil"),
-    US_CENTRAL_IOWA("US Iowa"),
-    US_EAST_S_CAROLINA("US Carolina"),
-    US_EAST_VIRGINIA("US Virginia"),
-    US_WEST_CALIFORNIA("US California"),
-    US_WEST_OREGON("US Oregon");
+    US_CENTRAL_IOWA("U.S.A. Iowa"),
+    US_EAST_S_CAROLINA("U.S.A. Carolina"),
+    US_EAST_VIRGINIA("U.S.A. Virginia"),
+    US_WEST_CALIFORNIA("U.S.A. California"),
+    US_WEST_OREGON("U.S.A. Oregon");
 
+    private static final List<String> BROADCAST_LOCATION_LIST;
 
-    private static final List<String> VALUES;
-
-    private final String value;
+    private final String location;
 
     static {
-        VALUES = new ArrayList<>();
+        BROADCAST_LOCATION_LIST = new ArrayList<>();
         for (BroadcastLocation locationEnum : BroadcastLocation.values()) {
-            VALUES.add(locationEnum.value);
+            BROADCAST_LOCATION_LIST.add(locationEnum.location);
         }
     }
 
-    private BroadcastLocation(String value) {
-        this.value = value;
+    private BroadcastLocation(String location) {
+        this.location = location;
     }
 
-    public static List<String> getValues() {
-        return Collections.unmodifiableList(VALUES);
+    public static List<String> getBroadcastLocationList() {
+        return Collections.unmodifiableList(BROADCAST_LOCATION_LIST);
     }
 
 }

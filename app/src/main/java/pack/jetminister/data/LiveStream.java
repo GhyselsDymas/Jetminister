@@ -5,6 +5,10 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 
 public class LiveStream {
+
+    public static final String KEY_STREAMS = "live_streams";
+    public static final String KEY_STREAM_ID = "live_streams";
+
     @SerializedName("id")
     private String streamId;
     @SerializedName("created_at")
@@ -77,5 +81,164 @@ public class LiveStream {
     @SerializedName("billing_mode")
     private String billingMode;
 
+    public LiveStream(String streamUsername, String streamLocation, String authUsername, String authPassword) {
 
+        this.streamUsername = streamUsername;
+        this.streamLocation = streamLocation;
+        this.authUsername = authUsername;
+        this.authPassword = authPassword;
+        this.authenticationDisabled = false;
+        this.encoderType = "other_rtmp";
+        this.transcoderType = "transcoded";
+        this.lowLatency = true;
+        this.aspectRatioHeight = 1920;
+        this.aspectRatioWidth = 1080;
+        this.hostedPage = false;
+        this.hostedPageSharingIcons = false;
+        this.billingMode = "pay_as_you_go";
+    }
+
+    public String getStreamId() {
+        return streamId;
+    }
+
+    public String getTimeCreated() {
+        return timeCreated;
+    }
+
+    public String getTimeUpdated() {
+        return timeUpdated;
+    }
+
+    public String getStreamUsername() {
+        return streamUsername;
+    }
+
+    public String getStreamLocation() {
+        return streamLocation;
+    }
+
+    public String getAuthUsername() {
+        return authUsername;
+    }
+
+    public String getAuthPassword() {
+        return authPassword;
+    }
+
+    public boolean isAuthenticationDisabled() {
+        return authenticationDisabled;
+    }
+
+    public boolean isStreamSource() {
+        return streamSource;
+    }
+
+    public ArrayList<StreamTarget> getStreamTargets() {
+        return streamTargets;
+    }
+
+    public DirectPlaybackURL getDirectPlaybackURL() {
+        return directPlaybackURL;
+    }
+
+    public SourceConnectionInformation getSourceConnectionInformation() {
+        return sourceConnectionInformation;
+    }
+
+    public String getEncoderType() {
+        return encoderType;
+    }
+
+    public String getTranscoderType() {
+        return transcoderType;
+    }
+
+    public String getDeliveryMethod() {
+        return deliveryMethod;
+    }
+
+    public ArrayList<String> getPublishProtocols() {
+        return publishProtocols;
+    }
+
+    public String getPlaybackProtocol() {
+        return playbackProtocol;
+    }
+
+    public boolean isLowLatency() {
+        return lowLatency;
+    }
+
+    public int getAspectRatioHeight() {
+        return aspectRatioHeight;
+    }
+
+    public int getAspectRatioWidth() {
+        return aspectRatioWidth;
+    }
+
+    public boolean isVODStream() {
+        return VODStream;
+    }
+
+    public boolean isRecording() {
+        return recording;
+    }
+
+    public String getClosedCaption() {
+        return closedCaption;
+    }
+
+    public String getPlayerID() {
+        return playerID;
+    }
+
+    public String getPlayerType() {
+        return playerType;
+    }
+
+    public boolean isPlayerResponsive() {
+        return playerResponsive;
+    }
+
+    public int getPlayerWidth() {
+        return playerWidth;
+    }
+
+    public boolean isPlayerCountdown() {
+        return playerCountdown;
+    }
+
+    public String getPlayerEmbedCode() {
+        return playerEmbedCode;
+    }
+
+    public String getPlaybackURL() {
+        return playbackURL;
+    }
+
+    public boolean isHostedPage() {
+        return hostedPage;
+    }
+
+    public String getHostedPageTitle() {
+        return hostedPageTitle;
+    }
+
+    public String getHostedPageURL() {
+        return hostedPageURL;
+    }
+
+    public boolean isHostedPageSharingIcons() {
+        return hostedPageSharingIcons;
+    }
+
+    public boolean isHostedPageLogoImageURL() {
+        return hostedPageLogoImageURL;
+    }
+
+    public String getBillingMode() {
+        return billingMode;
+    }
 }

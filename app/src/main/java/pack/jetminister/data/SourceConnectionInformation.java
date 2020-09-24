@@ -17,7 +17,6 @@ public class SourceConnectionInformation {
     private String streamPassword;
 
 
-
     public String getPrimaryServerAddress() {
         return primaryServerAddress;
     }

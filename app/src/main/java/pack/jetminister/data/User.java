@@ -12,6 +12,8 @@ import pack.jetminister.R;
 public class User implements Serializable {
     public static final String KEY_USERS = "users";
     public static final String KEY_USERNAME = "username";
+    public static final String KEY_LOCATION = "location";
+
 
     private String username, password, email;
     private String imageFilename = "";

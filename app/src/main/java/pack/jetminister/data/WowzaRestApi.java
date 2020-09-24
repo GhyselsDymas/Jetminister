@@ -11,7 +11,7 @@ import retrofit2.http.PUT;
 public interface WowzaRestApi {
     @POST("live_streams")
     Call<Broadcast> createLiveStream(@Header("wsc-api-key") String APIKey,
-                                     @Header("wcs-access-key") String accessKey,
+                                     @Header("wsc-access-key") String accessKey,
                                      @Body Broadcast broadcast);
 
     @PUT("live_streams/{id}/start")

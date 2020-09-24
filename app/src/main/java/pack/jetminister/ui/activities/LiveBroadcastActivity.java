@@ -43,13 +43,13 @@ import pack.jetminister.data.Broadcast;
 import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.WowzaRestApi;
 import pack.jetminister.data.util.BroadcastLocation;
-import pack.jetminister.data.util.BroadcastLocationConverter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static pack.jetminister.data.User.KEY_LOCATION;
 import static pack.jetminister.data.User.KEY_USERNAME;
 
 public class LiveBroadcastActivity
@@ -68,9 +68,9 @@ public class LiveBroadcastActivity
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-    private Gson gson;
     private WowzaRestApi wowzaRestApi;
 
+    private LiveStream liveStream;
     private StreamaxiaPublisher broadcastPublisher;
     private CameraPreview previewCameraBroadcast;
     private TextView startStopBroadcastTV, stateBroadcastTV;
@@ -121,14 +121,16 @@ public class LiveBroadcastActivity
         }
 
         if (currentUser != null) {
-            usersRef.child(currentUser.getUid()).child(KEY_USERNAME).addValueEventListener(new ValueEventListener() {
+            usersRef.child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String currentUsername = snapshot.getValue(String.class);
-                    LiveStream currentLiveStream = new LiveStream(currentUsername, BroadcastLocation.EU_BELGIUM.name().toLowerCase(), "Hackermann", "1234azer");
-                    Broadcast currentBroadcast = new Broadcast(currentLiveStream);
-                    gson = new Gson();
-                    String json = gson.toJson(currentBroadcast);
+                    if (snapshot.exists() && snapshot.hasChild(KEY_USERNAME) && snapshot.hasChild(KEY_LOCATION)){
+                        String userLocation = snapshot.child(KEY_USERNAME).getValue(String.class);
+                        String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
+                        LiveStream newLiveStream = new LiveStream(currentUsername, userLocation, "Hackermann", "1234azer");
+                        Broadcast newBroadcast = new Broadcast(newLiveStream);
+                        createLiveStream(newBroadcast);
+                    }
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
@@ -138,25 +140,32 @@ public class LiveBroadcastActivity
         }
     }
 
-    private void setUpLiveStream(LiveStream currentLiveStream) {
-        Broadcast currentBroadcast = new Broadcast(currentLiveStream);
-        Call<Broadcast> call = wowzaRestApi.createLiveStream(API_KEY, ACCESS_KEY, currentBroadcast);
+    private void createLiveStream(Broadcast newBroadcast) {;
+        Call<Broadcast> call = wowzaRestApi.createLiveStream(API_KEY, ACCESS_KEY, newBroadcast);
         call.enqueue(new Callback<Broadcast>() {
             @Override
             public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
                 if (!response.isSuccessful()) {
                     Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code() , Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "ResponseCode " + response.code() +": " + response.toString());
+                    try {
+                        Log.d(TAG, "Response " + response.code() + ": " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     return;
                 }
                 Broadcast broadcastResponse = response.body();
                 if (broadcastResponse != null) {
-                    LiveStream newLiveStream = broadcastResponse.getLiveStream();
-                    String streamId = newLiveStream.getStreamId();
-                    Log.d(TAG, "onResponse: streamId = " + streamId);
+                    LiveStream currentLiveStream = broadcastResponse.getLiveStream();
+                    LiveBroadcastActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            liveStream = currentLiveStream;
+                        }
+                    });
+                    Log.d(TAG, "onResponse:\nstreamId = " + currentLiveStream.getStreamId() + "\nplaybackUrl = " + currentLiveStream.getPlaybackURL());
                 }
             }
-
             @Override
             public void onFailure(Call<Broadcast> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t.getMessage());
@@ -247,10 +256,9 @@ public class LiveBroadcastActivity
                             liveIconIV.setVisibility(View.VISIBLE);
                             broadcastChronometer.setBase(SystemClock.elapsedRealtime());
                             broadcastChronometer.start();
-                            broadcastPublisher.startPublish(STREAM_URI_RTMP
-//                                    + "JetMinister/" + broadcastUsername
-                            );
-                            //takeSnapshot();
+//                            broadcastPublisher.startPublish(STREAM_URI_RTMP
+//                                    + "JetMinister/" + broadcastUsername);
+//                            takeSnapshot();
                         } else {
                             startStopBroadcastTV.setText(getResources().getString(R.string.start));
                             liveIconIV.setVisibility(View.GONE);
