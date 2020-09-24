@@ -136,7 +136,7 @@ public class LiveBroadcastActivity
                         String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
                         LiveStream newLiveStream = new LiveStream(currentUsername, userLocation, "Hackermann", "1234azer");
                         Broadcast newBroadcast = new Broadcast(newLiveStream);
-                        createLiveStream(uID, newBroadcast);
+                        createLiveStream(newBroadcast);
                     }
                 }
                 @Override
@@ -216,7 +216,7 @@ public class LiveBroadcastActivity
         });
     }
 
-    private void createLiveStream(String uID, Broadcast newBroadcast) {;
+    private void createLiveStream(Broadcast newBroadcast) {;
         Call<Broadcast> call = wowzaRestApi.createLiveStream(API_KEY, ACCESS_KEY, newBroadcast);
         call.enqueue(new Callback<Broadcast>() {
             @Override
@@ -232,7 +232,7 @@ public class LiveBroadcastActivity
                 }
                 Broadcast broadcastResponse = response.body();
                 if (broadcastResponse != null) {
-                    addLiveStreamToDatabase(uID, broadcastResponse);
+                    addLiveStreamToDatabase(broadcastResponse);
                 }
             }
             @Override
@@ -242,13 +242,12 @@ public class LiveBroadcastActivity
         });
     }
 
-    private void addLiveStreamToDatabase(String uID, Broadcast broadcastResponse) {
+    private void addLiveStreamToDatabase(Broadcast broadcastResponse) {
         LiveStream currentLiveStream = broadcastResponse.getLiveStream();
         SourceConnectionInformation currentSourceInfo = currentLiveStream.getSourceConnectionInformation();
-        liveStreamsRef.child(uID).child(KEY_STREAM_ID).setValue(currentLiveStream.getStreamId());
-        liveStreamsRef.child(uID).child(KEY_STREAM_PLAYBACK_URL).setValue(currentLiveStream.getPlaybackURL());
-        liveStreamsRef.child(uID).child(KEY_STREAM_USERNAME).setValue(currentLiveStream.getStreamUsername());
-        liveStreamsRef.child(uID).child(KEY_STREAM_PUBLISH_URL).setValue(currentSourceInfo.toString());
+        liveStreamsRef.child(currentLiveStream.getStreamUsername()).child(KEY_STREAM_ID).setValue(currentLiveStream.getStreamId());
+        liveStreamsRef.child(currentLiveStream.getStreamUsername()).child(KEY_STREAM_PLAYBACK_URL).setValue(currentLiveStream.getPlaybackURL());
+        liveStreamsRef.child(currentLiveStream.getStreamUsername()).child(KEY_STREAM_PUBLISH_URL).setValue(currentSourceInfo.toString());
         Log.d(TAG, "onResponse:\nstreamId = " + currentLiveStream.getStreamId() + "\nplaybackUrl = " + currentLiveStream.getPlaybackURL() + "\npublishUrl = " + currentSourceInfo.toString());
     }
 
