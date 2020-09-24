@@ -7,6 +7,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Path;
 
 public interface WowzaRestApi {
     @POST("live_streams")
@@ -15,14 +16,22 @@ public interface WowzaRestApi {
                                      @Body Broadcast broadcast);
 
     @PUT("live_streams/{id}/start")
-    Call<LiveStream> startLiveStream();
+    Call<Broadcast> startLiveStream(@Header("wsc-api-key") String APIKey,
+                                    @Header("wsc-access-key") String accessKey,
+                                    @Path("id") String streamId);
 
     @PUT("live_streams/{id}/stop")
-    Call<LiveStream> stopLiveStream();
+    Call<Broadcast> stopLiveStream(@Header("wsc-api-key") String APIKey,
+                                   @Header("wsc-access-key") String accessKey,
+                                   @Path("id") String streamId);
 
     @GET("live_streams/{id}/state")
-    Call<LiveStream> getLiveStreamState();
+    Call<Broadcast> getLiveStreamState(@Header("wsc-api-key") String APIKey,
+                                       @Header("wsc-access-key") String accessKey,
+                                       @Path("id") String streamId);
 
     @DELETE("live_streams/{id}")
-    Call<LiveStream> deleteLiveStream();
+    Call deleteLiveStream(@Header("wsc-api-key") String APIKey,
+                          @Header("wsc-access-key") String accessKey,
+                          @Path("id") String streamId);
 }

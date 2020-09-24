@@ -22,7 +22,7 @@ public class User implements Serializable {
     private String theme = "Blank";
     private ArrayList<String> followers, following;
     private boolean streamer = false;
-    private String regionServer = "eu_belguim";
+    private String location = "eu_belgium";
     private String creditCard = "";
     private Integer reportedNumber = 0;
 
@@ -70,7 +70,7 @@ public class User implements Serializable {
         return streamer;
     }
 
-    public String getRegionServer() { return regionServer; }
+    public String getLocation() { return location; }
 
     public String getCreditCard() { return creditCard; }
 
@@ -112,7 +112,7 @@ public class User implements Serializable {
         this.streamer = streamer;
     }
 
-    public void setRegionServer(String regionServer) { this.regionServer = regionServer; }
+    public void setLocation(String location) { this.location = location; }
 
     public void setCreditCard(String creditCard) { this.creditCard = creditCard; }
 

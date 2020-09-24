@@ -26,7 +26,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 import com.streamaxia.android.CameraPreview;
 import com.streamaxia.android.StreamaxiaPublisher;
 import com.streamaxia.android.handlers.EncoderHandler;
@@ -41,16 +40,22 @@ import java.util.List;
 import pack.jetminister.R;
 import pack.jetminister.data.Broadcast;
 import pack.jetminister.data.LiveStream;
+import pack.jetminister.data.SourceConnectionInformation;
 import pack.jetminister.data.WowzaRestApi;
-import pack.jetminister.data.util.BroadcastLocation;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_ID;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_USERNAME;
+import static pack.jetminister.data.SourceConnectionInformation.KEY_STREAM_PUBLISH_URL;
 import static pack.jetminister.data.User.KEY_LOCATION;
 import static pack.jetminister.data.User.KEY_USERNAME;
+import static pack.jetminister.data.User.KEY_USERS;
 
 public class LiveBroadcastActivity
         extends AppCompatActivity
@@ -67,7 +72,8 @@ public class LiveBroadcastActivity
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
-    private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+    private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
+    private DatabaseReference liveStreamsRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
     private WowzaRestApi wowzaRestApi;
 
     private LiveStream liveStream;
@@ -81,10 +87,9 @@ public class LiveBroadcastActivity
         @Override
         public void onClick(View v) {
             //TODO: AlertDialog to confirm broadcast
-            startStopStream();
+            startStopPublishing();
         }
     };
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,13 +100,14 @@ public class LiveBroadcastActivity
         if (toolbar != null) {
             toolbar.hide();
         }
+        hideStatusBar();
+
         startStopBroadcastTV = findViewById(R.id.tv_live_broadcast_startstop);
         stateBroadcastTV = findViewById(R.id.tv_live_broadcast_state);
         broadcastChronometer = findViewById(R.id.chronometer_live_broadcast);
         previewCameraBroadcast = findViewById(R.id.cam_preview_live_broadcast);
         liveIconIV = findViewById(R.id.broadcast_iv_live);
         startStopBroadcastTV.setOnClickListener(startStopListener);
-        hideStatusBar();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.cloud.wowza.com/api/v1.5/")
@@ -121,56 +127,23 @@ public class LiveBroadcastActivity
         }
 
         if (currentUser != null) {
-            usersRef.child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+            String uID = currentUser.getUid();
+            usersRef.child(uID).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists() && snapshot.hasChild(KEY_USERNAME) && snapshot.hasChild(KEY_LOCATION)){
-                        String userLocation = snapshot.child(KEY_USERNAME).getValue(String.class);
+                        String userLocation = snapshot.child(KEY_LOCATION).getValue(String.class);
                         String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
                         LiveStream newLiveStream = new LiveStream(currentUsername, userLocation, "Hackermann", "1234azer");
                         Broadcast newBroadcast = new Broadcast(newLiveStream);
-                        createLiveStream(newBroadcast);
+                        createLiveStream(uID, newBroadcast);
                     }
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-
                 }
             });
         }
-    }
-
-    private void createLiveStream(Broadcast newBroadcast) {;
-        Call<Broadcast> call = wowzaRestApi.createLiveStream(API_KEY, ACCESS_KEY, newBroadcast);
-        call.enqueue(new Callback<Broadcast>() {
-            @Override
-            public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
-                if (!response.isSuccessful()) {
-                    Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code() , Toast.LENGTH_SHORT).show();
-                    try {
-                        Log.d(TAG, "Response " + response.code() + ": " + response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    return;
-                }
-                Broadcast broadcastResponse = response.body();
-                if (broadcastResponse != null) {
-                    LiveStream currentLiveStream = broadcastResponse.getLiveStream();
-                    LiveBroadcastActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            liveStream = currentLiveStream;
-                        }
-                    });
-                    Log.d(TAG, "onResponse:\nstreamId = " + currentLiveStream.getStreamId() + "\nplaybackUrl = " + currentLiveStream.getPlaybackURL());
-                }
-            }
-            @Override
-            public void onFailure(Call<Broadcast> call, Throwable t) {
-                Log.d(TAG, "onFailure: " + t.getMessage());
-            }
-        });
     }
 
     @Override
@@ -178,7 +151,7 @@ public class LiveBroadcastActivity
         super.onResume();
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
-            stopStreaming();
+            stopPublishing();
             stopChronometer();
             startStopBroadcastTV.setText(getResources().getString(R.string.start));
         } else {
@@ -243,27 +216,129 @@ public class LiveBroadcastActivity
         });
     }
 
-    private void startStopStream() {
-        if (currentUser != null) {
-            String uID = currentUser.getUid();
-            usersRef.child(uID).addValueEventListener(new ValueEventListener() {
+    private void createLiveStream(String uID, Broadcast newBroadcast) {;
+        Call<Broadcast> call = wowzaRestApi.createLiveStream(API_KEY, ACCESS_KEY, newBroadcast);
+        call.enqueue(new Callback<Broadcast>() {
+            @Override
+            public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code() , Toast.LENGTH_SHORT).show();
+                    try {
+                        Log.d(TAG, "Response " + response.code() + ": " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+                Broadcast broadcastResponse = response.body();
+                if (broadcastResponse != null) {
+                    addLiveStreamToDatabase(uID, broadcastResponse);
+                }
+            }
+            @Override
+            public void onFailure(Call<Broadcast> call, Throwable t) {
+                Log.d(TAG, "onFailure: " + t.getMessage());
+            }
+        });
+    }
+
+    private void addLiveStreamToDatabase(String uID, Broadcast broadcastResponse) {
+        LiveStream currentLiveStream = broadcastResponse.getLiveStream();
+        SourceConnectionInformation currentSourceInfo = currentLiveStream.getSourceConnectionInformation();
+        liveStreamsRef.child(uID).child(KEY_STREAM_ID).setValue(currentLiveStream.getStreamId());
+        liveStreamsRef.child(uID).child(KEY_STREAM_PLAYBACK_URL).setValue(currentLiveStream.getPlaybackURL());
+        liveStreamsRef.child(uID).child(KEY_STREAM_USERNAME).setValue(currentLiveStream.getStreamUsername());
+        liveStreamsRef.child(uID).child(KEY_STREAM_PUBLISH_URL).setValue(currentSourceInfo.toString());
+        Log.d(TAG, "onResponse:\nstreamId = " + currentLiveStream.getStreamId() + "\nplaybackUrl = " + currentLiveStream.getPlaybackURL() + "\npublishUrl = " + currentSourceInfo.toString());
+    }
+
+    private void activateStream(){
+        liveStreamsRef.child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.child(KEY_STREAM_ID).exists()){
+                    String currentStreamID = snapshot.child(KEY_STREAM_ID).getValue(String.class);
+                    Call<Broadcast> call = wowzaRestApi.startLiveStream(API_KEY, ACCESS_KEY, currentStreamID);
+                    call.enqueue(new Callback<Broadcast>() {
+                        @Override
+                        public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
+                            if (!response.isSuccessful()) {
+                                Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code(), Toast.LENGTH_SHORT).show();
+                                try {
+                                    Log.d(TAG, "Response " + response.code() + ": " + response.errorBody().string());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                startStopPublishing();
+                            }
+                        }
+                        @Override
+                        public void onFailure(Call<Broadcast> call, Throwable t) {
+                        }
+                    });
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
+    }
+
+    private void deactivateStream(){
+        liveStreamsRef.child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.child(KEY_STREAM_ID).exists()){
+                    String currentStreamID = snapshot.child(KEY_STREAM_ID).getValue(String.class);
+                    Call<Broadcast> call = wowzaRestApi.stopLiveStream(API_KEY, ACCESS_KEY, currentStreamID);
+                    call.enqueue(new Callback<Broadcast>() {
+                        @Override
+                        public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
+                            if (!response.isSuccessful()) {
+                                Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code(), Toast.LENGTH_SHORT).show();
+                                try {
+                                    Log.d(TAG, "Response " + response.code() + ": " + response.errorBody().string());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                startStopPublishing();
+                            }
+                        }
+                        @Override
+                        public void onFailure(Call<Broadcast> call, Throwable t) {
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+    private void startStopPublishing() {
+            liveStreamsRef.child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists() && snapshot.child("username").exists()) {
-                        String broadcastUsername = snapshot.child("username").getValue(String.class);
+                    if (snapshot.exists() && snapshot.child(KEY_STREAM_PUBLISH_URL).exists()) {
+                        String currentPublishURL = snapshot.child(KEY_STREAM_PUBLISH_URL).getValue(String.class);
                         if (startStopBroadcastTV.getText().toString().trim().equals(getResources().getString(R.string.start))) {
                             startStopBroadcastTV.setText(getResources().getString(R.string.stop));
+                            liveIconIV.setVisibility(View.GONE);
+                            stopChronometer();
+                            stopPublishing();
+                            deactivateStream();
+                        } else {
+                            startStopBroadcastTV.setText(getResources().getString(R.string.start));
                             liveIconIV.setVisibility(View.VISIBLE);
                             broadcastChronometer.setBase(SystemClock.elapsedRealtime());
                             broadcastChronometer.start();
-//                            broadcastPublisher.startPublish(STREAM_URI_RTMP
-//                                    + "JetMinister/" + broadcastUsername);
-//                            takeSnapshot();
-                        } else {
-                            startStopBroadcastTV.setText(getResources().getString(R.string.start));
-                            liveIconIV.setVisibility(View.GONE);
-                            stopChronometer();
-                            stopStreaming();
+                            activateStream();
+                            broadcastPublisher.startPublish(currentPublishURL);
                         }
                     }
                 }
@@ -273,11 +348,11 @@ public class LiveBroadcastActivity
                 }
             });
         }
-    }
 
 
-    private void stopStreaming() {
+    private void stopPublishing() {
         broadcastPublisher.stopPublish();
+
     }
 
     private void stopChronometer() {
@@ -293,7 +368,7 @@ public class LiveBroadcastActivity
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         broadcastPublisher.setScreenOrientation(newConfig.orientation);
     }

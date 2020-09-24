@@ -3,6 +3,8 @@ package pack.jetminister.data;
 import com.google.gson.annotations.SerializedName;
 
 public class SourceConnectionInformation {
+    public static final String KEY_STREAM_PUBLISH_URL = "publishURL";
+
     @SerializedName("primary_server")
     private String primaryServerAddress;
     @SerializedName("host_port")
@@ -12,9 +14,9 @@ public class SourceConnectionInformation {
     @SerializedName("disable_authentication")
     private boolean disableAuthentication;
     @SerializedName("username")
-    private String streamUsername;
+    private String authUsername;
     @SerializedName("password")
-    private String streamPassword;
+    private String authPassword;
 
 
     public String getPrimaryServerAddress() {
@@ -33,11 +35,29 @@ public class SourceConnectionInformation {
         return disableAuthentication;
     }
 
-    public String getStreamUsername() {
-        return streamUsername;
+    public String getAuthUsername() {
+        return authUsername;
     }
 
-    public String getStreamPassword() {
-        return streamPassword;
+    public String getAuthPassword() {
+        return authPassword;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder(60);
+        builder.append(primaryServerAddress.substring(0, 7))
+                .append(authUsername)
+                .append(":")
+                .append(authPassword)
+                .append("@")
+                .append(primaryServerAddress.substring(7).split("/")[0])
+                .append(":")
+                .append(hostPort)
+                .append("/")
+                .append(primaryServerAddress.substring(7).split("/")[1])
+                .append("/")
+                .append(streamName);
+        return builder.toString();
     }
 }

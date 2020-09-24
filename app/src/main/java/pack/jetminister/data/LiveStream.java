@@ -6,11 +6,19 @@ import java.util.ArrayList;
 
 public class LiveStream {
 
-    public static final String KEY_STREAMS = "live_streams";
-    public static final String KEY_STREAM_ID = "live_streams";
+    public static final String KEY_LIVE_STREAMS = "live_streams";
+    public static final String KEY_STREAM_ID = "streamId";
+    public static final String KEY_STREAM_PLAYBACK_URL = "playbackURL";
+    public static final String KEY_STREAM_USERNAME = "streamUsername";
+    private static final String TAG = "LiveStream";
+
 
     @SerializedName("id")
     private String streamId;
+    @SerializedName("state")
+    private String streamState;
+    @SerializedName("ip_address")
+    private String streamIPAdress;
     @SerializedName("created_at")
     private String timeCreated;
     @SerializedName("updated_at")
@@ -100,6 +108,14 @@ public class LiveStream {
 
     public String getStreamId() {
         return streamId;
+    }
+
+    public String getStreamState() {
+        return streamState;
+    }
+
+    public String getStreamIPAdress() {
+        return streamIPAdress;
     }
 
     public String getTimeCreated() {

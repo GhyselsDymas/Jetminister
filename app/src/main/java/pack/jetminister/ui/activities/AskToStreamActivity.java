@@ -36,7 +36,7 @@ public class AskToStreamActivity extends AppCompatActivity {
         confirmButton = findViewById(R.id.btn_ask_to_stream);
         spinnerServerLocation = findViewById(R.id.spinner_server_location);
 
-        List<String> list = broadcastLocation.getValues();
+        List<String> list = broadcastLocation.getBroadcastLocationList();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerServerLocation.setAdapter(adapter);
