@@ -42,7 +42,6 @@ public class ThemeChooserDialog extends androidx.fragment.app.DialogFragment {
                         List<String> myResArrayList = Arrays.asList(myResArray);
                         Intent intent = new Intent(getActivity(), LiveBroadcastActivity.class);
                         startActivity(intent);
-                        Toast.makeText(mContext, myResArrayList.get(which) , Toast.LENGTH_LONG).show();
                         dialog.dismiss();
                     }
                 })
