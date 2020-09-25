@@ -67,8 +67,11 @@ public class LiveBroadcastActivity
         EncoderHandler.EncodeListener {
 
     private static final String TAG = "LiveBroadcastActivity";
-    private static final String API_KEY = "6gs5AUUZ20A7NSQPF3fFMZ3aD2bCOenpqfPQxl5qDIb6V36VW2FPUsnfdbUv3117";
-    private static final String ACCESS_KEY = "9nDkUi9yAe0j0BQIK7n9vaKlLIgMJQ49rHXOdrnMA2cA0iaZCWQQH8APaHJe305c";
+    private static final String API_KEY_DYMAS = "6gs5AUUZ20A7NSQPF3fFMZ3aD2bCOenpqfPQxl5qDIb6V36VW2FPUsnfdbUv3117";
+    private static final String API_KEY_DAVID = "ffwQUAgvgFL310lMtP1O5Ee9rvnrg5bH8TgufZWHDAn2EHDeMJuWnKrdrVZU3356";
+    private static final String ACCESS_KEY_DYMAS = "9nDkUi9yAe0j0BQIK7n9vaKlLIgMJQ49rHXOdrnMA2cA0iaZCWQQH8APaHJe305c";
+    private static final String ACCESS_KEY_DAVID = "zaXG6RyhKF8DPQJTJNmG2n4Zcx98eU4mDmXmr2OKFgZQ7fz19AKtmYkqpYtd3334";
+
     public final static int BITRATE = 500;
     public final static int WIDTH = 720;
     public final static int HEIGHT = 1280;
@@ -92,22 +95,17 @@ public class LiveBroadcastActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists() && snapshot.hasChild(KEY_LIVE_STREAM)) {
-                    String currentStreamID = snapshot.child(KEY_STREAM_ID).getValue(String.class);
-                    String currentPublishURL = snapshot.child(KEY_STREAM_PUBLISH_URL).getValue(String.class);
-                    if (!currentStreamID.isEmpty() && !currentPublishURL.isEmpty()) {
+                    String currentStreamID = snapshot.child(KEY_LIVE_STREAM).child(KEY_STREAM_ID).getValue(String.class);
+                    String currentPublishURL = snapshot.child(KEY_LIVE_STREAM).child(KEY_STREAM_PUBLISH_URL).getValue(String.class);
+                    if (currentStreamID.isEmpty() && currentPublishURL.isEmpty()) {
+                        String userLocation = snapshot.child(KEY_LOCATION).getValue(String.class);
+                        String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
+                        LiveStream newLiveStream = new LiveStream(currentUsername, userLocation, "Hackermann", "1234azer");
+                        Broadcast newBroadcast = new Broadcast(newLiveStream);
+                        createLiveStream(newBroadcast);
+                    } else {
                         startRequestingStreamState();
                     }
-                    String userLocation = snapshot.child(KEY_LOCATION).getValue(String.class);
-                    String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
-                    LiveStream newLiveStream = new LiveStream(currentUsername, userLocation, "Hackermann", "1234azer");
-                    Broadcast newBroadcast = new Broadcast(newLiveStream);
-                    createLiveStream(newBroadcast);
-                } else {
-                    String userLocation = snapshot.child(KEY_LOCATION).getValue(String.class);
-                    String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
-                    LiveStream newLiveStream = new LiveStream(currentUsername, userLocation, "Hackermann", "1234azer");
-                    Broadcast newBroadcast = new Broadcast(newLiveStream);
-                    createLiveStream(newBroadcast);
                 }
             }
 
@@ -166,7 +164,7 @@ public class LiveBroadcastActivity
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
             stopPublishing();
-            deactivateStream();
+//            deactivateStream();
             stopChronometer();
         } else {
             Intent intent = new Intent(this, PermissionsActivity.class);
@@ -187,7 +185,7 @@ public class LiveBroadcastActivity
         previewCameraBroadcast.stopCamera();
         broadcastPublisher.stopPublish();
         broadcastPublisher.pauseRecord();
-        deactivateStream();
+//        deactivateStream();
     }
 
     @Override
@@ -195,7 +193,7 @@ public class LiveBroadcastActivity
         super.onStop();
         previewCameraBroadcast.stopCamera();
         broadcastPublisher.stopPublish();
-        deactivateStream();
+//        deactivateStream();
         broadcastPublisher.pauseRecord();
     }
 
@@ -203,7 +201,7 @@ public class LiveBroadcastActivity
     protected void onDestroy() {
         super.onDestroy();
         broadcastPublisher.stopPublish();
-        deactivateStream();
+//        deactivateStream();
         broadcastPublisher.stopRecord();
     }
 
@@ -234,7 +232,7 @@ public class LiveBroadcastActivity
     }
 
     private void createLiveStream(Broadcast newBroadcast) {
-        Call<Broadcast> call = wowzaRestApi.createLiveStream(API_KEY, ACCESS_KEY, newBroadcast);
+        Call<Broadcast> call = wowzaRestApi.createLiveStream(API_KEY_DAVID, ACCESS_KEY_DAVID, newBroadcast);
         call.enqueue(new Callback<Broadcast>() {
             @Override
             public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
@@ -297,7 +295,7 @@ public class LiveBroadcastActivity
                 if (snapshot.exists()) {
                     String currentStreamID = snapshot.child(KEY_STREAM_ID).getValue(String.class);
                     String currentPublishURL = snapshot.child(KEY_STREAM_PUBLISH_URL).getValue(String.class);
-                    Call<Broadcast> call = wowzaRestApi.getLiveStreamState(API_KEY, ACCESS_KEY, currentStreamID);
+                    Call<Broadcast> call = wowzaRestApi.getLiveStreamState(API_KEY_DAVID, ACCESS_KEY_DAVID, currentStreamID);
                     call.enqueue(new Callback<Broadcast>() {
                         @Override
                         public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
@@ -336,7 +334,7 @@ public class LiveBroadcastActivity
 
 
     private void activateStream(String streamID, String publishURL) {
-        Call<Broadcast> call = wowzaRestApi.startLiveStream(API_KEY, ACCESS_KEY, streamID);
+        Call<Broadcast> call = wowzaRestApi.startLiveStream(API_KEY_DAVID, ACCESS_KEY_DAVID, streamID);
         call.enqueue(new Callback<Broadcast>() {
             @Override
             public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
@@ -365,7 +363,7 @@ public class LiveBroadcastActivity
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     String currentStreamID = snapshot.getValue(String.class);
-                    Call<Broadcast> call = wowzaRestApi.stopLiveStream(API_KEY, ACCESS_KEY, currentStreamID);
+                    Call<Broadcast> call = wowzaRestApi.stopLiveStream(API_KEY_DAVID, ACCESS_KEY_DAVID, currentStreamID);
                     call.enqueue(new Callback<Broadcast>() {
                         @Override
                         public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
