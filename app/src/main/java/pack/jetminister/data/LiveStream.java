@@ -78,6 +78,7 @@ public class LiveStream {
     @SerializedName("player_hls_playback_url")
     private String playbackURL;
     @SerializedName("hosted_page")
+    private String pubishURL;
     private boolean hostedPage;
     @SerializedName("hosted_page_title")
     private String hostedPageTitle;
@@ -106,6 +107,19 @@ public class LiveStream {
         this.hostedPageSharingIcons = false;
         this.billingMode = "pay_as_you_go";
     }
+
+    public void setStreamId(String streamId) {
+        this.streamId = streamId;
+    }
+
+    public void setPlaybackURL(String playbackURL) {
+        this.playbackURL = playbackURL;
+    }
+
+    public void setPubishURL(String pubishURL) {
+        this.pubishURL = pubishURL;
+    }
+
 
     public String getStreamId() {
         return streamId;
@@ -233,6 +247,10 @@ public class LiveStream {
 
     public String getPlaybackURL() {
         return playbackURL;
+    }
+
+    public String getPubishURL() {
+        return pubishURL;
     }
 
     public boolean isHostedPage() {

@@ -84,6 +84,7 @@ public class LiveBroadcastActivity
     private WowzaRestApi wowzaRestApi;
 
     private StreamaxiaPublisher broadcastPublisher;
+    private Handler startHandler, checkHandler;
     private CameraPreview previewCameraBroadcast;
     private TextView startBroadcastTV, stopBroadcastTV, stateBroadcastTV;
     private Chronometer broadcastChronometer;
@@ -94,6 +95,7 @@ public class LiveBroadcastActivity
         usersRef.child(uID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                progressBar.setVisibility(View.VISIBLE);
                 if (snapshot.exists() && snapshot.hasChild(KEY_LIVE_STREAM)) {
                     String currentStreamID = snapshot.child(KEY_LIVE_STREAM).child(KEY_STREAM_ID).getValue(String.class);
                     String currentPublishURL = snapshot.child(KEY_LIVE_STREAM).child(KEY_STREAM_PUBLISH_URL).getValue(String.class);
@@ -104,6 +106,7 @@ public class LiveBroadcastActivity
                         Broadcast newBroadcast = new Broadcast(newLiveStream);
                         createLiveStream(newBroadcast);
                     } else {
+                        activateStream(currentStreamID);
                         startRequestingStreamState();
                     }
                 }
@@ -248,6 +251,7 @@ public class LiveBroadcastActivity
                 Broadcast broadcastResponse = response.body();
                 if (broadcastResponse != null) {
                     addLiveStreamToDatabase(broadcastResponse);
+                    startRequestingStreamState();
                 }
             }
 
@@ -279,14 +283,14 @@ public class LiveBroadcastActivity
 
 
     private void startRequestingStreamState() {
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        startHandler = new Handler();
+        startHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 getStreamState();
-                handler.postDelayed(this, 5000);
+                startHandler.postDelayed(this, 1000);
             }
-        }, 0);
+        }, 50);
     }
 
     private void getStreamState() {
@@ -311,29 +315,27 @@ public class LiveBroadcastActivity
                             if (broadcastResponse != null) {
                                 LiveStream checkedLivestream = broadcastResponse.getLiveStream();
                                 String streamState = checkedLivestream.getStreamState();
+                                Log.d(TAG, "get State " + streamState);
                                 if (streamState.equals("started")) {
-                                    activateStream(currentStreamID, currentPublishURL);
+                                    startHandler.removeCallbacksAndMessages(null);
+                                    startBroadcast(currentPublishURL);
                                 }
                             }
                         }
-
                         @Override
                         public void onFailure(Call<Broadcast> call, Throwable t) {
-
                         }
                     });
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
 
 
-    private void activateStream(String streamID, String publishURL) {
+    private void activateStream(String streamID) {
         Call<Broadcast> call = wowzaRestApi.startLiveStream(API_KEY_DAVID, ACCESS_KEY_DAVID, streamID);
         call.enqueue(new Callback<Broadcast>() {
             @Override
@@ -346,7 +348,6 @@ public class LiveBroadcastActivity
                         e.printStackTrace();
                     }
                 }
-                startBroadcast(publishURL);
                 Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code(), Toast.LENGTH_SHORT).show();
             }
 
