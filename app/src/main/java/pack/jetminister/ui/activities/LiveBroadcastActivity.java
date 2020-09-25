@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,27 +75,50 @@ public class LiveBroadcastActivity
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private String uID = mAuth.getCurrentUser().getUid();
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
     private DatabaseReference liveStreamsRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
     private WowzaRestApi wowzaRestApi;
 
-    private LiveStream liveStream;
     private StreamaxiaPublisher broadcastPublisher;
     private CameraPreview previewCameraBroadcast;
     private TextView startBroadcastTV, stopBroadcastTV, stateBroadcastTV;
     private Chronometer broadcastChronometer;
+    private ProgressBar progressBar;
     ImageView liveIconIV;
 
     private View.OnClickListener startListener = v -> {
-        startBroadcast();
-        stopBroadcastTV.setClickable(true);
-        startBroadcastTV.setClickable(false);
+        usersRef.child(uID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.hasChild(KEY_LIVE_STREAM)) {
+                    String currentStreamID = snapshot.child(KEY_STREAM_ID).getValue(String.class);
+                    String currentPublishURL = snapshot.child(KEY_STREAM_PUBLISH_URL).getValue(String.class);
+                    if (!currentStreamID.isEmpty() && !currentPublishURL.isEmpty()) {
+                        startRequestingStreamState();
+                    }
+                    String userLocation = snapshot.child(KEY_LOCATION).getValue(String.class);
+                    String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
+                    LiveStream newLiveStream = new LiveStream(currentUsername, userLocation, "Hackermann", "1234azer");
+                    Broadcast newBroadcast = new Broadcast(newLiveStream);
+                    createLiveStream(newBroadcast);
+                } else {
+                    String userLocation = snapshot.child(KEY_LOCATION).getValue(String.class);
+                    String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
+                    LiveStream newLiveStream = new LiveStream(currentUsername, userLocation, "Hackermann", "1234azer");
+                    Broadcast newBroadcast = new Broadcast(newLiveStream);
+                    createLiveStream(newBroadcast);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
     };
 
     private View.OnClickListener stopListener = v -> {
         stopBroadcast();
-        startBroadcastTV.setClickable(true);
-        stopBroadcastTV.setClickable(false);
     };
 
     @Override
@@ -110,6 +135,7 @@ public class LiveBroadcastActivity
         startBroadcastTV = findViewById(R.id.tv_live_broadcast_start);
         stopBroadcastTV = findViewById(R.id.tv_live_broadcast_stop);
         stateBroadcastTV = findViewById(R.id.tv_live_broadcast_state);
+        progressBar = findViewById(R.id.broadcast_progressbar);
         broadcastChronometer = findViewById(R.id.chronometer_live_broadcast);
         previewCameraBroadcast = findViewById(R.id.cam_preview_live_broadcast);
         liveIconIV = findViewById(R.id.broadcast_iv_live);
@@ -131,27 +157,6 @@ public class LiveBroadcastActivity
                 == PackageManager.PERMISSION_GRANTED) {
             previewCameraBroadcast.startCamera();
             setStreamerDefaultValues();
-        }
-
-        if (currentUser != null) {
-            String uID = currentUser.getUid();
-            usersRef.child(uID).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists() && snapshot.hasChild(KEY_LIVE_STREAM)) {
-                        activateStream();
-                    } else {
-                        String userLocation = snapshot.child(KEY_LOCATION).getValue(String.class);
-                        String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
-                        LiveStream newLiveStream = new LiveStream(currentUsername, userLocation, "Hackermann", "1234azer");
-                        Broadcast newBroadcast = new Broadcast(newLiveStream);
-                        createLiveStream(newBroadcast);
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                }
-            });
         }
     }
 
@@ -258,30 +263,41 @@ public class LiveBroadcastActivity
     private void addLiveStreamToDatabase(Broadcast broadcastResponse) {
         LiveStream currentLiveStream = broadcastResponse.getLiveStream();
         SourceConnectionInformation currentSourceInfo = currentLiveStream.getSourceConnectionInformation();
-        usersRef.child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+        usersRef.child(uID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
-                user.setPlaybackURL(currentLiveStream.getPlaybackURL());
-                user.setPublishURL(currentSourceInfo.getPrimaryServerAddress());
-                user.setStreamID(currentLiveStream.getStreamId());
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-        usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_ID).setValue(currentLiveStream.getStreamId());
-        usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_PLAYBACK_URL).setValue(currentLiveStream.getPlaybackURL());
-        usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_PUBLISH_URL).setValue(currentSourceInfo.toString());
+        usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_ID).setValue(currentLiveStream.getStreamId());
+        usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_PLAYBACK_URL).setValue(currentLiveStream.getPlaybackURL());
+        usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_PUBLISH_URL).setValue(currentSourceInfo.toString());
         Log.d(TAG, "onResponse:\nstreamId = " + currentLiveStream.getStreamId() + "\nplaybackUrl = " + currentLiveStream.getPlaybackURL() + "\npublishUrl = " + currentSourceInfo.toString());
     }
 
-    private void activateStream() {
-        usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_ID).addValueEventListener(new ValueEventListener() {
+
+    private void startRequestingStreamState() {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getStreamState();
+                handler.postDelayed(this, 5000);
+            }
+        }, 0);
+    }
+
+    private void getStreamState() {
+        usersRef.child(uID).child(KEY_LIVE_STREAM).addValueEventListener(new ValueEventListener() {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    String currentStreamID = snapshot.getValue(String.class);
-                    Call<Broadcast> call = wowzaRestApi.startLiveStream(API_KEY, ACCESS_KEY, currentStreamID);
+                    String currentStreamID = snapshot.child(KEY_STREAM_ID).getValue(String.class);
+                    String currentPublishURL = snapshot.child(KEY_STREAM_PUBLISH_URL).getValue(String.class);
+                    Call<Broadcast> call = wowzaRestApi.getLiveStreamState(API_KEY, ACCESS_KEY, currentStreamID);
                     call.enqueue(new Callback<Broadcast>() {
                         @Override
                         public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
@@ -293,11 +309,19 @@ public class LiveBroadcastActivity
                                     e.printStackTrace();
                                 }
                             }
+                            Broadcast broadcastResponse = response.body();
+                            if (broadcastResponse != null) {
+                                LiveStream checkedLivestream = broadcastResponse.getLiveStream();
+                                String streamState = checkedLivestream.getStreamState();
+                                if (streamState.equals("started")) {
+                                    activateStream(currentStreamID, currentPublishURL);
+                                }
+                            }
                         }
 
                         @Override
                         public void onFailure(Call<Broadcast> call, Throwable t) {
-                            Log.d(TAG, "onFailure: " + t.getMessage());
+
                         }
                     });
                 }
@@ -305,12 +329,38 @@ public class LiveBroadcastActivity
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+
+    private void activateStream(String streamID, String publishURL) {
+        Call<Broadcast> call = wowzaRestApi.startLiveStream(API_KEY, ACCESS_KEY, streamID);
+        call.enqueue(new Callback<Broadcast>() {
+            @Override
+            public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code(), Toast.LENGTH_SHORT).show();
+                    try {
+                        Log.d(TAG, "Response " + response.code() + ": " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                startBroadcast(publishURL);
+                Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Broadcast> call, Throwable t) {
+                Log.d(TAG, "onFailure: " + t.getMessage());
             }
         });
     }
 
     private void deactivateStream() {
-        usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_ID).addValueEventListener(new ValueEventListener() {
+        usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_ID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -328,6 +378,7 @@ public class LiveBroadcastActivity
                                 }
                             }
                         }
+
                         @Override
                         public void onFailure(Call<Broadcast> call, Throwable t) {
                             Log.d(TAG, "onFailure: " + t.getMessage());
@@ -343,32 +394,23 @@ public class LiveBroadcastActivity
 
     }
 
-    private void startBroadcast() {
-        usersRef.child(currentUser.getUid()).child(KEY_LIVE_STREAM).child(KEY_STREAM_PUBLISH_URL).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    String currentPublishURL = snapshot.getValue(String.class);
-                        liveIconIV.setVisibility(View.VISIBLE);
-                        broadcastChronometer.setBase(SystemClock.elapsedRealtime());
-                        broadcastChronometer.start();
-                        activateStream();
-                        broadcastPublisher.startPublish(currentPublishURL);
-                    }
-                }
+    private void startBroadcast(String publishURL) {
+        progressBar.setVisibility(View.GONE);
+        liveIconIV.setVisibility(View.VISIBLE);
+        broadcastChronometer.setBase(SystemClock.elapsedRealtime());
+        broadcastChronometer.start();
+        broadcastPublisher.startPublish(publishURL);
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+
     }
 
-    private void stopBroadcast(){
-            liveIconIV.setVisibility(View.GONE);
-            stopChronometer();
-            stopPublishing();
-            deactivateStream();
+    private void stopBroadcast() {
+        liveIconIV.setVisibility(View.GONE);
+        stopChronometer();
+        stopPublishing();
+        deactivateStream();
     }
+
     private void stopPublishing() {
         broadcastPublisher.stopPublish();
     }

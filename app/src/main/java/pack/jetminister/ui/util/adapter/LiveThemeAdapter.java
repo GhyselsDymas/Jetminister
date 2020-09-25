@@ -59,18 +59,20 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                    if (postSnapshot.hasChild(KEY_LIVE_STREAM) && postSnapshot.child(KEY_LIVE_STREAM).hasChild(KEY_STREAM_PLAYBACK_URL)){
                     User user = postSnapshot.getValue(User.class);
+
                     String playbackURL = postSnapshot.child(KEY_LIVE_STREAM).child(KEY_STREAM_PLAYBACK_URL).getValue(String.class);
                     mUsers.add(user);
                     mLiveStreams.add(playbackURL);
-
+                    }
                 }
 
                 holder.titleLiveTheme.setText(uploadCurrent);
                 holder.readMoreLiveTheme.setText(String.format("%s %s", mContext.getResources().getString(R.string.see_more_tv), uploadCurrent));
                 holder.recyclerViewLive.setHasFixedSize(true);
                 holder.recyclerViewLive.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-                mAdapter = new LivePictureAdapter(mContext, mUsers);
+                mAdapter = new LivePictureAdapter(mContext, mUsers, mLiveStreams);
                 holder.recyclerViewLive.setAdapter(mAdapter);
             }
 
