@@ -89,9 +89,30 @@ public class LiveBroadcastActivity
     private TextView startBroadcastTV, stopBroadcastTV, stateBroadcastTV;
     private Chronometer broadcastChronometer;
     private ProgressBar progressBar;
-    ImageView liveIconIV;
+    ImageView liveIconIV, publishIcon;
 
-    private View.OnClickListener startListener = v -> {
+    private View.OnClickListener publishListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_PUBLISH_URL).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()){
+                        String publishURL = snapshot.getValue(String.class);
+                        startBroadcast(publishURL);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+        }
+    };
+
+    private View.OnClickListener activateStreamListener = v -> {
         usersRef.child(uID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -118,7 +139,7 @@ public class LiveBroadcastActivity
         });
     };
 
-    private View.OnClickListener stopListener = v -> {
+    private View.OnClickListener deactivateStreamListener = v -> {
         stopBroadcast();
     };
 
@@ -140,8 +161,10 @@ public class LiveBroadcastActivity
         broadcastChronometer = findViewById(R.id.chronometer_live_broadcast);
         previewCameraBroadcast = findViewById(R.id.cam_preview_live_broadcast);
         liveIconIV = findViewById(R.id.broadcast_iv_live);
-        startBroadcastTV.setOnClickListener(startListener);
-        stopBroadcastTV.setOnClickListener(stopListener);
+        publishIcon = findViewById(R.id.live_broadcast_publish);
+        publishIcon.setOnClickListener(publishListener);
+        startBroadcastTV.setOnClickListener(activateStreamListener);
+        stopBroadcastTV.setOnClickListener(deactivateStreamListener);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.cloud.wowza.com/api/v1.5/")
@@ -188,7 +211,7 @@ public class LiveBroadcastActivity
         previewCameraBroadcast.stopCamera();
         broadcastPublisher.stopPublish();
         broadcastPublisher.pauseRecord();
-//        deactivateStream();
+        deactivateStream();
     }
 
     @Override
@@ -196,7 +219,7 @@ public class LiveBroadcastActivity
         super.onStop();
         previewCameraBroadcast.stopCamera();
         broadcastPublisher.stopPublish();
-//        deactivateStream();
+        deactivateStream();
         broadcastPublisher.pauseRecord();
     }
 
@@ -204,7 +227,7 @@ public class LiveBroadcastActivity
     protected void onDestroy() {
         super.onDestroy();
         broadcastPublisher.stopPublish();
-//        deactivateStream();
+        deactivateStream();
         broadcastPublisher.stopRecord();
     }
 
@@ -235,14 +258,14 @@ public class LiveBroadcastActivity
     }
 
     private void createLiveStream(Broadcast newBroadcast) {
-        Call<Broadcast> call = wowzaRestApi.createLiveStream(API_KEY_DAVID, ACCESS_KEY_DAVID, newBroadcast);
+        Call<Broadcast> call = wowzaRestApi.createLiveStream(API_KEY_DYMAS, ACCESS_KEY_DYMAS, newBroadcast);
         call.enqueue(new Callback<Broadcast>() {
             @Override
             public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
                 if (!response.isSuccessful()) {
                     Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code(), Toast.LENGTH_SHORT).show();
                     try {
-                        Log.d(TAG, "Response " + response.code() + ": " + response.errorBody().string());
+                        Log.d(TAG, "createLiveStreamResponse " + response.code() + ": " + response.errorBody().string());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -250,7 +273,10 @@ public class LiveBroadcastActivity
                 }
                 Broadcast broadcastResponse = response.body();
                 if (broadcastResponse != null) {
+                    LiveStream liveStream = broadcastResponse.getLiveStream();
+                    String streamId = liveStream.getStreamId();
                     addLiveStreamToDatabase(broadcastResponse);
+                    activateStream(streamId);
                     startRequestingStreamState();
                 }
             }
@@ -278,7 +304,7 @@ public class LiveBroadcastActivity
         usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_ID).setValue(currentLiveStream.getStreamId());
         usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_PLAYBACK_URL).setValue(currentLiveStream.getPlaybackURL());
         usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_PUBLISH_URL).setValue(currentSourceInfo.toString());
-        Log.d(TAG, "onResponse:\nstreamId = " + currentLiveStream.getStreamId() + "\nplaybackUrl = " + currentLiveStream.getPlaybackURL() + "\npublishUrl = " + currentSourceInfo.toString());
+        Log.d(TAG, "addLiveStreamToDataBaseResponse:\nstreamId = " + currentLiveStream.getStreamId() + "\nplaybackUrl = " + currentLiveStream.getPlaybackURL() + "\npublishUrl = " + currentSourceInfo.toString());
     }
 
 
@@ -299,14 +325,14 @@ public class LiveBroadcastActivity
                 if (snapshot.exists()) {
                     String currentStreamID = snapshot.child(KEY_STREAM_ID).getValue(String.class);
                     String currentPublishURL = snapshot.child(KEY_STREAM_PUBLISH_URL).getValue(String.class);
-                    Call<Broadcast> call = wowzaRestApi.getLiveStreamState(API_KEY_DAVID, ACCESS_KEY_DAVID, currentStreamID);
+                    Call<Broadcast> call = wowzaRestApi.getLiveStreamState(API_KEY_DYMAS, ACCESS_KEY_DYMAS, currentStreamID);
                     call.enqueue(new Callback<Broadcast>() {
                         @Override
                         public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
                             if (!response.isSuccessful()) {
                                 Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code(), Toast.LENGTH_SHORT).show();
                                 try {
-                                    Log.d(TAG, "Response " + response.code() + ": " + response.errorBody().string());
+                                    Log.d(TAG, "getLiveStreamStateResponse " + response.code() + ": " + response.errorBody().string());
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -318,16 +344,19 @@ public class LiveBroadcastActivity
                                 Log.d(TAG, "get State " + streamState);
                                 if (streamState.equals("started")) {
                                     startHandler.removeCallbacksAndMessages(null);
-                                    startBroadcast(currentPublishURL);
+                                    publishIcon.setVisibility(View.VISIBLE);
+                                    progressBar.setVisibility(View.GONE);
                                 }
                             }
                         }
+
                         @Override
                         public void onFailure(Call<Broadcast> call, Throwable t) {
                         }
                     });
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
@@ -336,14 +365,14 @@ public class LiveBroadcastActivity
 
 
     private void activateStream(String streamID) {
-        Call<Broadcast> call = wowzaRestApi.startLiveStream(API_KEY_DAVID, ACCESS_KEY_DAVID, streamID);
+        Call<Broadcast> call = wowzaRestApi.startLiveStream(API_KEY_DYMAS, ACCESS_KEY_DYMAS, streamID);
         call.enqueue(new Callback<Broadcast>() {
             @Override
             public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
                 if (!response.isSuccessful()) {
                     Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code(), Toast.LENGTH_SHORT).show();
                     try {
-                        Log.d(TAG, "Response " + response.code() + ": " + response.errorBody().string());
+                        Log.d(TAG, "activateStreamResponse " + response.code() + ": " + response.errorBody().string());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -364,14 +393,14 @@ public class LiveBroadcastActivity
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     String currentStreamID = snapshot.getValue(String.class);
-                    Call<Broadcast> call = wowzaRestApi.stopLiveStream(API_KEY_DAVID, ACCESS_KEY_DAVID, currentStreamID);
+                    Call<Broadcast> call = wowzaRestApi.stopLiveStream(API_KEY_DYMAS, ACCESS_KEY_DYMAS, currentStreamID);
                     call.enqueue(new Callback<Broadcast>() {
                         @Override
                         public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
                             if (!response.isSuccessful()) {
                                 Toast.makeText(LiveBroadcastActivity.this, "Code :" + response.code(), Toast.LENGTH_SHORT).show();
                                 try {
-                                    Log.d(TAG, "Response " + response.code() + ": " + response.errorBody().string());
+                                    Log.d(TAG, "deactivateStreamResponse " + response.code() + ": " + response.errorBody().string());
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -394,13 +423,11 @@ public class LiveBroadcastActivity
     }
 
     private void startBroadcast(String publishURL) {
-        progressBar.setVisibility(View.GONE);
-        liveIconIV.setVisibility(View.VISIBLE);
-        broadcastChronometer.setBase(SystemClock.elapsedRealtime());
-        broadcastChronometer.start();
-        broadcastPublisher.startPublish(publishURL);
-
-
+                liveIconIV.setVisibility(View.VISIBLE);
+                publishIcon.setVisibility(View.GONE);
+                broadcastChronometer.setBase(SystemClock.elapsedRealtime());
+                broadcastChronometer.start();
+                broadcastPublisher.startPublish(publishURL);
     }
 
     private void stopBroadcast() {
