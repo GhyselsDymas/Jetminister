@@ -1,6 +1,7 @@
 package pack.jetminister.ui.util.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,17 +27,21 @@ import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.User;
 
 import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAM;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_LIKES;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_VIEWERS;
 
-public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.LiveThemeHolder>  {
+public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.LiveThemeHolder> {
 
+    private static final String TAG = "LiveThemeAdapter";
     private LivePictureAdapter mAdapter;
     private Context mContext;
     private List<String> mThemes;
     private List<User> mUsers;
     private List<String> mLiveStreams;
+    private List<String> mStreamerIds;
 
-    public LiveThemeAdapter(Context context){
+    public LiveThemeAdapter(Context context) {
         mContext = context;
         String[] myResArray = context.getResources().getStringArray(R.array.themes);
         mThemes = Arrays.asList(myResArray);
@@ -54,18 +59,21 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
         final String uploadCurrent = mThemes.get(position);
         mUsers = new ArrayList<>();
         mLiveStreams = new ArrayList<>();
+        mStreamerIds = new ArrayList<>();
         DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
         usersDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-//                    if (postSnapshot.hasChild(KEY_LIVE_STREAM) && postSnapshot.child(KEY_LIVE_STREAM).hasChild(KEY_STREAM_PLAYBACK_URL)){
+                    String streamerID = postSnapshot.getKey();
+                    Log.d(TAG, "streamerID: " + streamerID);
                     User user = postSnapshot.getValue(User.class);
-
                     String playbackURL = postSnapshot.child(KEY_LIVE_STREAM).child(KEY_STREAM_PLAYBACK_URL).getValue(String.class);
+//                    int likes = postSnapshot.child(KEY_LIVE_STREAM).child(KEY_STREAM_LIKES).getValue(Integer.class);
+//                    int viewers = postSnapshot.child(KEY_LIVE_STREAM).child(KEY_STREAM_VIEWERS).getValue(Integer.class);
                     mUsers.add(user);
                     mLiveStreams.add(playbackURL);
-//                    }
+                    mStreamerIds.add(streamerID);
                 }
 
                 holder.titleLiveTheme.setText(uploadCurrent);

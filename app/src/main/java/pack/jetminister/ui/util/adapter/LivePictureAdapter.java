@@ -17,9 +17,11 @@ import com.streamaxia.player.StreamaxiaPlayer;
 import java.util.List;
 
 import pack.jetminister.R;
+import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.User;
 import pack.jetminister.ui.activities.LivePlayerActivity;
 
+import static pack.jetminister.data.LiveStream.KEY_STREAM_LIKES;
 import static pack.jetminister.data.User.KEY_USERNAME;
 
 public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.LivePictureHolder> {
@@ -31,6 +33,7 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
     private Context mContext;
     private List<User> mUsers;
     private List<String> mLivestreams;
+    private List<String> mStreamerIDs;
 
     public LivePictureAdapter(Context context, List<User> users, List<String> liveStreams){
         mContext = context;
@@ -84,11 +87,12 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
                     int position = getAdapterPosition();
                     User currentUser = mUsers.get(position);
                     String currentPlaybackURL = mLivestreams.get(position);
-//                    int amountLikes = 0;
+                    String currentStreamerID = mStreamerIDs.get(position);
                     String currentUsername = currentUser.getUsername();
 
                     Intent intent = new Intent(mContext , LivePlayerActivity.class);
-//                    intent.putExtra(KEY_LIKES, amountLikes);
+                    intent.putExtra("streamerID", currentStreamerID);
+//                    intent.putExtra(KEY_STREAM_LIKES, amountLikes);
                     intent.putExtra(KEY_USERNAME, currentUsername);
                     intent.putExtra(KEY_TYPE, STREAM_TYPE);
                     intent.putExtra(KEY_URI, currentPlaybackURL);

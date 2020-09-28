@@ -54,7 +54,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAM;
 import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_ID;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_LIKES;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_VIEWERS;
 import static pack.jetminister.data.SourceConnectionInformation.KEY_STREAM_PUBLISH_URL;
 import static pack.jetminister.data.User.KEY_LOCATION;
 import static pack.jetminister.data.User.KEY_USERNAME;
@@ -77,14 +79,12 @@ public class LiveBroadcastActivity
     public final static int HEIGHT = 1280;
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
     private String uID = mAuth.getCurrentUser().getUid();
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
-    private DatabaseReference liveStreamsRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
     private WowzaRestApi wowzaRestApi;
 
     private StreamaxiaPublisher broadcastPublisher;
-    private Handler startHandler, checkHandler;
+    private Handler startHandler, publishHandler;
     private CameraPreview previewCameraBroadcast;
     private TextView startBroadcastTV, stopBroadcastTV, stateBroadcastTV;
     private Chronometer broadcastChronometer;
@@ -304,6 +304,9 @@ public class LiveBroadcastActivity
         usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_ID).setValue(currentLiveStream.getStreamId());
         usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_PLAYBACK_URL).setValue(currentLiveStream.getPlaybackURL());
         usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_PUBLISH_URL).setValue(currentSourceInfo.toString());
+        usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_LIKES).setValue(0);
+        usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_VIEWERS).setValue(0);
+
         Log.d(TAG, "addLiveStreamToDataBaseResponse:\nstreamId = " + currentLiveStream.getStreamId() + "\nplaybackUrl = " + currentLiveStream.getPlaybackURL() + "\npublishUrl = " + currentSourceInfo.toString());
     }
 
@@ -362,7 +365,6 @@ public class LiveBroadcastActivity
             }
         });
     }
-
 
     private void activateStream(String streamID) {
         Call<Broadcast> call = wowzaRestApi.startLiveStream(API_KEY_DYMAS, ACCESS_KEY_DYMAS, streamID);

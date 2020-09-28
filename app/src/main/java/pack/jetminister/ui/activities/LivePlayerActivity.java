@@ -1,5 +1,6 @@
 package pack.jetminister.ui.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,18 +15,28 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.exoplayer.AspectRatioFrameLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.streamaxia.player.StreamaxiaPlayer;
 import com.streamaxia.player.listener.StreamaxiaPlayerState;
 
 import pack.jetminister.R;
-import pack.jetminister.data.User;
+import pack.jetminister.data.LiveStream;
 import pack.jetminister.ui.util.adapter.LivePictureAdapter;
 
+import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAM;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_LIKES;
 import static pack.jetminister.data.User.KEY_USERNAME;
 import static pack.jetminister.data.User.KEY_USERS;
 
 public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaPlayerState {
     private static final String TAG = "LivePlayerActivity";
+
+    private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
     private TextView usernamePlayerTV, likesPlayerTV, statePlayerTV;
     private ProgressBar playerProgressBar;
     private ImageView profilePlayerIV, likePlayerIV, sharePlayerIV, playPauseIV;
@@ -39,6 +50,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private String usernameBroadcast;
     private Uri broadcastURI;
     private int amountLikes;
+    private String streamerID;
     private int STREAM_TYPE = StreamaxiaPlayer.TYPE_HLS;
 
     Runnable hide = new Runnable() {
@@ -96,7 +108,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
         isLiked = false;
         likePlayerIV.setImageResource(R.drawable.ic_like_border_white_24);
-        likesPlayerTV.setVisibility(View.INVISIBLE);
+        likesPlayerTV.setVisibility(View.VISIBLE);
         likesPlayerTV.setText(String.valueOf(amountLikes));
         likePlayerIV.setOnClickListener(likeListener);
         usernamePlayerTV.setText(usernameBroadcast);
@@ -148,6 +160,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         usernameBroadcast = extras.getString(KEY_USERNAME);
         broadcastURI = Uri.parse(extras.getString(LivePictureAdapter.KEY_URI));
         STREAM_TYPE = extras.getInt(LivePictureAdapter.KEY_TYPE);
+        streamerID = extras.getString("streamerID");
     }
 
     private void initRTMPExoPlayer() {
@@ -162,12 +175,38 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
     private void likeUnlike() {
         if (!isLiked) {
-            amountLikes++;
+            usersRef.child(streamerID).child(KEY_LIVE_STREAM).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    int likes = snapshot.child(LiveStream.KEY_STREAM_LIKES).getValue(Integer.class);
+                    likes++;
+                    usersRef.child(streamerID).child(KEY_LIVE_STREAM).child(KEY_STREAM_LIKES).setValue(likes);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+            //TODO: set likes in database entry
             likesPlayerTV.setText(amountLikes);
             likePlayerIV.setImageResource(R.drawable.ic_like_fill_white_24);
             isLiked = true;
         } else {
-            amountLikes--;
+            usersRef.child(streamerID).child(KEY_LIVE_STREAM).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    int likes = snapshot.child(LiveStream.KEY_STREAM_LIKES).getValue(Integer.class);
+                    likes--;
+                    usersRef.child(streamerID).child(KEY_LIVE_STREAM).child(KEY_STREAM_LIKES).setValue(likes);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+            //TODO: set likes in database entry
             likesPlayerTV.setText(amountLikes);
             likePlayerIV.setImageResource(R.drawable.ic_like_border_white_24);
             isLiked = false;

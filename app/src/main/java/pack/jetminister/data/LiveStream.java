@@ -10,7 +10,8 @@ public class LiveStream {
     public static final String KEY_LIVE_STREAM = "liveStream";
     public static final String KEY_STREAM_ID = "streamId";
     public static final String KEY_STREAM_PLAYBACK_URL = "playbackURL";
-    public static final String KEY_STREAM_USERNAME = "streamUsername";
+    public static final String KEY_STREAM_LIKES = "likes";
+    public static final String KEY_STREAM_VIEWERS = "viewers";
     private static final String TAG = "LiveStream";
 
 
@@ -90,9 +91,10 @@ public class LiveStream {
     private boolean hostedPageLogoImageURL;
     @SerializedName("billing_mode")
     private String billingMode;
+    private int likes;
+    private int viewers;
 
     public LiveStream(String streamUsername, String streamLocation, String authUsername, String authPassword) {
-
         this.streamUsername = streamUsername;
         this.streamLocation = streamLocation;
         this.authUsername = authUsername;
@@ -106,6 +108,8 @@ public class LiveStream {
         this.hostedPage = false;
         this.hostedPageSharingIcons = false;
         this.billingMode = "pay_as_you_go";
+        this.viewers = 0;
+        this.likes = 0;
     }
 
     public void setStreamId(String streamId) {
@@ -120,6 +124,13 @@ public class LiveStream {
         this.pubishURL = pubishURL;
     }
 
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public void setViewers(int viewers) {
+        this.viewers = viewers;
+    }
 
     public String getStreamId() {
         return streamId;
@@ -275,5 +286,13 @@ public class LiveStream {
 
     public String getBillingMode() {
         return billingMode;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public int getViewers() {
+        return viewers;
     }
 }
