@@ -15,4 +15,23 @@
         <item>Adults</item>
         <item>Seniors</item>
     </array>
+
+    <array name="locationServer">
+        <item>asia_pacific_australia</item>
+        <item>asia_pacific_india</item>
+        <item>asia_pacific_japan</item>
+        <item>asia_pacific_singapore</item>
+        <item>asia_pacific_s_korea</item>
+        <item>asia_pacific_taiwan</item>
+        <item>eu_belgium</item>
+        <item>eu_germany</item>
+        <item>eu_ireland</item>
+        <item>south_america_brazil</item>
+        <item>us_central_iowa</item>
+        <item>us_east_s_carolina</item>
+        <item>us_east_virginia</item>
+        <item>us_west_california</item>
+        <item>us_west_oregon</item>
+    </array>
+
 </resources>

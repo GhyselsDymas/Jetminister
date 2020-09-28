@@ -22,19 +22,18 @@
         android:roundIcon="@mipmap/ic_launcher_einsteintv_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".ui.activities.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.activities.AskToStreamActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.LiveBroadcastActivity"
             android:screenOrientation="portrait" />
@@ -43,7 +42,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.LivePlayerActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.activities.LoginRegisterActivity"
             android:screenOrientation="portrait" />

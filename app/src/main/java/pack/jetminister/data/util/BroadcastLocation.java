@@ -36,6 +36,7 @@ public enum BroadcastLocation {
         this.location = location;
     }
 
+
     public static List<String> getBroadcastLocationList() {
         return Collections.unmodifiableList(BROADCAST_LOCATION_LIST);
     }

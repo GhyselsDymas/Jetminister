@@ -5,7 +5,7 @@
         android:defaultValue="false"
         android:key="@string/settings_dark"
         android:title="@string/settings_dark_title" />
-
+    
     <pack.jetminister.ui.util.preferences.WebsitePreference
         android:key="@string/settings_website"
         android:title="@string/settings_website_title"/>
