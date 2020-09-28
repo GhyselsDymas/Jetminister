@@ -4,12 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -23,6 +28,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.streamaxia.player.StreamaxiaPlayer;
 import com.streamaxia.player.listener.StreamaxiaPlayerState;
+
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 import pack.jetminister.R;
 import pack.jetminister.data.LiveStream;
@@ -43,6 +51,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private ImageView profilePlayerIV, likePlayerIV, sharePlayerIV, playPauseIV;
     private SurfaceView playerSurfaceView;
     private AspectRatioFrameLayout playerAspectRatioLayout;
+    private EditText commentHereET;
 
     private StreamaxiaPlayer streamPlayer = new StreamaxiaPlayer();
 
@@ -104,6 +113,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         playerSurfaceView = findViewById(R.id.player_surface_view);
         playerAspectRatioLayout = findViewById(R.id.player_aspect_ratio);
         playerProgressBar = findViewById(R.id.player_progress_bar);
+        commentHereET = findViewById(R.id.ET_comment_here);
 
         getExtras();
 
@@ -127,6 +137,24 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         likePlayerIV.setOnClickListener(likeListener);
         usernamePlayerTV.setText(usernameBroadcast);
         playerAspectRatioLayout.setOnClickListener(playPauseListener);
+
+        KeyboardVisibilityEvent.setEventListener(
+                this, new KeyboardVisibilityEventListener() {
+                    @Override
+                    public void onVisibilityChanged(boolean isOpen) {
+                        if (isOpen){
+                            likePlayerIV.setVisibility(View.INVISIBLE);
+                            likesPlayerTV.setVisibility(View.INVISIBLE);
+                            sharePlayerIV.setVisibility(View.INVISIBLE);
+                            profilePlayerIV.setVisibility(View.INVISIBLE);
+                        }else{
+                            likePlayerIV.setVisibility(View.VISIBLE);
+                            likesPlayerTV.setVisibility(View.VISIBLE);
+                            sharePlayerIV.setVisibility(View.VISIBLE);
+                            profilePlayerIV.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
 
         initRTMPExoPlayer();
     }

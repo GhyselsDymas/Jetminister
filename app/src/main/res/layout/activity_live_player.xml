@@ -95,11 +95,25 @@
         android:paddingTop="2dp"
         android:paddingEnd="4dp"
         android:paddingBottom="2dp"
-        android:text="69 watching"
+        android:text="69 "
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/player_tv_username" />
+
+    <TextView
+        android:id="@+id/player_tv_watching_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="4dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="2dp"
+        android:text="watching"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textColor="#FFFFFF"
+        app:layout_constraintStart_toEndOf="@+id/player_tv_watching"
+        app:layout_constraintTop_toTopOf="@+id/player_tv_watching" />
 
     <ImageView
         android:id="@+id/player_iv_profile"
@@ -139,8 +153,8 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginEnd="5dp"
-        android:layout_marginBottom="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/ET_comment_here"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_share_white_24" />
 
@@ -179,7 +193,7 @@
         app:srcCompat="@drawable/ic_live_record_24" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName"
+        android:id="@+id/ET_comment_here"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -187,13 +201,28 @@
         android:layout_marginBottom="20dp"
         android:ems="10"
         android:hint="Comment here"
-        android:inputType="textPersonName"
+        android:inputType="textMultiLine"
         android:textColor="#FFFFFF"
         android:textColorHint="#FFFFFF"
         app:backgroundTint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:maxHeight="80dp"
+        android:minHeight="60dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/ET_comment_here"
+        app:layout_constraintEnd_toStartOf="@+id/player_iv_like"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:itemCount="5"
+        tools:listitem="@layout/cardview_comment" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
