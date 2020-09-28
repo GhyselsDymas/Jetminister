@@ -41,7 +41,6 @@ import java.util.List;
 import pack.jetminister.R;
 import pack.jetminister.data.Broadcast;
 import pack.jetminister.data.LiveStream;
-import pack.jetminister.data.SourceConnectionInformation;
 import pack.jetminister.data.WowzaRestApi;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,12 +48,13 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_ID;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_LIKES;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_USERNAME;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_VIEWERS;
-import static pack.jetminister.data.SourceConnectionInformation.KEY_STREAM_PUBLISH_URL;
+import static pack.jetminister.data.util.SourceConnectionInformation.KEY_STREAM_PUBLISH_URL;
 import static pack.jetminister.data.User.KEY_LOCATION;
 import static pack.jetminister.data.User.KEY_USERNAME;
 import static pack.jetminister.data.User.KEY_USERS;
@@ -78,7 +78,7 @@ public class LiveBroadcastActivity
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String currentUID = mAuth.getCurrentUser().getUid();
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
-    private DatabaseReference streamsRef = FirebaseDatabase.getInstance().getReference("liveStreams");
+    private DatabaseReference streamsRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
 
     private WowzaRestApi wowzaRestApi;
 
@@ -170,7 +170,7 @@ public class LiveBroadcastActivity
         progressBar = findViewById(R.id.broadcast_progressbar);
         broadcastChronometer = findViewById(R.id.chronometer_live_broadcast);
         previewCameraBroadcast = findViewById(R.id.cam_preview_live_broadcast);
-        liveIconIV = findViewById(R.id.broadcast_iv_live);
+        liveIconIV = findViewById(R.id.player_iv_live);
         publishIcon = findViewById(R.id.live_broadcast_publish);
         publishIcon.setOnClickListener(publishListener);
         startBroadcastTV.setOnClickListener(activateStreamListener);

@@ -4,7 +4,13 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
+import pack.jetminister.data.util.DirectPlaybackURL;
+import pack.jetminister.data.util.SourceConnectionInformation;
+import pack.jetminister.data.util.StreamTarget;
+
 public class LiveStream {
+
+    private static final String TAG = "LiveStream";
 
     public static final String KEY_LIVE_STREAMS = "liveStreams";
     public static final String KEY_LIVE_STREAM = "liveStream";
@@ -13,7 +19,6 @@ public class LiveStream {
     public static final String KEY_STREAM_PLAYBACK_URL = "playbackURL";
     public static final String KEY_STREAM_LIKES = "likes";
     public static final String KEY_STREAM_VIEWERS = "viewers";
-    private static final String TAG = "LiveStream";
 
 
     @SerializedName("id")

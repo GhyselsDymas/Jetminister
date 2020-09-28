@@ -1,4 +1,4 @@
-package pack.jetminister.data;
+package pack.jetminister.data.util;
 
 import com.google.gson.annotations.SerializedName;
 

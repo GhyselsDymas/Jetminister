@@ -183,7 +183,7 @@
         app:layout_constraintTop_toTopOf="@+id/player_aspect_ratio" />
 
     <ImageView
-        android:id="@+id/broadcast_iv_live"
+        android:id="@+id/player_iv_live"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -201,6 +201,7 @@
         android:layout_marginBottom="20dp"
         android:ems="10"
         android:hint="Comment here"
+        android:imeOptions="actionDone"
         android:inputType="textMultiLine"
         android:textColor="#FFFFFF"
         android:textColorHint="#FFFFFF"

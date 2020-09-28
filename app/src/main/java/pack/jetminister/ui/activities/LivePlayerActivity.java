@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.google.android.exoplayer.AspectRatioFrameLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,6 +34,7 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 import pack.jetminister.R;
+import pack.jetminister.data.Comment;
 
 import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_LIKES;
@@ -44,6 +46,8 @@ import static pack.jetminister.ui.util.adapter.LivePictureAdapter.KEY_URI;
 public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaPlayerState {
     private static final String TAG = "LivePlayerActivity";
 
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseUser currentUser = mAuth.getCurrentUser();
     private DatabaseReference streamersRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
     private TextView usernamePlayerTV, likesPlayerTV, viewersPlayerTV, statePlayerTV;
     private ProgressBar playerProgressBar;
@@ -115,13 +119,27 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         playerAspectRatioLayout = findViewById(R.id.player_aspect_ratio);
         playerProgressBar = findViewById(R.id.player_progress_bar);
         commentHereET = findViewById(R.id.ET_comment_here);
+        commentHereET.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    // Identifier of the action. This will be either the identifier you supplied,
+                    // or EditorInfo.IME_NULL if being called due to the enter key being pressed.
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH
+                            || actionId == EditorInfo.IME_ACTION_DONE
+                            || event.getAction() == KeyEvent.ACTION_DOWN
+                            && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                        addCommentToStream();
+                        return true;
+                    }
+
+                return false;
+            }
+        });
 
         getStreamerInfo();
         showAmountLikes();
         addCurrentViewer();
         showAmountViewers();
-//        updateAmountViewers();
-
 
         isLiked = false;
         likePlayerIV.setImageResource(R.drawable.ic_like_border_white_24);
@@ -150,6 +168,12 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
                 });
 
         initRTMPExoPlayer();
+    }
+
+    private void addCommentToStream() {
+        long commentID = System.currentTimeMillis();
+        Comment comment = new Comment(currentUser.getUid(), commentHereET.getText().toString());
+        streamersRef.child("comments").child(String.valueOf(commentID)).setValue(comment);
     }
 
     private void addCurrentViewer(){
@@ -183,12 +207,6 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
             }
         });
     }
-
-    private void updateAmountViewers() {
-        int views = Integer.parseInt(viewersPlayerTV.getText().toString());
-        streamersRef.child(streamerID).child(KEY_STREAM_VIEWERS).setValue(views);
-    }
-
 
     private void showAmountLikes() {
         streamersRef.child(streamerID).child(KEY_STREAM_LIKES)
