@@ -37,8 +37,6 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
     private LivePictureAdapter mAdapter;
     private Context mContext;
     private List<String> mThemes;
-//    private List<User> mUsers;
-//    private List<String> mLiveStreams;
     private List<String> mStreamerIds;
 
     public LiveThemeAdapter(Context context) {
@@ -57,8 +55,6 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
     @Override
     public void onBindViewHolder(@NonNull final LiveThemeHolder holder, int position) {
         final String uploadCurrent = mThemes.get(position);
-//        mUsers = new ArrayList<>();
-//        mLiveStreams = new ArrayList<>();
         mStreamerIds = new ArrayList<>();
         DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
         usersDatabaseRef.addValueEventListener(new ValueEventListener() {
@@ -66,10 +62,6 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     String streamerID = postSnapshot.getKey();
-//                    User user = postSnapshot.getValue(User.class);
-                    String playbackURL = postSnapshot.child(KEY_LIVE_STREAM).child(KEY_STREAM_PLAYBACK_URL).getValue(String.class);
-//                    mUsers.add(user);
-//                    mLiveStreams.add(playbackURL);
                     mStreamerIds.add(streamerID);
                 }
 
@@ -78,8 +70,6 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
                 holder.recyclerViewLive.setHasFixedSize(true);
                 holder.recyclerViewLive.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
                 mAdapter = new LivePictureAdapter(mContext,
-//                        mUsers,
-//                        mLiveStreams,
                         mStreamerIds);
                 holder.recyclerViewLive.setAdapter(mAdapter);
             }

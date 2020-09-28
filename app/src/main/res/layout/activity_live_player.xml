@@ -95,11 +95,11 @@
         android:paddingTop="2dp"
         android:paddingEnd="4dp"
         android:paddingBottom="2dp"
-        android:text="69 "
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/player_tv_username" />
+        app:layout_constraintTop_toBottomOf="@id/player_tv_username"
+        tools:text="69" />
 
     <TextView
         android:id="@+id/player_tv_watching_text"
@@ -109,7 +109,7 @@
         android:paddingTop="2dp"
         android:paddingEnd="4dp"
         android:paddingBottom="2dp"
-        android:text="watching"
+        android:text="@string/play_tv_viewers"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:textColor="#FFFFFF"
         app:layout_constraintStart_toEndOf="@+id/player_tv_watching"

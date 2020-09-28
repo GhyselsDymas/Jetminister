@@ -18,38 +18,33 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-import com.streamaxia.player.StreamaxiaPlayer;
 
 import java.util.List;
 
 import pack.jetminister.R;
-import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.User;
 import pack.jetminister.ui.activities.LivePlayerActivity;
 
 import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAM;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_USERNAME;
 import static pack.jetminister.data.User.KEY_IMAGE_URL;
 import static pack.jetminister.data.User.KEY_USERNAME;
 import static pack.jetminister.data.User.KEY_USERS;
+import static pack.jetminister.data.User.KEY_USER_ID;
 
 public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.LivePictureHolder> {
 
     public static final String KEY_URI = "uri";
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
-    public static final int STREAM_TYPE = StreamaxiaPlayer.TYPE_HLS;
+
+    private DatabaseReference streamersRef = FirebaseDatabase.getInstance().getReference("liveStreams");
     private Context mContext;
-//    private List<User> mUsers;
-//    private List<String> mLivestreams;
     private List<String> mStreamerIDs;
 
     public LivePictureAdapter(Context context,
-//                              List<User> users,
-//                              List<String> liveStreams,
                               List<String> streamerIDs){
         mContext = context;
-//        mUsers = users;
-//        mLivestreams = liveStreams;
         mStreamerIDs = streamerIDs;
     }
 
@@ -62,8 +57,6 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull LivePictureAdapter.LivePictureHolder holder, int position) {
-//        User uploadCurrent = mUsers.get(position);
-//        String currentPlaybackURL = mLivestreams.get(position);
          usersRef.child(mStreamerIDs.get(position)).addValueEventListener(new ValueEventListener() {
              @Override
              public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -85,8 +78,6 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
 
              }
          });
-
-
     }
 
     @Override
@@ -110,20 +101,17 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
-//                    User currentUser = mUsers.get(position);
-//                    String currentPlaybackURL = mLivestreams.get(position);
                     String currentStreamerID = mStreamerIDs.get(position);
-                    usersRef.child(currentStreamerID).addValueEventListener(new ValueEventListener() {
+                    streamersRef.child(currentStreamerID)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                            String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
-                            String currentPlaybackURL = snapshot.child(KEY_LIVE_STREAM).child(KEY_STREAM_PLAYBACK_URL).getValue(String.class);
+                            String currentStreamUsername = snapshot.child(KEY_STREAM_USERNAME).getValue(String.class);
+                            String currentPlaybackURL = snapshot.child(KEY_STREAM_PLAYBACK_URL).getValue(String.class);
                             Intent intent = new Intent(mContext , LivePlayerActivity.class);
-                            intent.putExtra("streamerID", currentStreamerID);
-                            intent.putExtra(KEY_USERNAME, currentUsername);
+                            intent.putExtra(KEY_USER_ID, currentStreamerID);
+                            intent.putExtra(KEY_STREAM_USERNAME, currentStreamUsername);
                             intent.putExtra(KEY_URI, currentPlaybackURL);
-
                             mContext.startActivity(intent);
                         }
 

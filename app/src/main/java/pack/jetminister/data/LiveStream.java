@@ -6,9 +6,10 @@ import java.util.ArrayList;
 
 public class LiveStream {
 
-    public static final String KEY_LIVE_STREAMS = "live_streams";
+    public static final String KEY_LIVE_STREAMS = "liveStreams";
     public static final String KEY_LIVE_STREAM = "liveStream";
     public static final String KEY_STREAM_ID = "streamId";
+    public static final String KEY_STREAM_USERNAME = "streamUsername";
     public static final String KEY_STREAM_PLAYBACK_URL = "playbackURL";
     public static final String KEY_STREAM_LIKES = "likes";
     public static final String KEY_STREAM_VIEWERS = "viewers";
