@@ -2,6 +2,7 @@ package pack.jetminister.ui.util.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.streamaxia.player.StreamaxiaPlayer;
 
@@ -21,24 +27,30 @@ import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.User;
 import pack.jetminister.ui.activities.LivePlayerActivity;
 
-import static pack.jetminister.data.LiveStream.KEY_STREAM_LIKES;
+import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAM;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
+import static pack.jetminister.data.User.KEY_IMAGE_URL;
 import static pack.jetminister.data.User.KEY_USERNAME;
+import static pack.jetminister.data.User.KEY_USERS;
 
 public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.LivePictureHolder> {
 
-//    public static final String KEY_LIKES = "likes";
     public static final String KEY_URI = "uri";
-    public static final String KEY_TYPE = "type";
+    private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
     public static final int STREAM_TYPE = StreamaxiaPlayer.TYPE_HLS;
     private Context mContext;
-    private List<User> mUsers;
-    private List<String> mLivestreams;
+//    private List<User> mUsers;
+//    private List<String> mLivestreams;
     private List<String> mStreamerIDs;
 
-    public LivePictureAdapter(Context context, List<User> users, List<String> liveStreams){
+    public LivePictureAdapter(Context context,
+//                              List<User> users,
+//                              List<String> liveStreams,
+                              List<String> streamerIDs){
         mContext = context;
-        mUsers = users;
-        mLivestreams = liveStreams;
+//        mUsers = users;
+//        mLivestreams = liveStreams;
+        mStreamerIDs = streamerIDs;
     }
 
     @NonNull
@@ -50,18 +62,31 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull LivePictureAdapter.LivePictureHolder holder, int position) {
-        User uploadCurrent = mUsers.get(position);
-        String currentPlaybackURL = mLivestreams.get(position);
-        holder.usernameLive.setText(uploadCurrent.getUsername());
-        holder.followersLive.setText("0");
+//        User uploadCurrent = mUsers.get(position);
+//        String currentPlaybackURL = mLivestreams.get(position);
+         usersRef.child(mStreamerIDs.get(position)).addValueEventListener(new ValueEventListener() {
+             @Override
+             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                 String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
+                 String currentImageURL = snapshot.child(KEY_IMAGE_URL).getValue(String.class);
+                 holder.usernameLive.setText(currentUsername);
+                 holder.followersLive.setText("0");
+                 if (currentImageURL.isEmpty()) {
+                     holder.imageLive.setImageResource(R.drawable.ic_launcher_background);
+                 } else{
+                     Picasso.get().load(currentImageURL)
+                             .fit().centerCrop()
+                             .into(holder.imageLive);
+                 }
+             }
 
-        if (uploadCurrent.getImageURL().isEmpty()) {
-            holder.imageLive.setImageResource(R.drawable.ic_launcher_background);
-        } else{
-            Picasso.get().load(uploadCurrent.getImageURL())
-                    .fit().centerCrop()
-                    .into(holder.imageLive);
-        }
+             @Override
+             public void onCancelled(@NonNull DatabaseError error) {
+
+             }
+         });
+
+
     }
 
     @Override
@@ -85,19 +110,28 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
-                    User currentUser = mUsers.get(position);
-                    String currentPlaybackURL = mLivestreams.get(position);
+//                    User currentUser = mUsers.get(position);
+//                    String currentPlaybackURL = mLivestreams.get(position);
                     String currentStreamerID = mStreamerIDs.get(position);
-                    String currentUsername = currentUser.getUsername();
+                    usersRef.child(currentStreamerID).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    Intent intent = new Intent(mContext , LivePlayerActivity.class);
-                    intent.putExtra("streamerID", currentStreamerID);
-//                    intent.putExtra(KEY_STREAM_LIKES, amountLikes);
-                    intent.putExtra(KEY_USERNAME, currentUsername);
-                    intent.putExtra(KEY_TYPE, STREAM_TYPE);
-                    intent.putExtra(KEY_URI, currentPlaybackURL);
+                            String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
+                            String currentPlaybackURL = snapshot.child(KEY_LIVE_STREAM).child(KEY_STREAM_PLAYBACK_URL).getValue(String.class);
+                            Intent intent = new Intent(mContext , LivePlayerActivity.class);
+                            intent.putExtra("streamerID", currentStreamerID);
+                            intent.putExtra(KEY_USERNAME, currentUsername);
+                            intent.putExtra(KEY_URI, currentPlaybackURL);
 
-                    mContext.startActivity(intent);
+                            mContext.startActivity(intent);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
                 }
             });
         }

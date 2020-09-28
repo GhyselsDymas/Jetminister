@@ -32,6 +32,7 @@ import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAM;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_LIKES;
 import static pack.jetminister.data.User.KEY_USERNAME;
 import static pack.jetminister.data.User.KEY_USERS;
+import static pack.jetminister.ui.util.adapter.LivePictureAdapter.KEY_URI;
 
 public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaPlayerState {
     private static final String TAG = "LivePlayerActivity";
@@ -51,7 +52,6 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private Uri broadcastURI;
     private int amountLikes;
     private String streamerID;
-    private int STREAM_TYPE = StreamaxiaPlayer.TYPE_HLS;
 
     Runnable hide = new Runnable() {
         @Override
@@ -70,13 +70,14 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private View.OnClickListener playPauseListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (playPauseIV.getVisibility() == View.GONE){
+            if (playPauseIV.getVisibility() == View.GONE) {
                 playPauseIV.setVisibility(View.VISIBLE);
                 streamPlayer.pause();
                 playerProgressBar.setVisibility(View.VISIBLE);
             } else {
                 playPauseIV.setVisibility(View.GONE);
-                playerProgressBar.setVisibility(View.GONE );
+                playerProgressBar.setVisibility(View.GONE);
+                int STREAM_TYPE = StreamaxiaPlayer.TYPE_HLS;
                 streamPlayer.play(broadcastURI, STREAM_TYPE);
             }
         }
@@ -105,6 +106,19 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         playerProgressBar = findViewById(R.id.player_progress_bar);
 
         getExtras();
+
+        usersRef.child(streamerID).child(KEY_LIVE_STREAM).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                amountLikes = snapshot.child(KEY_STREAM_LIKES).getValue(Integer.class);
+                likesPlayerTV.setText(String.valueOf(amountLikes));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         isLiked = false;
         likePlayerIV.setImageResource(R.drawable.ic_like_border_white_24);
@@ -156,10 +170,8 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
     private void getExtras() {
         Bundle extras = getIntent().getExtras();
-//        amountLikes = extras.getInt(KEY_USERS);
         usernameBroadcast = extras.getString(KEY_USERNAME);
-        broadcastURI = Uri.parse(extras.getString(LivePictureAdapter.KEY_URI));
-        STREAM_TYPE = extras.getInt(LivePictureAdapter.KEY_TYPE);
+        broadcastURI = Uri.parse(extras.getString(KEY_URI));
         streamerID = extras.getString("streamerID");
     }
 
@@ -175,43 +187,16 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
     private void likeUnlike() {
         if (!isLiked) {
-            usersRef.child(streamerID).child(KEY_LIVE_STREAM).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    int likes = snapshot.child(LiveStream.KEY_STREAM_LIKES).getValue(Integer.class);
-                    likes++;
-                    usersRef.child(streamerID).child(KEY_LIVE_STREAM).child(KEY_STREAM_LIKES).setValue(likes);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-            //TODO: set likes in database entry
-            likesPlayerTV.setText(amountLikes);
+            amountLikes++;
+            usersRef.child(streamerID).child(KEY_LIVE_STREAM).child(KEY_STREAM_LIKES).setValue(amountLikes);
             likePlayerIV.setImageResource(R.drawable.ic_like_fill_white_24);
             isLiked = true;
         } else {
-            usersRef.child(streamerID).child(KEY_LIVE_STREAM).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    int likes = snapshot.child(LiveStream.KEY_STREAM_LIKES).getValue(Integer.class);
-                    likes--;
-                    usersRef.child(streamerID).child(KEY_LIVE_STREAM).child(KEY_STREAM_LIKES).setValue(likes);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-            //TODO: set likes in database entry
-            likesPlayerTV.setText(amountLikes);
+            amountLikes--;
+            usersRef.child(streamerID).child(KEY_LIVE_STREAM).child(KEY_STREAM_LIKES).setValue(amountLikes);
             likePlayerIV.setImageResource(R.drawable.ic_like_border_white_24);
             isLiked = false;
         }
-
     }
 
     private void hideStatusBar() {
