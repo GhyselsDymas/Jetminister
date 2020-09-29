@@ -35,15 +35,10 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import pack.jetminister.R;
 import pack.jetminister.data.Comment;
-import pack.jetminister.data.LiveStream;
-import pack.jetminister.data.User;
-import pack.jetminister.ui.util.adapter.AdminAdapter;
 import pack.jetminister.ui.util.adapter.CommentAdapter;
 
 import static pack.jetminister.data.Comment.KEY_COMMENTS;
@@ -66,7 +61,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private DatabaseReference streamersRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
     private TextView streamUsernameTV, streamLikesTV, streamViewersTV, playbackStateTV;
     private ProgressBar playbackProgressBar;
-    private ImageView streamLiveIV, streamProfileIV, streamLikeIV, streamShareIV, playPauseIV;
+    private ImageView streamLiveIV, streamProfileIV, streamLikeIV, streamShareIV, playPauseIV, submitCommentIV;
     private SurfaceView playbackSurfaceView;
     private AspectRatioFrameLayout playbackAspectRatioLayout;
     private EditText postCommentET;
@@ -81,7 +76,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private String streamUID;
 
     private CommentAdapter mAdapter;
-    private Set<Comment> mComments;
+    private List<Comment> mComments;
 
     Runnable hide = new Runnable() {
         @Override
@@ -118,11 +113,11 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             // Identifier of the action. This will be either the identifier you supplied,
             // or EditorInfo.IME_NULL if being called due to the enter key being pressed.
-            if (actionId == EditorInfo.IME_ACTION_SEARCH
-                    || actionId == EditorInfo.IME_ACTION_DONE
-                    || event.getAction() == KeyEvent.ACTION_DOWN
+            if (actionId == EditorInfo.IME_ACTION_DONE
                     && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                addCommentToStream();
+                String commentBody = postCommentET.getText().toString().trim();
+                addCommentToStream(commentBody);
+                postCommentET.getText().clear();
                 return true;
             }
 
@@ -143,6 +138,17 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
                 streamLikesTV.setVisibility(View.VISIBLE);
                 streamShareIV.setVisibility(View.VISIBLE);
                 streamProfileIV.setVisibility(View.VISIBLE);
+            }
+        }
+    };
+
+    private View.OnClickListener submitCommentListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (!postCommentET.getText().toString().trim().isEmpty()){
+                String commentBody = postCommentET.getText().toString().trim();
+                addCommentToStream(commentBody);
+                postCommentET.getText().clear();
             }
         }
     };
@@ -173,6 +179,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         playbackAspectRatioLayout = findViewById(R.id.player_aspect_ratio);
         playbackProgressBar = findViewById(R.id.player_progress_bar);
         postCommentET = findViewById(R.id.ET_comment_here);
+        submitCommentIV = findViewById(R.id.player_iv_comment_submit);
 
         getStreamerInfo();
         showAmountLikes();
@@ -187,6 +194,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         streamLikeIV.setOnClickListener(likeListener);
         playbackAspectRatioLayout.setOnClickListener(playPauseListener);
         postCommentET.setOnEditorActionListener(postCommentListener);
+        submitCommentIV.setOnClickListener(submitCommentListener);
 
         KeyboardVisibilityEvent.setEventListener(this, keyboardVisibilityListener);
 
@@ -194,18 +202,19 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         recyclerViewComment.setHasFixedSize(true);
         recyclerViewComment.setLayoutManager(new LinearLayoutManager(this));
 
-        mComments = new HashSet<>();
+        mComments = new ArrayList<>();
         DatabaseReference streamersDatabaseRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS).child(streamUID).child(KEY_COMMENTS);
 
         streamersDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                mComments.clear();
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     Comment comment = postSnapshot.getValue(Comment.class);
                     mComments.add(comment);
+                    mAdapter = new CommentAdapter(LivePlayerActivity.this, mComments);
+                    recyclerViewComment.setAdapter(mAdapter);
                 }
-                mAdapter = new CommentAdapter(LivePlayerActivity.this, mComments);
-                recyclerViewComment.setAdapter(mAdapter);
             }
 
             @Override
@@ -254,7 +263,6 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
                     }
                 });
     }
@@ -284,7 +292,6 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
@@ -303,21 +310,20 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         }
     }
 
-    private void addCommentToStream() {
+    private void addCommentToStream(String commentBody) {
         long commentID = System.currentTimeMillis();
         usersRef.child(currentUser.getUid()).child(KEY_USERNAME)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String username = snapshot.getValue(String.class);
-                Comment comment = new Comment(currentUser.getUid(), username, postCommentET.getText().toString());
-                streamersRef.child(streamUID).child(KEY_COMMENTS).child(String.valueOf(commentID)).setValue(comment);
-                Log.d(TAG, "new comment: " + comment.toString());
+                Comment newComment = new Comment(currentUser.getUid(), username, commentBody);
+                streamersRef.child(streamUID).child(KEY_COMMENTS).child(String.valueOf(commentID)).setValue(newComment);
+                Log.d(TAG, "new comment: " + newComment.toString());
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }

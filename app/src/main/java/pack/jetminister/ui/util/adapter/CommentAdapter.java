@@ -4,16 +4,17 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.List;
 
 import pack.jetminister.R;
 import pack.jetminister.data.Comment;
+import pack.jetminister.data.User;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentHolder> {
 
@@ -28,11 +29,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
     }
 
     private Context mContext;
-    private Set<Comment> commentSet;
+    private List<Comment> mCommentList;
 
-    public CommentAdapter(Context context, Set<Comment> comments){
+    public CommentAdapter(Context context, List<Comment> comments){
         mContext = context;
-        commentSet = comments;
+        mCommentList = comments;
     }
 
     @NonNull
@@ -46,8 +47,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
 
     @Override
     public void onBindViewHolder(@NonNull CommentAdapter.CommentHolder holder, int position) {
-        ArrayList<Comment> commentsList = new ArrayList<>(commentSet);
-        Comment uploadCurrent = commentsList.get(position);
+        Comment uploadCurrent = mCommentList.get(position);
         holder.usernameComment.setText("" + uploadCurrent.getUsername() + " :");
         holder.commentComment.setText(uploadCurrent.getBody());
 
@@ -62,7 +62,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
 
     @Override
     public int getItemCount() {
-        return commentSet.size();
+        return mCommentList.size();
     }
 
 }

@@ -5,7 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
+    android:contentDescription="@string/player_submit_comment"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".ui.activities.LivePlayerActivity">
+
 
     <com.google.android.exoplayer.AspectRatioFrameLayout
         android:id="@+id/player_aspect_ratio"
@@ -204,12 +208,24 @@
         android:hint="Comment here"
         android:imeOptions="actionDone"
         android:inputType="textMultiLine"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#FFFFFF"
+        android:textColor="#E6FFFFFF"
+        android:textColorHint="#B3FFFFFF"
         app:backgroundTint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/player_iv_comment_submit"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/player_iv_comment_submit"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_submit_24" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_comments"
@@ -225,6 +241,5 @@
         app:layout_constraintEnd_toStartOf="@+id/player_iv_like"
         app:layout_constraintStart_toStartOf="parent"
         tools:listitem="@layout/cardview_comment" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
