@@ -4,16 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -36,11 +35,13 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventList
 import pack.jetminister.R;
 import pack.jetminister.data.Comment;
 
+import static pack.jetminister.data.Comment.KEY_COMMENTS;
 import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_LIKES;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_USERNAME;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_VIEWERS;
 import static pack.jetminister.data.User.KEY_USERNAME;
+import static pack.jetminister.data.User.KEY_USERS;
 import static pack.jetminister.data.User.KEY_USER_ID;
 import static pack.jetminister.ui.util.adapter.LivePictureAdapter.KEY_URI;
 
@@ -49,21 +50,23 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
+
+    private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
     private DatabaseReference streamersRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
-    private TextView usernamePlayerTV, likesPlayerTV, viewersPlayerTV, statePlayerTV;
-    private ProgressBar playerProgressBar;
-    private ImageView profilePlayerIV, likePlayerIV, sharePlayerIV, playPauseIV;
-    private SurfaceView playerSurfaceView;
-    private AspectRatioFrameLayout playerAspectRatioLayout;
-    private EditText commentHereET;
+    private TextView streamUsernameTV, streamLikesTV, streamViewersTV, playbackStateTV;
+    private ProgressBar playbackProgressBar;
+    private ImageView streamLiveIV, streamProfileIV, streamLikeIV, streamShareIV, playPauseIV;
+    private SurfaceView playbackSurfaceView;
+    private AspectRatioFrameLayout playbackAspectRatioLayout;
+    private EditText postCommentET;
 
     private StreamaxiaPlayer streamPlayer = new StreamaxiaPlayer();
 
-    private boolean isLiked;
-    private String streamerUsername;
-    private Uri broadcastURI;
-    private int amountLikes;
-    private String streamerID;
+    private boolean streamLiked;
+    private String streamUsername;
+    private Uri streamPlaybackURL;
+    private int streamLikes;
+    private String streamUID;
 
     Runnable hide = new Runnable() {
         @Override
@@ -85,12 +88,12 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
             if (playPauseIV.getVisibility() == View.GONE) {
                 playPauseIV.setVisibility(View.VISIBLE);
                 streamPlayer.pause();
-                playerProgressBar.setVisibility(View.VISIBLE);
+                playbackProgressBar.setVisibility(View.VISIBLE);
             } else {
                 playPauseIV.setVisibility(View.GONE);
-                playerProgressBar.setVisibility(View.GONE);
+                playbackProgressBar.setVisibility(View.GONE);
                 int STREAM_TYPE = StreamaxiaPlayer.TYPE_HLS;
-                streamPlayer.play(broadcastURI, STREAM_TYPE);
+                streamPlayer.play(streamPlaybackURL, STREAM_TYPE);
             }
         }
     };
@@ -116,15 +119,15 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         @Override
         public void onVisibilityChanged(boolean isOpen) {
             if (isOpen){
-                likePlayerIV.setVisibility(View.INVISIBLE);
-                likesPlayerTV.setVisibility(View.INVISIBLE);
-                sharePlayerIV.setVisibility(View.INVISIBLE);
-                profilePlayerIV.setVisibility(View.INVISIBLE);
+                streamLikeIV.setVisibility(View.INVISIBLE);
+                streamLikesTV.setVisibility(View.INVISIBLE);
+                streamShareIV.setVisibility(View.INVISIBLE);
+                streamProfileIV.setVisibility(View.INVISIBLE);
             }else{
-                likePlayerIV.setVisibility(View.VISIBLE);
-                likesPlayerTV.setVisibility(View.VISIBLE);
-                sharePlayerIV.setVisibility(View.VISIBLE);
-                profilePlayerIV.setVisibility(View.VISIBLE);
+                streamLikeIV.setVisibility(View.VISIBLE);
+                streamLikesTV.setVisibility(View.VISIBLE);
+                streamShareIV.setVisibility(View.VISIBLE);
+                streamProfileIV.setVisibility(View.VISIBLE);
             }
         }
     };
@@ -142,65 +145,72 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
         hideStatusBar();
 
-        usernamePlayerTV = findViewById(R.id.player_tv_username);
-        viewersPlayerTV = findViewById(R.id.player_tv_watching);
-        likesPlayerTV = findViewById(R.id.player_tv_amount_likes);
-        statePlayerTV = findViewById(R.id.tv_live_player_state);
-        profilePlayerIV = findViewById(R.id.player_iv_profile);
-        likePlayerIV = findViewById(R.id.player_iv_like);
-        sharePlayerIV = findViewById(R.id.player_iv_share);
+        streamUsernameTV = findViewById(R.id.player_tv_username);
+        streamViewersTV = findViewById(R.id.player_tv_watching);
+        streamLikesTV = findViewById(R.id.player_tv_amount_likes);
+        playbackStateTV = findViewById(R.id.tv_live_player_state);
+        streamLiveIV = findViewById(R.id.player_iv_live);
+        streamProfileIV = findViewById(R.id.player_iv_profile);
+        streamLikeIV = findViewById(R.id.player_iv_like);
+        streamShareIV = findViewById(R.id.player_iv_share);
         playPauseIV = findViewById(R.id.player_iv_play);
-        playerSurfaceView = findViewById(R.id.player_surface_view);
-        playerAspectRatioLayout = findViewById(R.id.player_aspect_ratio);
-        playerProgressBar = findViewById(R.id.player_progress_bar);
-        commentHereET = findViewById(R.id.ET_comment_here);
+        playbackSurfaceView = findViewById(R.id.player_surface_view);
+        playbackAspectRatioLayout = findViewById(R.id.player_aspect_ratio);
+        playbackProgressBar = findViewById(R.id.player_progress_bar);
+        postCommentET = findViewById(R.id.ET_comment_here);
 
         getStreamerInfo();
         showAmountLikes();
         addCurrentViewer();
         showAmountViewers();
 
-        isLiked = false;
-        likePlayerIV.setImageResource(R.drawable.ic_like_border_white_24);
-        likesPlayerTV.setVisibility(View.VISIBLE);
-        likesPlayerTV.setText(String.valueOf(amountLikes));
-        usernamePlayerTV.setText(streamerUsername);
-        likePlayerIV.setOnClickListener(likeListener);
-        playerAspectRatioLayout.setOnClickListener(playPauseListener);
-        commentHereET.setOnEditorActionListener(postCommentListener);
+        streamLiked = false;
+        streamLikeIV.setImageResource(R.drawable.ic_like_border_white_24);
+        streamLikesTV.setVisibility(View.VISIBLE);
+        streamLikesTV.setText(String.valueOf(streamLikes));
+        streamUsernameTV.setText(streamUsername);
+        streamLikeIV.setOnClickListener(likeListener);
+        playbackAspectRatioLayout.setOnClickListener(playPauseListener);
+        postCommentET.setOnEditorActionListener(postCommentListener);
 
         KeyboardVisibilityEvent.setEventListener(this, keyboardVisibilityListener);
 
         initRTMPExoPlayer();
     }
 
-    private void addCommentToStream() {
-        long commentID = System.currentTimeMillis();
-        streamersRef.child(currentUser.getUid()).child(KEY_USERNAME).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String username = snapshot.getValue(String.class);
-                Comment comment = new Comment(currentUser.getUid(), username, commentHereET.getText().toString());
-                streamersRef.child("comments").child(String.valueOf(commentID)).setValue(comment);
-            }
+    private void hideStatusBar() {
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+    private void initRTMPExoPlayer() {
+        streamPlayer.initStreamaxiaPlayer(
+                playbackSurfaceView,
+                playbackAspectRatioLayout,
+                playbackStateTV,
+                this,
+                this,
+                streamPlaybackURL);
+    }
 
-            }
-        });
-
+    private void getStreamerInfo() {
+        Bundle extras = getIntent().getExtras();
+        streamUsername = extras.getString(KEY_STREAM_USERNAME);
+        streamPlaybackURL = Uri.parse(extras.getString(KEY_URI));
+        streamUID = extras.getString(KEY_USER_ID);
     }
 
     private void addCurrentViewer(){
-        streamersRef.child(streamerID).child(KEY_STREAM_VIEWERS)
+        streamersRef.child(streamUID).child(KEY_STREAM_VIEWERS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         int amountViewers = snapshot.getValue(Integer.class);
                         amountViewers++;
-                        viewersPlayerTV.setText(String.valueOf(amountViewers));
-                        streamersRef.child(streamerID).child(KEY_STREAM_VIEWERS).setValue(amountViewers);
+                        streamViewersTV.setText(String.valueOf(amountViewers));
+                        streamersRef.child(streamUID).child(KEY_STREAM_VIEWERS).setValue(amountViewers);
                     }
 
                     @Override
@@ -211,12 +221,12 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     }
 
     private void showAmountViewers() {
-        streamersRef.child(streamerID).child(KEY_STREAM_VIEWERS)
+        streamersRef.child(streamUID).child(KEY_STREAM_VIEWERS)
                 .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 int amountViewers = snapshot.getValue(Integer.class);
-                viewersPlayerTV.setText(String.valueOf(amountViewers));
+                streamViewersTV.setText(String.valueOf(amountViewers));
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -225,12 +235,45 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     }
 
     private void showAmountLikes() {
-        streamersRef.child(streamerID).child(KEY_STREAM_LIKES)
+        streamersRef.child(streamUID).child(KEY_STREAM_LIKES)
                 .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                amountLikes = snapshot.getValue(Integer.class);
-                likesPlayerTV.setText(String.valueOf(amountLikes));
+                streamLikes = snapshot.getValue(Integer.class);
+                streamLikesTV.setText(String.valueOf(streamLikes));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void likeUnlike() {
+        if (!streamLiked) {
+            streamLikes++;
+            streamersRef.child(streamUID).child(KEY_STREAM_LIKES).setValue(streamLikes);
+            streamLikeIV.setImageResource(R.drawable.ic_like_fill_white_24);
+            streamLiked = true;
+        } else {
+            streamLikes--;
+            streamersRef.child(streamUID).child(KEY_STREAM_LIKES).setValue(streamLikes);
+            streamLikeIV.setImageResource(R.drawable.ic_like_border_white_24);
+            streamLiked = false;
+        }
+    }
+
+    private void addCommentToStream() {
+        long commentID = System.currentTimeMillis();
+        usersRef.child(currentUser.getUid()).child(KEY_USERNAME)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String username = snapshot.getValue(String.class);
+                Comment comment = new Comment(currentUser.getUid(), username, postCommentET.getText().toString());
+                streamersRef.child(streamUID).child(KEY_COMMENTS).child(String.valueOf(commentID)).setValue(comment);
+                Log.d(TAG, "new comment: " + comment.toString());
             }
 
             @Override
@@ -241,34 +284,46 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     }
 
     @Override
-    public void stateENDED() {
-        playerProgressBar.setVisibility(View.GONE);
-        playPauseIV.setImageResource(R.drawable.ic_play_white_24);
-    }
-
-    @Override
-    public void stateBUFFERING() {
-        playerProgressBar.setVisibility(View.VISIBLE);
+    public void stateUNKNOWN() {
+        playbackProgressBar.setVisibility(View.VISIBLE);
+        streamLiveIV.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void stateIDLE() {
-        playerProgressBar.setVisibility(View.VISIBLE);
+        playbackProgressBar.setVisibility(View.VISIBLE);
+        streamLiveIV.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void stateBUFFERING() {
+        playbackProgressBar.setVisibility(View.VISIBLE);
+        streamLiveIV.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void statePREPARING() {
-        playerProgressBar.setVisibility(View.VISIBLE);
+        streamLiveIV.setVisibility(View.INVISIBLE);
+        playbackProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void stateREADY() {
-        playerProgressBar.setVisibility(View.GONE);
+        playbackProgressBar.setVisibility(View.GONE);
+        playbackStateTV.setVisibility(View.INVISIBLE);
+        playPauseIV.setImageResource(R.drawable.ic_play_white_24);
     }
 
     @Override
-    public void stateUNKNOWN() {
-        playerProgressBar.setVisibility(View.VISIBLE);
+    public void stateENDED() {
+        playbackProgressBar.setVisibility(View.GONE);
+        streamLiveIV.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    protected void onStop() {
+        streamPlayer.stop();
+        super.onStop();
     }
 
     @Override
@@ -276,44 +331,4 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         super.onDestroy();
         streamPlayer.stop();
     }
-
-    private void getStreamerInfo() {
-        Bundle extras = getIntent().getExtras();
-        streamerUsername = extras.getString(KEY_STREAM_USERNAME);
-        broadcastURI = Uri.parse(extras.getString(KEY_URI));
-        streamerID = extras.getString(KEY_USER_ID);
-    }
-
-    private void initRTMPExoPlayer() {
-        streamPlayer.initStreamaxiaPlayer(
-                playerSurfaceView,
-                playerAspectRatioLayout,
-                statePlayerTV,
-                this,
-                this,
-                broadcastURI);
-    }
-
-    private void likeUnlike() {
-        if (!isLiked) {
-            amountLikes++;
-            streamersRef.child(streamerID).child(KEY_STREAM_LIKES).setValue(amountLikes);
-            likePlayerIV.setImageResource(R.drawable.ic_like_fill_white_24);
-            isLiked = true;
-        } else {
-            amountLikes--;
-            streamersRef.child(streamerID).child(KEY_STREAM_LIKES).setValue(amountLikes);
-            likePlayerIV.setImageResource(R.drawable.ic_like_border_white_24);
-            isLiked = false;
-        }
-    }
-
-    private void hideStatusBar() {
-        View decorView = getWindow().getDecorView();
-        // Hide the status bar.
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
-    }
-
-
 }
