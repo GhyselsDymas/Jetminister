@@ -85,4 +85,5 @@
     <string name="title_activity_ask_to_stream">AskToStreamActivity</string>
     <string name="play_tv_viewers">\u0020viewers</string>
     <string name="player_submit_comment">Submit comment</string>
+    <string name="player_comment_hint">Comment</string>
 </resources>

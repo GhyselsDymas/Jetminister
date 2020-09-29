@@ -149,18 +149,16 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             // Identifier of the action. This will be either the identifier you supplied,
             // or EditorInfo.IME_NULL if being called due to the enter key being pressed.
-            if (actionId == EditorInfo.IME_ACTION_DONE ||
-                    actionId == EditorInfo.IME_NULL
-                    && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+            if (actionId == EditorInfo.IME_ACTION_DONE && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                 if (!postCommentET.getText().toString().trim().isEmpty()) {
                     String commentBody = postCommentET.getText().toString().trim();
                     addCommentToStream(commentBody);
                     postCommentET.getText().clear();
                     hideKeyboard();
+                    postCommentET.clearFocus();
                 }
                 return true;
             }
-
             return false;
         }
     };
@@ -173,6 +171,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
                 addCommentToStream(commentBody);
                 postCommentET.getText().clear();
                 hideKeyboard();
+                postCommentET.clearFocus();
             }
         }
     };
@@ -216,7 +215,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         streamUsernameTV.setText(streamUsername);
         streamLikeIV.setOnClickListener(likeListener);
         playbackAspectRatioLayout.setOnClickListener(playPauseListener);
-        postCommentET.setOnEditorActionListener(postCommentListener);
+//        postCommentET.setOnEditorActionListener(postCommentListener);
         submitCommentIV.setOnClickListener(submitCommentListener);
         streamProfileIV.setOnClickListener(streamProfileListener);
 
