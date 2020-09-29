@@ -39,7 +39,9 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import pack.jetminister.R;
 import pack.jetminister.data.Comment;
@@ -85,7 +87,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private String streamUID;
 
     private CommentAdapter mAdapter;
-    private List<Comment> mComments;
+    private Set<Comment> mComments;
 
     Runnable hide = new Runnable() {
         @Override
@@ -209,13 +211,12 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         recyclerViewComment.setHasFixedSize(true);
         recyclerViewComment.setLayoutManager(new LinearLayoutManager(this));
 
-        mComments = new ArrayList<>();
+        mComments = new HashSet<>();
         DatabaseReference streamersDatabaseRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS).child(streamUID).child(KEY_COMMENTS);
 
         streamersDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot)
-            {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     Comment comment = postSnapshot.getValue(Comment.class);
                     mComments.add(comment);
