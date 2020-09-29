@@ -8,6 +8,9 @@ public class Comment {
     private String username;
     private String body;
 
+    public Comment() {
+    }
+
     public Comment(String userID, String username, String body) {
         this.userID = userID;
         this.username = username;

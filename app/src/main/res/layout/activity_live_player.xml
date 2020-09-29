@@ -212,6 +212,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview_comments"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -223,7 +224,6 @@
         app:layout_constraintBottom_toTopOf="@+id/ET_comment_here"
         app:layout_constraintEnd_toStartOf="@+id/player_iv_like"
         app:layout_constraintStart_toStartOf="parent"
-        tools:itemCount="5"
         tools:listitem="@layout/cardview_comment" />
 
 

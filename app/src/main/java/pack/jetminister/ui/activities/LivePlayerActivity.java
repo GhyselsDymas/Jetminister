@@ -3,6 +3,8 @@ package pack.jetminister.ui.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -32,8 +34,15 @@ import com.streamaxia.player.listener.StreamaxiaPlayerState;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import pack.jetminister.R;
 import pack.jetminister.data.Comment;
+import pack.jetminister.data.LiveStream;
+import pack.jetminister.data.User;
+import pack.jetminister.ui.util.adapter.AdminAdapter;
+import pack.jetminister.ui.util.adapter.CommentAdapter;
 
 import static pack.jetminister.data.Comment.KEY_COMMENTS;
 import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
@@ -59,6 +68,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private SurfaceView playbackSurfaceView;
     private AspectRatioFrameLayout playbackAspectRatioLayout;
     private EditText postCommentET;
+    private RecyclerView recyclerViewComment;
 
     private StreamaxiaPlayer streamPlayer = new StreamaxiaPlayer();
 
@@ -67,6 +77,9 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private Uri streamPlaybackURL;
     private int streamLikes;
     private String streamUID;
+
+    private CommentAdapter mAdapter;
+    private List<Comment> mComments;
 
     Runnable hide = new Runnable() {
         @Override
@@ -174,6 +187,31 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         postCommentET.setOnEditorActionListener(postCommentListener);
 
         KeyboardVisibilityEvent.setEventListener(this, keyboardVisibilityListener);
+
+        recyclerViewComment = findViewById(R.id.recyclerview_comments);
+        recyclerViewComment.setHasFixedSize(true);
+        recyclerViewComment.setLayoutManager(new LinearLayoutManager(this));
+
+        mComments = new ArrayList<>();
+        DatabaseReference streamersDatabaseRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS).child(streamUID).child(KEY_COMMENTS);
+
+        streamersDatabaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot)
+            {
+                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                    Comment comment = postSnapshot.getValue(Comment.class);
+                    mComments.add(comment);
+                }
+                mAdapter = new CommentAdapter(LivePlayerActivity.this, mComments);
+                recyclerViewComment.setAdapter(mAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
 
         initRTMPExoPlayer();
     }

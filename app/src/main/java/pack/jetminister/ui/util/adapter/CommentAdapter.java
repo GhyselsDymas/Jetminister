@@ -23,7 +23,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
 
         public CommentHolder(@NonNull View itemView) {
             super(itemView);
-
             usernameComment = itemView.findViewById(R.id.username_comment_tv);
             commentComment = itemView.findViewById(R.id.comment_comment_tv);
         }
@@ -40,7 +39,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
     @NonNull
     @Override
     public CommentAdapter.CommentHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(mContext).inflate(R.layout.cardview_admin, parent, false);
+        View v = LayoutInflater.from(mContext).inflate(R.layout.cardview_comment, parent, false);
 
 
         return new CommentAdapter.CommentHolder(v);
@@ -49,7 +48,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
     @Override
     public void onBindViewHolder(@NonNull CommentAdapter.CommentHolder holder, int position) {
         Comment uploadCurrent = mCommentList.get(position);
-        holder.usernameComment.setText(uploadCurrent.getUsername());
+        holder.usernameComment.setText("" + uploadCurrent.getUsername() + " :");
         holder.commentComment.setText(uploadCurrent.getBody());
 
         holder.usernameComment.setOnClickListener(new View.OnClickListener() {
