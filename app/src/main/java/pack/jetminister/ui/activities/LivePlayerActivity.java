@@ -237,6 +237,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
                     Comment comment = postSnapshot.getValue(Comment.class);
                     mComments.add(comment);
                     mAdapter = new CommentAdapter(LivePlayerActivity.this, mComments);
+                    recyclerViewComment.scrollToPosition(mAdapter.getItemCount()-1);
                     recyclerViewComment.setAdapter(mAdapter);
                 }
             }
