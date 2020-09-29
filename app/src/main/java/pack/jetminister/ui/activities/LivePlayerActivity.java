@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,10 +36,17 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import pack.jetminister.R;
 import pack.jetminister.data.Comment;
+import pack.jetminister.data.LiveStream;
+import pack.jetminister.data.User;
+import pack.jetminister.ui.fragments.LiveFragment;
+import pack.jetminister.ui.fragments.ProfileFragment;
+import pack.jetminister.ui.util.adapter.AdminAdapter;
 import pack.jetminister.ui.util.adapter.CommentAdapter;
 
 import static pack.jetminister.data.Comment.KEY_COMMENTS;
@@ -61,7 +69,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private DatabaseReference streamersRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
     private TextView streamUsernameTV, streamLikesTV, streamViewersTV, playbackStateTV;
     private ProgressBar playbackProgressBar;
-    private ImageView streamLiveIV, streamProfileIV, streamLikeIV, streamShareIV, playPauseIV, submitCommentIV;
+    private ImageView streamLiveIV, streamProfileIV, streamLikeIV, streamShareIV, playPauseIV;
     private SurfaceView playbackSurfaceView;
     private AspectRatioFrameLayout playbackAspectRatioLayout;
     private EditText postCommentET;
@@ -107,6 +115,16 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
             }
         }
     };
+
+    private View.OnClickListener streamProfileListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(LivePlayerActivity.this , StreamerProfileActivity.class);
+            intent.putExtra("streamerID", streamUID);
+            startActivity(intent);
+        }
+    };
+
 
     private TextView.OnEditorActionListener postCommentListener = new TextView.OnEditorActionListener(){
         @Override
@@ -195,6 +213,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         playbackAspectRatioLayout.setOnClickListener(playPauseListener);
         postCommentET.setOnEditorActionListener(postCommentListener);
         submitCommentIV.setOnClickListener(submitCommentListener);
+        streamProfileIV.setOnClickListener(streamProfileListener);
 
         KeyboardVisibilityEvent.setEventListener(this, keyboardVisibilityListener);
 
@@ -324,6 +343,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }
