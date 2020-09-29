@@ -22,7 +22,8 @@
         android:roundIcon="@mipmap/ic_launcher_einsteintv_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activities.StreamerProfileActivity"></activity>
+        <activity android:name=".ui.activities.StreamerProfileActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.activities.MainActivity"
             android:screenOrientation="portrait">

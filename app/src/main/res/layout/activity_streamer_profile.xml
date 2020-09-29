@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/iv_profile_image"
+            android:id="@+id/iv_streamer_profile_image"
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:contentDescription="@string/profile_image_descr_iv"
@@ -32,7 +32,7 @@
     </androidx.cardview.widget.CardView>
 
     <TextView
-        android:id="@+id/tv_profile_username"
+        android:id="@+id/tv_streamer_profile_username"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
@@ -56,11 +56,11 @@
         android:text="@string/profile_followers_tv"
         android:textColor="@color/colorPrimary"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_profile_username"
+        app:layout_constraintTop_toBottomOf="@+id/tv_streamer_profile_username"
         tools:text="followers" />
 
     <TextView
-        android:id="@+id/tv_profile_followers"
+        android:id="@+id/tv_streamer_profile_followers"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
@@ -81,11 +81,11 @@
         android:textColor="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView4"
-        app:layout_constraintTop_toBottomOf="@+id/tv_profile_username"
+        app:layout_constraintTop_toBottomOf="@+id/tv_streamer_profile_username"
         tools:text="following" />
 
     <TextView
-        android:id="@+id/tv_profile_following"
+        android:id="@+id/tv_streamer_profile_following"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="80dp"
@@ -93,7 +93,7 @@
         android:gravity="end"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/tv_profile_followers"
+        app:layout_constraintStart_toEndOf="@+id/tv_streamer_profile_followers"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <TextView
@@ -107,10 +107,10 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="@color/colorPrimaryDark"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_profile_following" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_streamer_profile_following" />
 
     <TextView
-        android:id="@+id/tv_profile_description"
+        android:id="@+id/tv_streamer_profile_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
@@ -128,7 +128,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_baseline_person_add_24"
-        app:layout_constraintEnd_toEndOf="@+id/tv_profile_username"
-        app:layout_constraintTop_toTopOf="@+id/tv_profile_username" />
+        app:layout_constraintEnd_toEndOf="@+id/tv_streamer_profile_username"
+        app:layout_constraintTop_toTopOf="@+id/tv_streamer_profile_username" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

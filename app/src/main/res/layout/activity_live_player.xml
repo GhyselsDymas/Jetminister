@@ -230,12 +230,10 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_comments"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:maxHeight="80dp"
-        android:minHeight="60dp"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@+id/ET_comment_here"
         app:layout_constraintEnd_toStartOf="@+id/player_iv_like"

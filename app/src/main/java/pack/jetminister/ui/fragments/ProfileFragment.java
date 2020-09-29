@@ -14,11 +14,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -94,9 +92,9 @@ public class ProfileFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        usernameTV = rootView.findViewById(R.id.tv_profile_username);
-        descriptionTV = rootView.findViewById(R.id.tv_profile_description);
-        profileImageIV = rootView.findViewById(R.id.iv_profile_image);
+        usernameTV = rootView.findViewById(R.id.tv_streamer_profile_username);
+        descriptionTV = rootView.findViewById(R.id.tv_streamer_profile_description);
+        profileImageIV = rootView.findViewById(R.id.iv_streamer_profile_image);
         Button startStreamBtn = rootView.findViewById(R.id.btn_start_livestream);
 
         profileImageIV.setOnLongClickListener(profileImageListener);

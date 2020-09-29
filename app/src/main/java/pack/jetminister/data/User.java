@@ -17,6 +17,7 @@ public class User implements Serializable {
     public static final String KEY_IMAGE_URL = "imageURL";
     public static final String KEY_FOLLOWERS = "followers";
     public static final String KEY_FOLLOWING = "following";
+    public static final String KEY_DESCRIPTION = "description";
 
 
     private String username, password, email;

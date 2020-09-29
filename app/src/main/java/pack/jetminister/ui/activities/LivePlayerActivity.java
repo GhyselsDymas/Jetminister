@@ -180,7 +180,6 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_live_player);
         ActionBar toolbar = getSupportActionBar();
