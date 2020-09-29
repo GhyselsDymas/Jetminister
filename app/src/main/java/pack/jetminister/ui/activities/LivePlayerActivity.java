@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -93,6 +95,23 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         }
     };
 
+    private KeyboardVisibilityEventListener keyboardVisibilityListener = new KeyboardVisibilityEventListener() {
+        @Override
+        public void onVisibilityChanged(boolean isOpen) {
+            if (isOpen) {
+                streamLikeIV.setVisibility(View.INVISIBLE);
+                streamLikesTV.setVisibility(View.INVISIBLE);
+                streamShareIV.setVisibility(View.INVISIBLE);
+                streamProfileIV.setVisibility(View.INVISIBLE);
+            } else {
+                streamLikeIV.setVisibility(View.VISIBLE);
+                streamLikesTV.setVisibility(View.VISIBLE);
+                streamShareIV.setVisibility(View.VISIBLE);
+                streamProfileIV.setVisibility(View.VISIBLE);
+            }
+        }
+    };
+
     private View.OnClickListener likeListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -119,23 +138,26 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private View.OnClickListener streamProfileListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(LivePlayerActivity.this , StreamerProfileActivity.class);
+            Intent intent = new Intent(LivePlayerActivity.this, StreamerProfileActivity.class);
             intent.putExtra("streamerID", streamUID);
             startActivity(intent);
         }
     };
 
-
-    private TextView.OnEditorActionListener postCommentListener = new TextView.OnEditorActionListener(){
+    private TextView.OnEditorActionListener postCommentListener = new TextView.OnEditorActionListener() {
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             // Identifier of the action. This will be either the identifier you supplied,
             // or EditorInfo.IME_NULL if being called due to the enter key being pressed.
-            if (actionId == EditorInfo.IME_ACTION_DONE
+            if (actionId == EditorInfo.IME_ACTION_DONE ||
+                    actionId == EditorInfo.IME_NULL
                     && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                String commentBody = postCommentET.getText().toString().trim();
-                addCommentToStream(commentBody);
-                postCommentET.getText().clear();
+                if (!postCommentET.getText().toString().trim().isEmpty()) {
+                    String commentBody = postCommentET.getText().toString().trim();
+                    addCommentToStream(commentBody);
+                    postCommentET.getText().clear();
+                    hideKeyboard();
+                }
                 return true;
             }
 
@@ -143,30 +165,14 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         }
     };
 
-    private KeyboardVisibilityEventListener keyboardVisibilityListener = new KeyboardVisibilityEventListener() {
-        @Override
-        public void onVisibilityChanged(boolean isOpen) {
-            if (isOpen){
-                streamLikeIV.setVisibility(View.INVISIBLE);
-                streamLikesTV.setVisibility(View.INVISIBLE);
-                streamShareIV.setVisibility(View.INVISIBLE);
-                streamProfileIV.setVisibility(View.INVISIBLE);
-            }else{
-                streamLikeIV.setVisibility(View.VISIBLE);
-                streamLikesTV.setVisibility(View.VISIBLE);
-                streamShareIV.setVisibility(View.VISIBLE);
-                streamProfileIV.setVisibility(View.VISIBLE);
-            }
-        }
-    };
-
     private View.OnClickListener submitCommentListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!postCommentET.getText().toString().trim().isEmpty()){
+            if (!postCommentET.getText().toString().trim().isEmpty()) {
                 String commentBody = postCommentET.getText().toString().trim();
                 addCommentToStream(commentBody);
                 postCommentET.getText().clear();
+                hideKeyboard();
             }
         }
     };
@@ -245,6 +251,17 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         initRTMPExoPlayer();
     }
 
+    private void hideKeyboard() {
+            InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            //Find the currently focused view, so we can grab the correct window token from it.
+            View view = this.getCurrentFocus();
+            //If no view currently has focus, create a new one, just so we can grab a window token from it
+            if (view == null) {
+                view = new View(this);
+            }
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
     private void hideStatusBar() {
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
@@ -269,7 +286,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         streamUID = extras.getString(KEY_USER_ID);
     }
 
-    private void addCurrentViewer(){
+    private void addCurrentViewer() {
         streamersRef.child(streamUID).child(KEY_STREAM_VIEWERS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -289,30 +306,31 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private void showAmountViewers() {
         streamersRef.child(streamUID).child(KEY_STREAM_VIEWERS)
                 .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int amountViewers = snapshot.getValue(Integer.class);
-                streamViewersTV.setText(String.valueOf(amountViewers));
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        int amountViewers = snapshot.getValue(Integer.class);
+                        streamViewersTV.setText(String.valueOf(amountViewers));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
     }
 
     private void showAmountLikes() {
         streamersRef.child(streamUID).child(KEY_STREAM_LIKES)
                 .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                streamLikes = snapshot.getValue(Integer.class);
-                streamLikesTV.setText(String.valueOf(streamLikes));
-            }
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        streamLikes = snapshot.getValue(Integer.class);
+                        streamLikesTV.setText(String.valueOf(streamLikes));
+                    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
     }
 
     private void likeUnlike() {
@@ -333,19 +351,19 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         long commentID = System.currentTimeMillis();
         usersRef.child(currentUser.getUid()).child(KEY_USERNAME)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String username = snapshot.getValue(String.class);
-                Comment newComment = new Comment(currentUser.getUid(), username, commentBody);
-                streamersRef.child(streamUID).child(KEY_COMMENTS).child(String.valueOf(commentID)).setValue(newComment);
-                Log.d(TAG, "new comment: " + newComment.toString());
-            }
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String username = snapshot.getValue(String.class);
+                        Comment newComment = new Comment(currentUser.getUid(), username, commentBody);
+                        streamersRef.child(streamUID).child(KEY_COMMENTS).child(String.valueOf(commentID)).setValue(newComment);
+                        Log.d(TAG, "new comment: " + newComment.toString());
+                    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+                    }
+                });
     }
 
     @Override
