@@ -1,5 +1,6 @@
 package pack.jetminister.data;
 
+import pack.jetminister.data.util.Broadcast;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;

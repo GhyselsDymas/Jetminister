@@ -40,6 +40,7 @@ import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_LIKES;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_USERNAME;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_VIEWERS;
+import static pack.jetminister.data.User.KEY_USERNAME;
 import static pack.jetminister.data.User.KEY_USER_ID;
 import static pack.jetminister.ui.util.adapter.LivePictureAdapter.KEY_URI;
 
@@ -175,8 +176,20 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
     private void addCommentToStream() {
         long commentID = System.currentTimeMillis();
-        Comment comment = new Comment(currentUser.getUid(), commentHereET.getText().toString());
-        streamersRef.child("comments").child(String.valueOf(commentID)).setValue(comment);
+        streamersRef.child(currentUser.getUid()).child(KEY_USERNAME).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String username = snapshot.getValue(String.class);
+                Comment comment = new Comment(currentUser.getUid(), username, commentHereET.getText().toString());
+                streamersRef.child("comments").child(String.valueOf(commentID)).setValue(comment);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     private void addCurrentViewer(){
@@ -195,8 +208,8 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
                     }
                 });
-
     }
+
     private void showAmountViewers() {
         streamersRef.child(streamerID).child(KEY_STREAM_VIEWERS)
                 .addValueEventListener(new ValueEventListener() {

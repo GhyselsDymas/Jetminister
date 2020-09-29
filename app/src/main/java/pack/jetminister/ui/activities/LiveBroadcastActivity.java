@@ -39,7 +39,7 @@ import java.net.SocketException;
 import java.util.List;
 
 import pack.jetminister.R;
-import pack.jetminister.data.Broadcast;
+import pack.jetminister.data.util.Broadcast;
 import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.WowzaRestApi;
 import retrofit2.Call;
