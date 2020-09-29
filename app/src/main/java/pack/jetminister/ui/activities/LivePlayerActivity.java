@@ -94,6 +94,40 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         }
     };
 
+    private TextView.OnEditorActionListener postCommentListener = new TextView.OnEditorActionListener(){
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            // Identifier of the action. This will be either the identifier you supplied,
+            // or EditorInfo.IME_NULL if being called due to the enter key being pressed.
+            if (actionId == EditorInfo.IME_ACTION_SEARCH
+                    || actionId == EditorInfo.IME_ACTION_DONE
+                    || event.getAction() == KeyEvent.ACTION_DOWN
+                    && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                addCommentToStream();
+                return true;
+            }
+
+            return false;
+        }
+    };
+
+    private KeyboardVisibilityEventListener keyboardVisibilityListener = new KeyboardVisibilityEventListener() {
+        @Override
+        public void onVisibilityChanged(boolean isOpen) {
+            if (isOpen){
+                likePlayerIV.setVisibility(View.INVISIBLE);
+                likesPlayerTV.setVisibility(View.INVISIBLE);
+                sharePlayerIV.setVisibility(View.INVISIBLE);
+                profilePlayerIV.setVisibility(View.INVISIBLE);
+            }else{
+                likePlayerIV.setVisibility(View.VISIBLE);
+                likesPlayerTV.setVisibility(View.VISIBLE);
+                sharePlayerIV.setVisibility(View.VISIBLE);
+                profilePlayerIV.setVisibility(View.VISIBLE);
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,22 +153,6 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         playerAspectRatioLayout = findViewById(R.id.player_aspect_ratio);
         playerProgressBar = findViewById(R.id.player_progress_bar);
         commentHereET = findViewById(R.id.ET_comment_here);
-        commentHereET.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    // Identifier of the action. This will be either the identifier you supplied,
-                    // or EditorInfo.IME_NULL if being called due to the enter key being pressed.
-                    if (actionId == EditorInfo.IME_ACTION_SEARCH
-                            || actionId == EditorInfo.IME_ACTION_DONE
-                            || event.getAction() == KeyEvent.ACTION_DOWN
-                            && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                        addCommentToStream();
-                        return true;
-                    }
-
-                return false;
-            }
-        });
 
         getStreamerInfo();
         showAmountLikes();
@@ -145,27 +163,12 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         likePlayerIV.setImageResource(R.drawable.ic_like_border_white_24);
         likesPlayerTV.setVisibility(View.VISIBLE);
         likesPlayerTV.setText(String.valueOf(amountLikes));
-        likePlayerIV.setOnClickListener(likeListener);
         usernamePlayerTV.setText(streamerUsername);
+        likePlayerIV.setOnClickListener(likeListener);
         playerAspectRatioLayout.setOnClickListener(playPauseListener);
+        commentHereET.setOnEditorActionListener(postCommentListener);
 
-        KeyboardVisibilityEvent.setEventListener(
-                this, new KeyboardVisibilityEventListener() {
-                    @Override
-                    public void onVisibilityChanged(boolean isOpen) {
-                        if (isOpen){
-                            likePlayerIV.setVisibility(View.INVISIBLE);
-                            likesPlayerTV.setVisibility(View.INVISIBLE);
-                            sharePlayerIV.setVisibility(View.INVISIBLE);
-                            profilePlayerIV.setVisibility(View.INVISIBLE);
-                        }else{
-                            likePlayerIV.setVisibility(View.VISIBLE);
-                            likesPlayerTV.setVisibility(View.VISIBLE);
-                            sharePlayerIV.setVisibility(View.VISIBLE);
-                            profilePlayerIV.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });
+        KeyboardVisibilityEvent.setEventListener(this, keyboardVisibilityListener);
 
         initRTMPExoPlayer();
     }
