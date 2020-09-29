@@ -69,7 +69,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private DatabaseReference streamersRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
     private TextView streamUsernameTV, streamLikesTV, streamViewersTV, playbackStateTV;
     private ProgressBar playbackProgressBar;
-    private ImageView streamLiveIV, streamProfileIV, streamLikeIV, streamShareIV, playPauseIV;
+    private ImageView streamLiveIV, streamProfileIV, streamLikeIV, streamShareIV, playPauseIV, submitCommentIV;
     private SurfaceView playbackSurfaceView;
     private AspectRatioFrameLayout playbackAspectRatioLayout;
     private EditText postCommentET;
