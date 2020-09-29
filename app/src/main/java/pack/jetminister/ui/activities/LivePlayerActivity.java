@@ -3,9 +3,13 @@ package pack.jetminister.ui.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,6 +45,8 @@ import pack.jetminister.R;
 import pack.jetminister.data.Comment;
 import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.User;
+import pack.jetminister.ui.fragments.LiveFragment;
+import pack.jetminister.ui.fragments.ProfileFragment;
 import pack.jetminister.ui.util.adapter.AdminAdapter;
 import pack.jetminister.ui.util.adapter.CommentAdapter;
 
@@ -110,6 +116,16 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
             }
         }
     };
+
+    private View.OnClickListener streamProfileListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(LivePlayerActivity.this , StreamerProfileActivity.class);
+            intent.putExtra("streamerID", streamUID);
+            startActivity(intent);
+        }
+    };
+
 
     private TextView.OnEditorActionListener postCommentListener = new TextView.OnEditorActionListener(){
         @Override
@@ -185,6 +201,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         streamLikeIV.setOnClickListener(likeListener);
         playbackAspectRatioLayout.setOnClickListener(playPauseListener);
         postCommentET.setOnEditorActionListener(postCommentListener);
+        streamProfileIV.setOnClickListener(streamProfileListener);
 
         KeyboardVisibilityEvent.setEventListener(this, keyboardVisibilityListener);
 
@@ -211,7 +228,6 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-
 
         initRTMPExoPlayer();
     }
