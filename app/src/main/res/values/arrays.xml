@@ -34,4 +34,12 @@
         <item>us_west_oregon</item>
     </array>
 
+    <array name="reportReasons">
+        <item>Spamming</item>
+        <item>Inappropriate behaviour</item>
+        <item>Inappropriate Clothing</item>
+        <item>Inappropriate Username</item>
+        <item>Nudity</item>
+    </array>
+
 </resources>

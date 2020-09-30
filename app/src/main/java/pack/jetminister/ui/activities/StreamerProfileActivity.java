@@ -6,9 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -18,6 +20,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import pack.jetminister.R;
+import pack.jetminister.ui.dialogs.DescriptionChangeDialog;
+import pack.jetminister.ui.dialogs.ReportDialog;
 
 import static pack.jetminister.data.User.KEY_DESCRIPTION;
 import static pack.jetminister.data.User.KEY_FOLLOWERS;
@@ -31,7 +35,7 @@ public class StreamerProfileActivity extends AppCompatActivity {
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
 
     private TextView usernameTV , descriptionTV , followersTV , followingTV;
-    private ImageView profileIV;
+    private ImageView profileIV , reportIV;
 
     private String streamerID;
 
@@ -50,6 +54,9 @@ public class StreamerProfileActivity extends AppCompatActivity {
         followersTV = findViewById(R.id.tv_streamer_profile_followers);
         followingTV = findViewById(R.id.tv_streamer_profile_following);
         profileIV = findViewById(R.id.iv_streamer_profile_image);
+        reportIV = findViewById(R.id.iv_report_streamer_profile);
+
+        reportIV.setOnClickListener(reportListener);
 
         getStreamerInfo();
 
@@ -77,6 +84,14 @@ public class StreamerProfileActivity extends AppCompatActivity {
                 }
             });
     }
+
+    View.OnClickListener reportListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            ReportDialog newReportDialogDialog = new ReportDialog();
+            newReportDialogDialog.show(getSupportFragmentManager(), "report");
+        }
+    };
 
     private void getStreamerInfo(){
         Bundle extra = getIntent().getExtras();

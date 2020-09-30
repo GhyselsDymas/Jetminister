@@ -48,12 +48,20 @@ public class DescriptionChangeDialog extends androidx.fragment.app.DialogFragmen
         final String uID = currentUser.getUid();
         final DatabaseReference currentUserDatabaseRef = usersDatabaseRef.child(uID);
 
+        LinearLayout layout = new LinearLayout(mContext);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+
         final EditText edittext = new EditText(mContext);
         edittext.setHint("your Description");
+        layout.addView(edittext);
+
+        layout.setPadding(40, 0 , 40 , 0);
 
         builder.setTitle("Add a description to your profile");
                 builder.setMessage("Enter your profile description");
-                builder.setView(edittext);
+                builder.setView(layout);
+
                 builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -71,5 +79,4 @@ public class DescriptionChangeDialog extends androidx.fragment.app.DialogFragmen
 
         return builder.create();
     }
-
 }
