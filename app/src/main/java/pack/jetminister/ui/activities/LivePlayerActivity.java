@@ -131,6 +131,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
                 playbackProgressBar.setVisibility(View.GONE);
                 int STREAM_TYPE = StreamaxiaPlayer.TYPE_HLS;
                 streamPlayer.play(streamPlaybackURL, STREAM_TYPE);
+
             }
         }
     };

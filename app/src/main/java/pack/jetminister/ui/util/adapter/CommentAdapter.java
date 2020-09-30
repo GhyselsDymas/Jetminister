@@ -1,6 +1,8 @@
 package pack.jetminister.ui.util.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,8 @@ import java.util.List;
 import pack.jetminister.R;
 import pack.jetminister.data.Comment;
 import pack.jetminister.data.User;
+import pack.jetminister.ui.activities.LivePlayerActivity;
+import pack.jetminister.ui.activities.StreamerProfileActivity;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentHolder> {
 
@@ -48,14 +52,19 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
     @Override
     public void onBindViewHolder(@NonNull CommentAdapter.CommentHolder holder, int position) {
         Comment uploadCurrent = mCommentList.get(position);
-        holder.usernameComment.setText("" + uploadCurrent.getUsername() + " :");
-        holder.commentComment.setText(uploadCurrent.getBody());
+
+        holder.usernameComment.setPaintFlags(holder.usernameComment.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
+
+        holder.usernameComment.setText(uploadCurrent.getUsername() );
+        holder.commentComment.setText(" : " + uploadCurrent.getBody());
 
         holder.usernameComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String userUID  = uploadCurrent.getUserID();
-                //TODO make a connection to a profile page
+                Intent intent = new Intent(view.getContext() , StreamerProfileActivity.class);
+                intent.putExtra("streamerID", userUID);
+                mContext.startActivity(intent);
             }
         });
     }

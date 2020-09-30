@@ -29,6 +29,7 @@ import pack.jetminister.data.User;
 import pack.jetminister.ui.activities.AskToStreamActivity;
 import pack.jetminister.ui.activities.LoginRegisterActivity;
 import pack.jetminister.ui.activities.ProfileImageActivity;
+import pack.jetminister.ui.dialogs.DescriptionChangeDialog;
 import pack.jetminister.ui.dialogs.ThemeChooserDialog;
 
 public class ProfileFragment extends Fragment {
@@ -39,7 +40,7 @@ public class ProfileFragment extends Fragment {
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
     private AppCompatActivity mContext;
 
-    private ImageView profileImageIV;
+    private ImageView profileImageIV, descriptionIV;
     private TextView usernameTV;
     private TextView descriptionTV;
 
@@ -80,6 +81,14 @@ public class ProfileFragment extends Fragment {
         }
     };
 
+    View.OnClickListener descriptionListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            DescriptionChangeDialog newDescriptionChangeDialog = new DescriptionChangeDialog();
+            newDescriptionChangeDialog.show(getParentFragmentManager(), "themes");
+        }
+    };
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -96,9 +105,11 @@ public class ProfileFragment extends Fragment {
         descriptionTV = rootView.findViewById(R.id.tv_streamer_profile_description);
         profileImageIV = rootView.findViewById(R.id.iv_streamer_profile_image);
         Button startStreamBtn = rootView.findViewById(R.id.btn_start_livestream);
+        descriptionIV = rootView.findViewById(R.id.iv_profile_edit);
 
         profileImageIV.setOnLongClickListener(profileImageListener);
         startStreamBtn.setOnClickListener(startStreamListener);
+        descriptionIV.setOnClickListener(descriptionListener);
 
         updateUI();
 
