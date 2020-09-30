@@ -114,7 +114,7 @@
         android:paddingTop="2dp"
         android:paddingEnd="4dp"
         android:paddingBottom="2dp"
-        android:text="@string/play_tv_viewers"
+        android:text="@string/player_tv_viewers"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:textColor="#FFFFFF"
         app:layout_constraintStart_toEndOf="@+id/player_tv_watching"

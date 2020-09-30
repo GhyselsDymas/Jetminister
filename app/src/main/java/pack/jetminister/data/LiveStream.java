@@ -8,9 +8,7 @@ import pack.jetminister.data.util.DirectPlaybackURL;
 import pack.jetminister.data.util.SourceConnectionInformation;
 import pack.jetminister.data.util.StreamTarget;
 
-public class LiveStream {
-
-    private static final String TAG = "LiveStream";
+public class LiveStream {private static final String TAG = "LiveStream";
 
     public static final String KEY_LIVE_STREAMS = "liveStreams";
     public static final String KEY_LIVE_STREAM = "liveStream";
@@ -19,6 +17,7 @@ public class LiveStream {
     public static final String KEY_STREAM_PLAYBACK_URL = "playbackURL";
     public static final String KEY_STREAM_LIKES = "likes";
     public static final String KEY_STREAM_VIEWERS = "viewers";
+    public static final String KEY_STREAM_THEME = "theme";
 
 
     @SerializedName("id")
@@ -35,6 +34,7 @@ public class LiveStream {
     private String streamUsername;
     @SerializedName("broadcast_location")
     private String streamLocation;
+    private String theme;
     @SerializedName("username")
     private String authUsername;
     @SerializedName("password")
@@ -100,9 +100,12 @@ public class LiveStream {
     private int likes;
     private int viewers;
 
-    public LiveStream(String streamUsername, String streamLocation, String authUsername, String authPassword) {
+    private LiveStream(){}
+
+    public LiveStream(String streamUsername, String streamLocation, String theme, String authUsername, String authPassword) {
         this.streamUsername = streamUsername;
         this.streamLocation = streamLocation;
+        this.theme = theme;
         this.authUsername = authUsername;
         this.authPassword = authPassword;
         this.authenticationDisabled = false;
@@ -138,6 +141,10 @@ public class LiveStream {
         this.viewers = viewers;
     }
 
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
     public String getStreamId() {
         return streamId;
     }
@@ -160,6 +167,10 @@ public class LiveStream {
 
     public String getStreamUsername() {
         return streamUsername;
+    }
+
+    public String getTheme() {
+        return theme;
     }
 
     public String getStreamLocation() {
@@ -300,5 +311,4 @@ public class LiveStream {
 
     public int getViewers() {
         return viewers;
-    }
-}
+    }}

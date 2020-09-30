@@ -13,6 +13,7 @@ public class User implements Serializable {
     public static final String KEY_USER_ID = "userID";
     public static final String KEY_USERS = "users";
     public static final String KEY_USERNAME = "username";
+    public static final String KEY_STREAMER = "streamer";
     public static final String KEY_LOCATION = "location";
     public static final String KEY_IMAGE_URL = "imageURL";
     public static final String KEY_FOLLOWERS = "followers";

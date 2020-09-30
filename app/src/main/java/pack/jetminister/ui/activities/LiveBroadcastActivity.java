@@ -52,6 +52,7 @@ import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_ID;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_LIKES;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_THEME;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_USERNAME;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_VIEWERS;
 import static pack.jetminister.data.util.SourceConnectionInformation.KEY_STREAM_PUBLISH_URL;
@@ -88,7 +89,8 @@ public class LiveBroadcastActivity
     private TextView startBroadcastTV, stopBroadcastTV, stateBroadcastTV;
     private Chronometer broadcastChronometer;
     private ProgressBar progressBar;
-    ImageView liveIconIV, publishIcon;
+    private ImageView liveIconIV, publishIcon;
+    private String currentTheme;
 
     private View.OnClickListener publishListener = new View.OnClickListener() {
         @Override
@@ -124,7 +126,7 @@ public class LiveBroadcastActivity
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     String userLocation = snapshot.child(KEY_LOCATION).getValue(String.class);
                                     String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
-                                    LiveStream newLiveStream = new LiveStream(currentUsername, userLocation, "Hackermann", "1234azer");
+                                    LiveStream newLiveStream = new LiveStream(currentUsername, currentTheme, userLocation, "Hackermann", "1234azer");
                                     Broadcast newBroadcast = new Broadcast(newLiveStream);
                                     createLiveStream(newBroadcast);
                                 }
@@ -163,6 +165,8 @@ public class LiveBroadcastActivity
             toolbar.hide();
         }
         hideStatusBar();
+
+        getCurrentTheme();
 
         startBroadcastTV = findViewById(R.id.tv_live_broadcast_start);
         stopBroadcastTV = findViewById(R.id.tv_live_broadcast_stop);
@@ -241,6 +245,13 @@ public class LiveBroadcastActivity
         broadcastPublisher.stopRecord();
     }
 
+    private void getCurrentTheme() {
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra(KEY_STREAM_THEME)) {
+            currentTheme = intent.getStringExtra(KEY_STREAM_THEME);
+        }
+    }
+
 
     private void hideStatusBar() {
         View decorView = getWindow().getDecorView();
@@ -301,24 +312,9 @@ public class LiveBroadcastActivity
     private void addLiveStreamToDatabase(Broadcast broadcastResponse) {
         LiveStream currentLiveStream = broadcastResponse.getLiveStream();
 
-//        usersRef.child(uID).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                User user = snapshot.getValue(User.class);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//            }
-//        });
-//        usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_ID).setValue(currentLiveStream.getStreamId());
-//        usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_PLAYBACK_URL).setValue(currentLiveStream.getPlaybackURL());
-//        usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_PUBLISH_URL).setValue(currentSourceInfo.toString());
-//        usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_LIKES).setValue(0);
-//        usersRef.child(uID).child(KEY_LIVE_STREAM).child(KEY_STREAM_VIEWERS).setValue(0);
-
         streamsRef.child(currentUID).child(KEY_STREAM_ID).setValue(currentLiveStream.getStreamId());
         streamsRef.child(currentUID).child(KEY_STREAM_USERNAME).setValue(currentLiveStream.getStreamUsername());
+        streamsRef.child(currentUID).child(KEY_STREAM_THEME).setValue(currentTheme);
         streamsRef.child(currentUID).child(KEY_STREAM_PLAYBACK_URL).setValue(currentLiveStream.getPlaybackURL());
         streamsRef.child(currentUID).child(KEY_STREAM_PUBLISH_URL).setValue(currentLiveStream.getSourceConnectionInformation().toString());
         resetViews();

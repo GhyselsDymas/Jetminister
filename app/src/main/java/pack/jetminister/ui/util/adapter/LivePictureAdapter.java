@@ -82,7 +82,7 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
 
     @Override
     public int getItemCount() {
-        return 5;
+        return mStreamerIDs.size();
     }
 
     public class LivePictureHolder extends RecyclerView.ViewHolder {

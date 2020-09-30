@@ -20,12 +20,14 @@ import pack.jetminister.R;
 import pack.jetminister.data.User;
 import pack.jetminister.ui.util.adapter.AdminAdapter;
 
+import static pack.jetminister.data.User.KEY_USERS;
+
 public class AdminActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerVew;
     private AdminAdapter mAdapter;
 
-    private List<User> mUsers;
+    private List<String> userIDs;
 
     public AdminActivity() {
     }
@@ -39,17 +41,17 @@ public class AdminActivity extends AppCompatActivity {
         mRecyclerVew.setHasFixedSize(true);
         mRecyclerVew.setLayoutManager(new LinearLayoutManager(this));
 
-        mUsers = new ArrayList<>();
-        DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
+        userIDs = new ArrayList<>();
+        DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
 
         usersDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                    User user = postSnapshot.getValue(User.class);
-                    mUsers.add(user);
+                    String userID = postSnapshot.getKey();
+                    userIDs.add(userID);
                 }
-                mAdapter = new AdminAdapter(AdminActivity.this, mUsers);
+                mAdapter = new AdminAdapter(AdminActivity.this, userIDs);
                 mRecyclerVew.setAdapter(mAdapter);
             }
 

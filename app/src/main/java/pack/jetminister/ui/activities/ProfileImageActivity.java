@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.navigation.ActivityNavigator;
 import androidx.navigation.NavController;
 
 import android.util.Log;
@@ -63,9 +64,16 @@ public class ProfileImageActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             //return to user profile screen
-            FragmentManager fragmentManager = getSupportFragmentManager();
             ProfileFragment destinationFragment = new ProfileFragment();
-            fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, destinationFragment).commit();
+
+
+            ActivityNavigator navigator = new ActivityNavigator(ProfileImageActivity.this);
+
+            navigator.createDestination();
+
+
+            //            FragmentManager fragmentManager = getSupportFragmentManager();
+            //     fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, destinationFragment).commit();
         }
     };
 

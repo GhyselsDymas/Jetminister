@@ -21,7 +21,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.exoplayer.AspectRatioFrameLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -157,6 +159,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
                     postCommentET.getText().clear();
                     hideKeyboard();
                     postCommentET.clearFocus();
+//                    setRecyclerViewHeight(100);
                 }
                 return true;
             }
@@ -173,6 +176,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
                 postCommentET.getText().clear();
                 hideKeyboard();
                 postCommentET.clearFocus();
+//            setRecyclerViewHeight(100);
             }
         }
     };
@@ -237,7 +241,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
                     Comment comment = postSnapshot.getValue(Comment.class);
                     mComments.add(comment);
                     mAdapter = new CommentAdapter(LivePlayerActivity.this, mComments);
-                    recyclerViewComment.scrollToPosition(mAdapter.getItemCount()-1);
+                    recyclerViewComment.scrollToPosition(mAdapter.getItemCount() - 1);
                     recyclerViewComment.setAdapter(mAdapter);
                 }
             }
@@ -252,15 +256,15 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     }
 
     private void hideKeyboard() {
-            InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
-            //Find the currently focused view, so we can grab the correct window token from it.
-            View view = this.getCurrentFocus();
-            //If no view currently has focus, create a new one, just so we can grab a window token from it
-            if (view == null) {
-                view = new View(this);
-            }
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = this.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(this);
         }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
     private void hideStatusBar() {
         View decorView = getWindow().getDecorView();
@@ -349,21 +353,25 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
     private void addCommentToStream(String commentBody) {
         long commentID = System.currentTimeMillis();
-        usersRef.child(currentUser.getUid()).child(KEY_USERNAME)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        String username = snapshot.getValue(String.class);
-                        Comment newComment = new Comment(currentUser.getUid(), username, commentBody);
-                        streamersRef.child(streamUID).child(KEY_COMMENTS).child(String.valueOf(commentID)).setValue(newComment);
-                        Log.d(TAG, "new comment: " + newComment.toString());
-                    }
+        if (currentUser != null) {
+            usersRef.child(currentUser.getUid()).child(KEY_USERNAME)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String username = snapshot.getValue(String.class);
+                            Comment newComment = new Comment(currentUser.getUid(), username, commentBody);
+                            streamersRef.child(streamUID).child(KEY_COMMENTS).child(String.valueOf(commentID)).setValue(newComment);
+                            Log.d(TAG, "new comment: " + newComment.toString());
+                        }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
 
-                    }
-                });
+                        }
+                    });
+        } else {
+            Toast.makeText(this, R.string.player_comment_error_not_registered, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

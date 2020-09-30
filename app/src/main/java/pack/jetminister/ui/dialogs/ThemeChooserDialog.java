@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import pack.jetminister.R;
+import pack.jetminister.data.LiveStream;
 import pack.jetminister.ui.activities.LiveBroadcastActivity;
 
 public class ThemeChooserDialog extends androidx.fragment.app.DialogFragment {
@@ -40,7 +41,9 @@ public class ThemeChooserDialog extends androidx.fragment.app.DialogFragment {
                         // of the selected item
                         String[] myResArray = getResources().getStringArray(R.array.themes);
                         List<String> myResArrayList = Arrays.asList(myResArray);
+                        String selectedTheme = myResArrayList.get(which);
                         Intent intent = new Intent(getActivity(), LiveBroadcastActivity.class);
+                        intent.putExtra(LiveStream.KEY_STREAM_THEME, selectedTheme);
                         startActivity(intent);
                         dialog.dismiss();
                     }

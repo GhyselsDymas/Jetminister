@@ -83,7 +83,8 @@
     <string name="profile_btn_start_broadcast">Start broadcast</string>
     <string name="prof_iv_edit_description">Edit description of channel</string>
     <string name="title_activity_ask_to_stream">AskToStreamActivity</string>
-    <string name="play_tv_viewers">\u0020viewers</string>
+    <string name="player_tv_viewers">\u0020viewers</string>
     <string name="player_submit_comment">Submit comment</string>
     <string name="player_comment_hint">Comment</string>
+    <string name="player_comment_error_not_registered">You must be logged in to post a comment</string>
 </resources>

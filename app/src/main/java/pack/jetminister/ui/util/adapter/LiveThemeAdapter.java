@@ -24,20 +24,16 @@ import java.util.List;
 
 import pack.jetminister.R;
 import pack.jetminister.data.LiveStream;
-import pack.jetminister.data.User;
 
-import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAM;
-import static pack.jetminister.data.LiveStream.KEY_STREAM_LIKES;
-import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
-import static pack.jetminister.data.LiveStream.KEY_STREAM_VIEWERS;
+import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
 
 public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.LiveThemeHolder> {
 
     private static final String TAG = "LiveThemeAdapter";
-    private LivePictureAdapter mAdapter;
+    private LivePictureAdapter pictureAdapter;
     private Context mContext;
     private List<String> mThemes;
-    private List<String> mStreamerIds;
+    private List<String> mStreamerIDsPerTheme;
 
     public LiveThemeAdapter(Context context) {
         mContext = context;
@@ -54,24 +50,27 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
 
     @Override
     public void onBindViewHolder(@NonNull final LiveThemeHolder holder, int position) {
-        final String uploadCurrent = mThemes.get(position);
-        mStreamerIds = new ArrayList<>();
-        DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
-        usersDatabaseRef.addValueEventListener(new ValueEventListener() {
+        final String currentTheme = mThemes.get(position);
+        holder.streamersPerTheme = new ArrayList<>();
+        DatabaseReference streamsRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
+        streamsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     String streamerID = postSnapshot.getKey();
-                    mStreamerIds.add(streamerID);
+                    LiveStream currentStream = postSnapshot.getValue(LiveStream.class);
+                    String streamerTheme = currentStream.getTheme();
+                    if (streamerTheme.equals(currentTheme)){
+                        holder.streamersPerTheme.add(streamerID);
+                    }
                 }
 
-                holder.titleLiveTheme.setText(uploadCurrent);
-                holder.readMoreLiveTheme.setText(String.format("%s %s", mContext.getResources().getString(R.string.see_more_tv), uploadCurrent));
+                holder.titleLiveTheme.setText(currentTheme);
+                holder.readMoreLiveTheme.setText(String.format("%s %s", mContext.getResources().getString(R.string.see_more_tv), currentTheme));
                 holder.recyclerViewLive.setHasFixedSize(true);
                 holder.recyclerViewLive.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-                mAdapter = new LivePictureAdapter(mContext,
-                        mStreamerIds);
-                holder.recyclerViewLive.setAdapter(mAdapter);
+                pictureAdapter = new LivePictureAdapter(mContext, holder.streamersPerTheme);
+                holder.recyclerViewLive.setAdapter(pictureAdapter);
             }
 
             @Override
@@ -87,7 +86,7 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
     }
 
     public static class LiveThemeHolder extends RecyclerView.ViewHolder {
-
+        public List<String> streamersPerTheme;
         public TextView titleLiveTheme, readMoreLiveTheme;
         public RecyclerView recyclerViewLive;
 
