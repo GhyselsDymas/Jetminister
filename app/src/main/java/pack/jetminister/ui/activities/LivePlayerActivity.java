@@ -48,6 +48,7 @@ import pack.jetminister.R;
 import pack.jetminister.data.Comment;
 import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.User;
+import pack.jetminister.ui.dialogs.StreamEndedDialog;
 import pack.jetminister.ui.fragments.LiveFragment;
 import pack.jetminister.ui.fragments.ProfileFragment;
 import pack.jetminister.ui.util.adapter.AdminAdapter;
@@ -142,7 +143,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(LivePlayerActivity.this, StreamerProfileActivity.class);
-            intent.putExtra("streamerID", streamUID);
+            intent.putExtra(KEY_USER_ID, streamUID);
             startActivity(intent);
         }
     };
@@ -425,8 +426,13 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     public void stateENDED() {
         playbackProgressBar.setVisibility(View.GONE);
         streamLiveIV.setVisibility(View.INVISIBLE);
-        //TODO: alert dialog
+        showStreamEndedDialog();
         Toast.makeText(this, R.string.player_stream_ended, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showStreamEndedDialog() {
+       StreamEndedDialog streamEndedDialog = new StreamEndedDialog();
+        streamEndedDialog.show(getSupportFragmentManager(), "Stream Ended");
     }
 
     @Override

@@ -18,6 +18,7 @@
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
     <string name="upload">Upload</string>
+    <string name="or">or</string>
     <string name="register_et_password">Password</string>
     <string name="register_et_password_confirm">Confirm password</string>
     <string name="register_et_descr">Description</string>
@@ -71,13 +72,13 @@
     <string name="see_more_tv">See more</string>
     <string name="read_more_tv">Read more</string>
     <string name="btn_choose_image">Choose image</string>
-    <string name="profile_iv_preview">A preview of the image you selcted</string>
+    <string name="profile_iv_preview">A preview of the image you selected</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="stopped">[Stopped]</string>
     <string name="permission_dialog_title">Camera and Audio</string>
     <string name="permission_dialog_message">"Both camera and audio permissions are needed for broadcasting</string>
-    <string name="broadcast_permission_notification">You need to grant persmissions in order to begin streaming</string>
+    <string name="broadcast_permission_notification">You need to grant permissions in order to begin streaming</string>
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
@@ -89,6 +90,9 @@
     <string name="player_comment_hint">Comment</string>
     <string name="player_comment_error_not_registered">You must be logged in to post a comment</string>
     <string name="player_stream_ended">The stream has ended. Thank you for watching!</string>
+    <string name="player_stream_ended_live">See who else is live</string>
+    <string name="player_stream_ended_profile">Visit streamer profile</string>
+
     <string name="report_dialog_title">Report abuse</string>
     <string name="report_dialog_message">Please give adequate information</string>
     <string name="report_dialog_reasons">Write your reasons for reporting here</string>
