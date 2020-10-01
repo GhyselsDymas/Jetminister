@@ -43,8 +43,8 @@ public class ReportDialog extends androidx.fragment.app.DialogFragment{
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        builder.setTitle("For what reason will you report this person?");
-        builder.setMessage("Please give us enough information");
+        builder.setTitle(R.string.report_dialog_title);
+        builder.setMessage(R.string.report_dialog_message);
 
         LinearLayout layout = new LinearLayout(mContext);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -62,21 +62,21 @@ public class ReportDialog extends androidx.fragment.app.DialogFragment{
 
 // second one
         final EditText edittext = new EditText(mContext);
-        edittext.setHint("Reason for report");
+        edittext.setHint(R.string.report_dialog_reasons);
         layout.addView(edittext);
 
         layout.setPadding(40, 10, 40, 10);
 
         builder.setView(layout);
 
-        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
                 dialogInterface.dismiss();
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 dialog.dismiss();
