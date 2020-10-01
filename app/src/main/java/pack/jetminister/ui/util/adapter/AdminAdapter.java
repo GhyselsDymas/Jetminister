@@ -49,6 +49,7 @@ public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder>
     public void onBindViewHolder(@NonNull AdminAdapter.AdminHolder holder, int position) {
         String currentUserID = userIDs.get(position);
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
+
         usersRef.child(currentUserID)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -56,6 +57,11 @@ public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder>
                         if (snapshot.exists()) {
                             User currentUser = snapshot.getValue(User.class);
                             if (currentUser != null) {
+
+                                if (currentUser.isStreamer() == true){
+                                    holder.streamerSwitch.setChecked(true);
+                                }
+
                                 holder.usernameAdmin.setText(currentUser.getUsername());
                                 holder.streamerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                     @Override
