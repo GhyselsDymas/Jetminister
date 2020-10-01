@@ -22,10 +22,10 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import pack.jetminister.R;
-import pack.jetminister.data.User;
 import pack.jetminister.ui.activities.LivePlayerActivity;
 
-import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAM;
+
+import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_USERNAME;
 import static pack.jetminister.data.User.KEY_IMAGE_URL;
@@ -37,13 +37,11 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
 
     public static final String KEY_URI = "uri";
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
-
-    private DatabaseReference streamersRef = FirebaseDatabase.getInstance().getReference("liveStreams");
+    private DatabaseReference streamersRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
     private Context mContext;
     private List<String> mStreamerIDs;
 
-    public LivePictureAdapter(Context context,
-                              List<String> streamerIDs){
+    public LivePictureAdapter(Context context, List<String> streamerIDs){
         mContext = context;
         mStreamerIDs = streamerIDs;
     }

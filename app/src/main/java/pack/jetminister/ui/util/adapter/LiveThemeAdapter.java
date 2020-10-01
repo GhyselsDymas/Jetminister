@@ -33,12 +33,10 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
     private LivePictureAdapter pictureAdapter;
     private Context mContext;
     private List<String> mThemes;
-    private List<String> mStreamerIDsPerTheme;
 
-    public LiveThemeAdapter(Context context) {
+    public LiveThemeAdapter(Context context, List<String> themes) {
         mContext = context;
-        String[] myResArray = context.getResources().getStringArray(R.array.themes);
-        mThemes = Arrays.asList(myResArray);
+        mThemes = themes;
     }
 
     @NonNull
@@ -56,6 +54,7 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
         streamsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                holder.streamersPerTheme.clear();
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     String streamerID = postSnapshot.getKey();
                     LiveStream currentStream = postSnapshot.getValue(LiveStream.class);
@@ -64,7 +63,6 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
                         holder.streamersPerTheme.add(streamerID);
                     }
                 }
-
                 holder.titleLiveTheme.setText(currentTheme);
                 holder.readMoreLiveTheme.setText(String.format("%s %s", mContext.getResources().getString(R.string.see_more_tv), currentTheme));
                 holder.recyclerViewLive.setHasFixedSize(true);

@@ -307,6 +307,22 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
                 });
     }
 
+    private void removeCurrentViewer(){
+        streamersRef.child(streamUID).child(KEY_STREAM_VIEWERS)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        int amountViewers = snapshot.getValue(Integer.class);
+                        amountViewers--;
+                        streamersRef.child(streamUID).child(KEY_STREAM_VIEWERS).setValue(amountViewers);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
+    }
+
     private void showAmountViewers() {
         streamersRef.child(streamUID).child(KEY_STREAM_VIEWERS)
                 .addValueEventListener(new ValueEventListener() {
@@ -409,17 +425,21 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     public void stateENDED() {
         playbackProgressBar.setVisibility(View.GONE);
         streamLiveIV.setVisibility(View.INVISIBLE);
+        //TODO: alert dialog
+        Toast.makeText(this, R.string.player_stream_ended, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onStop() {
-        streamPlayer.stop();
         super.onStop();
+        removeCurrentViewer();
+        streamPlayer.stop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        removeCurrentViewer();
         streamPlayer.stop();
     }
 }

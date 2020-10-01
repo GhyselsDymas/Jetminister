@@ -22,7 +22,6 @@ import pack.jetminister.ui.util.adapter.LiveThemeAdapter;
 public class LiveFragment extends Fragment {
 
     private AppCompatActivity mContext;
-
     public LiveFragment() {
     }
 
@@ -42,14 +41,13 @@ public class LiveFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootview =  inflater.inflate(R.layout.fragment_live_, container, false);
 
+
+        String[] myResArray = mContext.getResources().getStringArray(R.array.themes);
+        List<String> mThemes = Arrays.asList(myResArray);
         RecyclerView themeRecyclerView = rootview.findViewById(R.id.rv_live_theme);
         themeRecyclerView.setHasFixedSize(true);
         themeRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-
-        String[] mResArray = getResources().getStringArray(R.array.themes);
-        List<String> myResArrayList = Arrays.asList(mResArray);
-
-        LiveThemeAdapter livePageAdapter = new LiveThemeAdapter(mContext);
+        LiveThemeAdapter livePageAdapter = new LiveThemeAdapter(mContext, mThemes);
         themeRecyclerView.setAdapter(livePageAdapter);
 
         return rootview;

@@ -29,6 +29,7 @@ import static pack.jetminister.data.User.KEY_FOLLOWING;
 import static pack.jetminister.data.User.KEY_IMAGE_URL;
 import static pack.jetminister.data.User.KEY_USERNAME;
 import static pack.jetminister.data.User.KEY_USERS;
+import static pack.jetminister.data.User.KEY_USER_ID;
 
 public class StreamerProfileActivity extends AppCompatActivity {
 
@@ -95,6 +96,6 @@ public class StreamerProfileActivity extends AppCompatActivity {
 
     private void getStreamerInfo(){
         Bundle extra = getIntent().getExtras();
-        streamerID = extra.getString("streamerID");
+        streamerID = extra.getString(KEY_USER_ID);
     }
 }

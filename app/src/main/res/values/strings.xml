@@ -87,4 +87,5 @@
     <string name="player_submit_comment">Submit comment</string>
     <string name="player_comment_hint">Comment</string>
     <string name="player_comment_error_not_registered">You must be logged in to post a comment</string>
+    <string name="player_stream_ended">The stream has ended. Thank you for watching!</string>
 </resources>

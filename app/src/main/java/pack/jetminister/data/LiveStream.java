@@ -8,7 +8,8 @@ import pack.jetminister.data.util.DirectPlaybackURL;
 import pack.jetminister.data.util.SourceConnectionInformation;
 import pack.jetminister.data.util.StreamTarget;
 
-public class LiveStream {private static final String TAG = "LiveStream";
+public class LiveStream {
+    private static final String TAG = "LiveStream";
 
     public static final String KEY_LIVE_STREAMS = "liveStreams";
     public static final String KEY_LIVE_STREAM = "liveStream";
@@ -18,7 +19,6 @@ public class LiveStream {private static final String TAG = "LiveStream";
     public static final String KEY_STREAM_LIKES = "likes";
     public static final String KEY_STREAM_VIEWERS = "viewers";
     public static final String KEY_STREAM_THEME = "theme";
-
 
     @SerializedName("id")
     private String streamId;
@@ -100,7 +100,8 @@ public class LiveStream {private static final String TAG = "LiveStream";
     private int likes;
     private int viewers;
 
-    private LiveStream(){}
+    private LiveStream() {
+    }
 
     public LiveStream(String streamUsername, String streamLocation, String theme, String authUsername, String authPassword) {
         this.streamUsername = streamUsername;
@@ -125,12 +126,160 @@ public class LiveStream {private static final String TAG = "LiveStream";
         this.streamId = streamId;
     }
 
+    public void setStreamState(String streamState) {
+        this.streamState = streamState;
+    }
+
+    public void setStreamIPAdress(String streamIPAdress) {
+        this.streamIPAdress = streamIPAdress;
+    }
+
+    public void setTimeCreated(String timeCreated) {
+        this.timeCreated = timeCreated;
+    }
+
+    public void setTimeUpdated(String timeUpdated) {
+        this.timeUpdated = timeUpdated;
+    }
+
+    public void setStreamUsername(String streamUsername) {
+        this.streamUsername = streamUsername;
+    }
+
+    public void setStreamLocation(String streamLocation) {
+        this.streamLocation = streamLocation;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public void setAuthUsername(String authUsername) {
+        this.authUsername = authUsername;
+    }
+
+    public void setAuthPassword(String authPassword) {
+        this.authPassword = authPassword;
+    }
+
+    public void setAuthenticationDisabled(boolean authenticationDisabled) {
+        this.authenticationDisabled = authenticationDisabled;
+    }
+
+    public void setStreamSource(boolean streamSource) {
+        this.streamSource = streamSource;
+    }
+
+    public void setStreamTargets(ArrayList<StreamTarget> streamTargets) {
+        this.streamTargets = streamTargets;
+    }
+
+    public void setDirectPlaybackURL(DirectPlaybackURL directPlaybackURL) {
+        this.directPlaybackURL = directPlaybackURL;
+    }
+
+    public void setSourceConnectionInformation(SourceConnectionInformation sourceConnectionInformation) {
+        this.sourceConnectionInformation = sourceConnectionInformation;
+    }
+
+    public void setEncoderType(String encoderType) {
+        this.encoderType = encoderType;
+    }
+
+    public void setTranscoderType(String transcoderType) {
+        this.transcoderType = transcoderType;
+    }
+
+    public void setDeliveryMethod(String deliveryMethod) {
+        this.deliveryMethod = deliveryMethod;
+    }
+
+    public void setPublishProtocols(ArrayList<String> publishProtocols) {
+        this.publishProtocols = publishProtocols;
+    }
+
+    public void setPlaybackProtocol(String playbackProtocol) {
+        this.playbackProtocol = playbackProtocol;
+    }
+
+    public void setLowLatency(boolean lowLatency) {
+        this.lowLatency = lowLatency;
+    }
+
+    public void setAspectRatioHeight(int aspectRatioHeight) {
+        this.aspectRatioHeight = aspectRatioHeight;
+    }
+
+    public void setAspectRatioWidth(int aspectRatioWidth) {
+        this.aspectRatioWidth = aspectRatioWidth;
+    }
+
+    public void setVODStream(boolean VODStream) {
+        this.VODStream = VODStream;
+    }
+
+    public void setRecording(boolean recording) {
+        this.recording = recording;
+    }
+
+    public void setClosedCaption(String closedCaption) {
+        this.closedCaption = closedCaption;
+    }
+
+    public void setPlayerID(String playerID) {
+        this.playerID = playerID;
+    }
+
+    public void setPlayerType(String playerType) {
+        this.playerType = playerType;
+    }
+
+    public void setPlayerResponsive(boolean playerResponsive) {
+        this.playerResponsive = playerResponsive;
+    }
+
+    public void setPlayerWidth(int playerWidth) {
+        this.playerWidth = playerWidth;
+    }
+
+    public void setPlayerCountdown(boolean playerCountdown) {
+        this.playerCountdown = playerCountdown;
+    }
+
+    public void setPlayerEmbedCode(String playerEmbedCode) {
+        this.playerEmbedCode = playerEmbedCode;
+    }
+
     public void setPlaybackURL(String playbackURL) {
         this.playbackURL = playbackURL;
     }
 
     public void setPubishURL(String pubishURL) {
         this.pubishURL = pubishURL;
+    }
+
+    public void setHostedPage(boolean hostedPage) {
+        this.hostedPage = hostedPage;
+    }
+
+    public void setHostedPageTitle(String hostedPageTitle) {
+        this.hostedPageTitle = hostedPageTitle;
+    }
+
+    public void setHostedPageURL(String hostedPageURL) {
+        this.hostedPageURL = hostedPageURL;
+    }
+
+    public void setHostedPageSharingIcons(boolean hostedPageSharingIcons) {
+        this.hostedPageSharingIcons = hostedPageSharingIcons;
+    }
+
+    public void setHostedPageLogoImageURL(boolean hostedPageLogoImageURL) {
+        this.hostedPageLogoImageURL = hostedPageLogoImageURL;
+    }
+
+    public void setBillingMode(String billingMode) {
+        this.billingMode = billingMode;
     }
 
     public void setLikes(int likes) {
@@ -141,9 +290,6 @@ public class LiveStream {private static final String TAG = "LiveStream";
         this.viewers = viewers;
     }
 
-    public void setTheme(String theme) {
-        this.theme = theme;
-    }
 
     public String getStreamId() {
         return streamId;
@@ -169,12 +315,12 @@ public class LiveStream {private static final String TAG = "LiveStream";
         return streamUsername;
     }
 
-    public String getTheme() {
-        return theme;
-    }
-
     public String getStreamLocation() {
         return streamLocation;
+    }
+
+    public String getTheme() {
+        return theme;
     }
 
     public String getAuthUsername() {
@@ -311,4 +457,5 @@ public class LiveStream {private static final String TAG = "LiveStream";
 
     public int getViewers() {
         return viewers;
-    }}
+    }
+}
