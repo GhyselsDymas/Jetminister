@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -35,8 +36,8 @@ public class StreamerProfileActivity extends AppCompatActivity {
 
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
 
-    private TextView usernameTV , descriptionTV , followersTV , followingTV;
-    private ImageView profileIV , reportIV;
+    private TextView usernameTV, descriptionTV, followersTV, followingTV;
+    private ImageView profileIV, reportIV;
 
     private String streamerID;
 
@@ -62,28 +63,28 @@ public class StreamerProfileActivity extends AppCompatActivity {
         getStreamerInfo();
 
         usersRef.child(streamerID).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    usernameTV.setText(snapshot.child(KEY_USERNAME).getValue().toString());
-                    descriptionTV.setText(snapshot.child(KEY_DESCRIPTION).getValue().toString());
-                    //followersTV.setText(snapshot.child(KEY_FOLLOWERS).getValue().toString());
-                    //followingTV.setText(snapshot.child(KEY_FOLLOWING).getValue().toString());
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                usernameTV.setText(snapshot.child(KEY_USERNAME).getValue().toString());
+                descriptionTV.setText(snapshot.child(KEY_DESCRIPTION).getValue().toString());
+                //followersTV.setText(snapshot.child(KEY_FOLLOWERS).getValue().toString());
+                //followingTV.setText(snapshot.child(KEY_FOLLOWING).getValue().toString());
 
 
-                    String imageURI =  snapshot.child(KEY_IMAGE_URL).getValue().toString();
-                    Uri thisURI = Uri.parse(imageURI);
-                    Picasso.get()
-                            .load(thisURI)
-                            .fit()
-                            .centerCrop()
-                            .into(profileIV);
-                }
+                String imageURI = snapshot.child(KEY_IMAGE_URL).getValue().toString();
+                Uri thisURI = Uri.parse(imageURI);
+                Picasso.get()
+                        .load(thisURI)
+                        .fit()
+                        .centerCrop()
+                        .into(profileIV);
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-                }
-            });
+            }
+        });
     }
 
     View.OnClickListener reportListener = new View.OnClickListener() {
@@ -94,8 +95,13 @@ public class StreamerProfileActivity extends AppCompatActivity {
         }
     };
 
-    private void getStreamerInfo(){
-        Bundle extra = getIntent().getExtras();
-        streamerID = extra.getString(KEY_USER_ID);
+    private void getStreamerInfo() {
+        Intent intent = getIntent();
+        if (intent != null) {
+            Bundle extra = intent.getExtras();
+            if (extra != null & !extra.isEmpty()) {
+                streamerID = extra.getString(KEY_USER_ID);
+            }
+        }
     }
 }

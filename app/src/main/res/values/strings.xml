@@ -92,7 +92,7 @@
     <string name="player_stream_ended">The stream has ended. Thank you for watching!</string>
     <string name="player_stream_ended_live">See who else is live</string>
     <string name="player_stream_ended_profile">Visit streamer profile</string>
-
+    <string name="player_stream_error">Could not load stream, please try again</string>
     <string name="report_dialog_title">Report abuse</string>
     <string name="report_dialog_message">Please give adequate information</string>
     <string name="report_dialog_reasons">Write your reasons for reporting here</string>

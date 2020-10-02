@@ -11,6 +11,16 @@
     tools:context=".ui.activities.LivePlayerActivity">
 
 
+    <Button
+        android:id="@+id/button_stream_ended"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.exoplayer.AspectRatioFrameLayout
         android:id="@+id/player_aspect_ratio"
         android:layout_width="match_parent"

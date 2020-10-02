@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,10 +17,10 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,18 +39,11 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import pack.jetminister.R;
 import pack.jetminister.data.Comment;
-import pack.jetminister.data.LiveStream;
-import pack.jetminister.data.User;
 import pack.jetminister.ui.dialogs.StreamEndedDialog;
-import pack.jetminister.ui.fragments.LiveFragment;
-import pack.jetminister.ui.fragments.ProfileFragment;
-import pack.jetminister.ui.util.adapter.AdminAdapter;
 import pack.jetminister.ui.util.adapter.CommentAdapter;
 
 import static pack.jetminister.data.Comment.KEY_COMMENTS;
@@ -73,6 +65,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
     private DatabaseReference streamersRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
     private TextView streamUsernameTV, streamLikesTV, streamViewersTV, playbackStateTV;
+    private Button streamEnded;
     private ProgressBar playbackProgressBar;
     private ImageView streamLiveIV, streamProfileIV, streamLikeIV, streamShareIV, playPauseIV, submitCommentIV;
     private SurfaceView playbackSurfaceView;
@@ -86,7 +79,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private String streamUsername;
     private Uri streamPlaybackURL;
     private int streamLikes;
-    private String streamUID;
+    private String streamerUID;
 
     private CommentAdapter mAdapter;
     private List<Comment> mComments;
@@ -112,6 +105,13 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
                 streamShareIV.setVisibility(View.VISIBLE);
                 streamProfileIV.setVisibility(View.VISIBLE);
             }
+        }
+    };
+
+    private View.OnClickListener streamEndedListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            showStreamEndedDialog();
         }
     };
 
@@ -143,7 +143,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(LivePlayerActivity.this, StreamerProfileActivity.class);
-            intent.putExtra(KEY_USER_ID, streamUID);
+            intent.putExtra(KEY_USER_ID, streamerUID);
             startActivity(intent);
         }
     };
@@ -194,6 +194,8 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
 
         hideStatusBar();
 
+        streamEnded = findViewById(R.id.button_stream_ended);
+        streamEnded.setOnClickListener(streamEndedListener);
         streamUsernameTV = findViewById(R.id.player_tv_username);
         streamViewersTV = findViewById(R.id.player_tv_watching);
         streamLikesTV = findViewById(R.id.player_tv_amount_likes);
@@ -232,7 +234,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
         recyclerViewComment.setLayoutManager(new LinearLayoutManager(this));
 
         mComments = new ArrayList<>();
-        DatabaseReference streamersDatabaseRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS).child(streamUID).child(KEY_COMMENTS);
+        DatabaseReference streamersDatabaseRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS).child(streamerUID).child(KEY_COMMENTS);
 
         streamersDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -285,21 +287,34 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     }
 
     private void getStreamerInfo() {
-        Bundle extras = getIntent().getExtras();
-        streamUsername = extras.getString(KEY_STREAM_USERNAME);
-        streamPlaybackURL = Uri.parse(extras.getString(KEY_URI));
-        streamUID = extras.getString(KEY_USER_ID);
+        Intent intent = getIntent();
+        if (intent != null) {
+            Bundle extras = intent.getExtras();
+            if (extras != null && !extras.isEmpty()) {
+                streamUsername = extras.getString(KEY_STREAM_USERNAME);
+                streamPlaybackURL = Uri.parse(extras.getString(KEY_URI));
+                streamerUID = extras.getString(KEY_USER_ID);
+            }
+        } else {
+            Toast.makeText(this, R.string.player_stream_error, Toast.LENGTH_SHORT).show();
+            proceedToMain();
+        }
+    }
+
+    private void proceedToMain(){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     private void addCurrentViewer() {
-        streamersRef.child(streamUID).child(KEY_STREAM_VIEWERS)
+        streamersRef.child(streamerUID).child(KEY_STREAM_VIEWERS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         int amountViewers = snapshot.getValue(Integer.class);
                         amountViewers++;
                         streamViewersTV.setText(String.valueOf(amountViewers));
-                        streamersRef.child(streamUID).child(KEY_STREAM_VIEWERS).setValue(amountViewers);
+                        streamersRef.child(streamerUID).child(KEY_STREAM_VIEWERS).setValue(amountViewers);
                     }
 
                     @Override
@@ -308,14 +323,14 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
                 });
     }
 
-    private void removeCurrentViewer(){
-        streamersRef.child(streamUID).child(KEY_STREAM_VIEWERS)
+    private void removeCurrentViewer() {
+        streamersRef.child(streamerUID).child(KEY_STREAM_VIEWERS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         int amountViewers = snapshot.getValue(Integer.class);
                         amountViewers--;
-                        streamersRef.child(streamUID).child(KEY_STREAM_VIEWERS).setValue(amountViewers);
+                        streamersRef.child(streamerUID).child(KEY_STREAM_VIEWERS).setValue(amountViewers);
                     }
 
                     @Override
@@ -325,7 +340,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     }
 
     private void showAmountViewers() {
-        streamersRef.child(streamUID).child(KEY_STREAM_VIEWERS)
+        streamersRef.child(streamerUID).child(KEY_STREAM_VIEWERS)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -340,7 +355,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     }
 
     private void showAmountLikes() {
-        streamersRef.child(streamUID).child(KEY_STREAM_LIKES)
+        streamersRef.child(streamerUID).child(KEY_STREAM_LIKES)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -357,12 +372,12 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     private void likeUnlike() {
         if (!streamLiked) {
             streamLikes++;
-            streamersRef.child(streamUID).child(KEY_STREAM_LIKES).setValue(streamLikes);
+            streamersRef.child(streamerUID).child(KEY_STREAM_LIKES).setValue(streamLikes);
             streamLikeIV.setImageResource(R.drawable.ic_like_fill_white_24);
             streamLiked = true;
         } else {
             streamLikes--;
-            streamersRef.child(streamUID).child(KEY_STREAM_LIKES).setValue(streamLikes);
+            streamersRef.child(streamerUID).child(KEY_STREAM_LIKES).setValue(streamLikes);
             streamLikeIV.setImageResource(R.drawable.ic_like_border_white_24);
             streamLiked = false;
         }
@@ -377,7 +392,7 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             String username = snapshot.getValue(String.class);
                             Comment newComment = new Comment(currentUser.getUid(), username, commentBody);
-                            streamersRef.child(streamUID).child(KEY_COMMENTS).child(String.valueOf(commentID)).setValue(newComment);
+                            streamersRef.child(streamerUID).child(KEY_COMMENTS).child(String.valueOf(commentID)).setValue(newComment);
                             Log.d(TAG, "new comment: " + newComment.toString());
                         }
 
@@ -431,8 +446,11 @@ public class LivePlayerActivity extends AppCompatActivity implements StreamaxiaP
     }
 
     private void showStreamEndedDialog() {
-       StreamEndedDialog streamEndedDialog = new StreamEndedDialog();
-        streamEndedDialog.show(getSupportFragmentManager(), "Stream Ended");
+        StreamEndedDialog streamEndedDialog = StreamEndedDialog.newInstance(streamerUID);
+        Bundle data = new Bundle();
+        data.putString(KEY_USER_ID, streamerUID);
+        streamEndedDialog.setArguments(data);
+        streamEndedDialog.show(getSupportFragmentManager(), "stream_ended");
     }
 
     @Override
