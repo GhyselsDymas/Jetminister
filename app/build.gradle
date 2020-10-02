@@ -37,10 +37,17 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.2.1'
 
+
+    implementation(name:'theoplayer-minapi21-release', ext:'aar')
+
+    /* only for Android TV
+       implementation 'com.google.code.gson:gson:2.8.2'
+       implementation 'com.android.support:leanback-v17:27.1.1'*/
+
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.preference:preference:1.1.1'
-    implementation 'com.google.firebase:firebase-database:19.4.0'
+    implementation 'com.google.firebase:firebase-database:19.5.0'
     implementation 'com.google.firebase:firebase-storage:19.2.0'
     implementation 'com.google.firebase:firebase-auth:19.4.0'
     implementation 'androidx.navigation:navigation-fragment:2.3.0'
@@ -48,8 +55,6 @@ dependencies {
     implementation 'com.karumi:dexter:6.2.1'
     implementation 'com.github.mmin18:realtimeblurview:1.2.1'
 
-    implementation project(path: ':streamaxia-opensdk')
-    implementation project(path: ':streamaxialib-release')
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

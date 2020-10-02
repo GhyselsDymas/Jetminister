@@ -2,7 +2,6 @@ package pack.jetminister.ui.util.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import pack.jetminister.R;
-import pack.jetminister.ui.activities.LivePlayerActivity;
+import pack.jetminister.ui.activities.PlaybackActivity;
 
 
 import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
@@ -35,7 +34,6 @@ import static pack.jetminister.data.User.KEY_USER_ID;
 
 public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.LivePictureHolder> {
 
-    public static final String KEY_URI = "uri";
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
     private DatabaseReference streamersRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
     private Context mContext;
@@ -106,10 +104,10 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             String currentStreamUsername = snapshot.child(KEY_STREAM_USERNAME).getValue(String.class);
                             String currentPlaybackURL = snapshot.child(KEY_STREAM_PLAYBACK_URL).getValue(String.class);
-                            Intent intent = new Intent(mContext , LivePlayerActivity.class);
+                            Intent intent = new Intent(mContext , PlaybackActivity.class);
                             intent.putExtra(KEY_USER_ID, currentStreamerID);
                             intent.putExtra(KEY_STREAM_USERNAME, currentStreamUsername);
-                            intent.putExtra(KEY_URI, currentPlaybackURL);
+                            intent.putExtra(KEY_STREAM_PLAYBACK_URL, currentPlaybackURL);
                             mContext.startActivity(intent);
                         }
 

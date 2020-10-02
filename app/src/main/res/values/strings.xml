@@ -17,8 +17,10 @@
     <string name="app_name" tools:ignore="PrivateResource">EinsteinTV</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
+    <string name="retry">Retry</string>
     <string name="upload">Upload</string>
     <string name="or">or</string>
+    <string name="home">Home</string>
     <string name="register_et_password">Password</string>
     <string name="register_et_password_confirm">Confirm password</string>
     <string name="register_et_descr">Description</string>
@@ -93,6 +95,8 @@
     <string name="player_stream_ended_live">See who else is live</string>
     <string name="player_stream_ended_profile">Visit streamer profile</string>
     <string name="player_stream_error">Could not load stream, please try again</string>
+    <string name="player_stream_error_message">Could not load stream, please try again or return to home</string>
+    <string name="player_stream_error_oops">Oops!</string>
     <string name="report_dialog_title">Report abuse</string>
     <string name="report_dialog_message">Please give adequate information</string>
     <string name="report_dialog_reasons">Write your reasons for reporting here</string>

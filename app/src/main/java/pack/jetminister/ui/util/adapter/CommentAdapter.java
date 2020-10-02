@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,8 +17,6 @@ import java.util.List;
 
 import pack.jetminister.R;
 import pack.jetminister.data.Comment;
-import pack.jetminister.data.User;
-import pack.jetminister.ui.activities.LivePlayerActivity;
 import pack.jetminister.ui.activities.StreamerProfileActivity;
 
 import static pack.jetminister.data.User.KEY_USER_ID;
@@ -47,7 +44,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
 
         Comment currentComment = mCommentList.get(position);
         String commentUID = currentComment.getUserID();
-         holder.usernameComment.setText(currentComment.getUsername());
+        holder.usernameComment.setText(currentComment.getUsername());
         holder.commentComment.setText(" : " + currentComment.getBody());
         if (mAuth.getCurrentUser() != null && mAuth.getCurrentUser().getUid().equals(commentUID)) {
             holder.usernameComment.setClickable(false);

@@ -11,14 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.widget.Toast;
-
 import java.util.Arrays;
 import java.util.List;
 
 import pack.jetminister.R;
 import pack.jetminister.data.LiveStream;
-import pack.jetminister.ui.activities.LiveBroadcastActivity;
+import pack.jetminister.ui.activities.BroadcastActivity;
 
 public class ThemeChooserDialog extends androidx.fragment.app.DialogFragment {
 
@@ -42,7 +40,7 @@ public class ThemeChooserDialog extends androidx.fragment.app.DialogFragment {
                         String[] myResArray = getResources().getStringArray(R.array.themes);
                         List<String> myResArrayList = Arrays.asList(myResArray);
                         String selectedTheme = myResArrayList.get(which);
-                        Intent intent = new Intent(getActivity(), LiveBroadcastActivity.class);
+                        Intent intent = new Intent(getActivity(), BroadcastActivity.class);
                         intent.putExtra(LiveStream.KEY_STREAM_THEME, selectedTheme);
                         startActivity(intent);
                         dialog.dismiss();

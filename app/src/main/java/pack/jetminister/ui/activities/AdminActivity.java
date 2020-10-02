@@ -42,11 +42,13 @@ public class AdminActivity extends AppCompatActivity {
         mRecyclerVew.setLayoutManager(new LinearLayoutManager(this));
 
         userIDs = new ArrayList<>();
-        DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
 
-        usersDatabaseRef.addValueEventListener(new ValueEventListener() {
+        usersRef.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                userIDs.clear();
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     String userID = postSnapshot.getKey();
                     userIDs.add(userID);

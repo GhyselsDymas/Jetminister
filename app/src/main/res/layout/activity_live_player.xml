@@ -8,47 +8,48 @@
     android:contentDescription="@string/player_submit_comment"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".ui.activities.LivePlayerActivity">
-
+    tools:context=".ui.activities.PlaybackActivity">
 
     <Button
-        android:id="@+id/button_stream_ended"
+        android:id="@+id/btn_test_ended"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginEnd="10dp"
+        android:text="ENDED"
+        app:layout_constraintEnd_toStartOf="@+id/btn_test_error"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.exoplayer.AspectRatioFrameLayout
-        android:id="@+id/player_aspect_ratio"
+    <Button
+        android:id="@+id/btn_test_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="60dp"
+        android:text="ERROR"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.theoplayer.android.api.THEOplayerView
+        android:id="@+id/player_theo_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
         android:background="@android:color/black"
         android:clickable="true"
-        android:focusable="true">
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingStart="4dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <SurfaceView
-            android:id="@+id/player_surface_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center"
-            android:paddingStart="4dp"
-            android:paddingTop="2dp"
-            android:paddingEnd="4dp"
-            android:paddingBottom="2dp" />
+    </com.theoplayer.android.api.THEOplayerView>
 
-    </com.google.android.exoplayer.AspectRatioFrameLayout>
 
     <TextView
-        android:id="@+id/tv_live_player_state"
+        android:id="@+id/player_tv_live_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="200dp"
@@ -78,7 +79,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_live_player_state" />
+        app:layout_constraintTop_toBottomOf="@+id/player_tv_live_state" />
 
     <TextView
         android:id="@+id/player_tv_username"
@@ -135,7 +136,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/player_iv_like"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_user_profile_white_24" />
@@ -155,7 +156,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="8dp"
         android:gravity="center"
         android:text="251"
         android:textColor="#FFFFFF"
@@ -169,7 +170,7 @@
         android:layout_height="50dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/ET_comment_here"
+        app:layout_constraintBottom_toTopOf="@+id/player_et_comment"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_share_white_24" />
 
@@ -181,9 +182,9 @@
         android:focusable="true"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/player_aspect_ratio"
-        app:layout_constraintStart_toStartOf="@+id/player_aspect_ratio"
-        app:layout_constraintTop_toTopOf="@+id/player_aspect_ratio"
+        app:layout_constraintEnd_toEndOf="@+id/player_theo_view"
+        app:layout_constraintStart_toStartOf="@+id/player_theo_view"
+        app:layout_constraintTop_toTopOf="@+id/player_theo_view"
         app:srcCompat="@drawable/ic_play_white_24" />
 
     <ProgressBar
@@ -195,7 +196,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/player_aspect_ratio" />
+        app:layout_constraintTop_toTopOf="@+id/player_theo_view" />
 
     <ImageView
         android:id="@+id/player_iv_live"
@@ -209,7 +210,7 @@
         app:srcCompat="@drawable/ic_live_record_24" />
 
     <EditText
-        android:id="@+id/ET_comment_here"
+        android:id="@+id/player_et_comment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -239,14 +240,14 @@
         app:srcCompat="@drawable/ic_submit_24" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview_comments"
+        android:id="@+id/player_recyclerview_comments"
         android:layout_width="0dp"
         android:layout_height="200dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/ET_comment_here"
+        app:layout_constraintBottom_toTopOf="@+id/player_et_comment"
         app:layout_constraintEnd_toStartOf="@+id/player_iv_like"
         app:layout_constraintStart_toStartOf="parent"
         tools:listitem="@layout/cardview_comment" />

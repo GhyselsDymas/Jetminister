@@ -4,9 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -19,12 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Arrays;
-import java.util.List;
-
-import pack.jetminister.R;
 import pack.jetminister.data.User;
-import pack.jetminister.ui.activities.LiveBroadcastActivity;
 
 public class DescriptionChangeDialog extends androidx.fragment.app.DialogFragment {
 

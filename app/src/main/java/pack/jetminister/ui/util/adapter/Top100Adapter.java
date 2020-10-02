@@ -17,7 +17,7 @@ import java.util.List;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
-import pack.jetminister.ui.activities.LivePlayerActivity;
+import pack.jetminister.ui.activities.PlaybackActivity;
 
 public class Top100Adapter extends RecyclerView.Adapter<Top100Adapter.Top100Holder> {
 
@@ -77,7 +77,7 @@ public class Top100Adapter extends RecyclerView.Adapter<Top100Adapter.Top100Hold
 
                     String currentUsername = currentUser.getUsername();
 
-                    Intent intent = new Intent(mContext , LivePlayerActivity.class);
+                    Intent intent = new Intent(mContext , PlaybackActivity.class);
                     intent.putExtra("username", currentUsername);
                     mContext.startActivity(intent);
                 }

@@ -8,10 +8,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,12 +19,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import pack.jetminister.R;
-import pack.jetminister.ui.dialogs.DescriptionChangeDialog;
 import pack.jetminister.ui.dialogs.ReportDialog;
 
 import static pack.jetminister.data.User.KEY_DESCRIPTION;
-import static pack.jetminister.data.User.KEY_FOLLOWERS;
-import static pack.jetminister.data.User.KEY_FOLLOWING;
 import static pack.jetminister.data.User.KEY_IMAGE_URL;
 import static pack.jetminister.data.User.KEY_USERNAME;
 import static pack.jetminister.data.User.KEY_USERS;
@@ -38,7 +33,6 @@ public class StreamerProfileActivity extends AppCompatActivity {
 
     private TextView usernameTV, descriptionTV, followersTV, followingTV;
     private ImageView profileIV, reportIV;
-
     private String streamerID;
 
     @Override
@@ -57,34 +51,37 @@ public class StreamerProfileActivity extends AppCompatActivity {
         followingTV = findViewById(R.id.tv_streamer_profile_following);
         profileIV = findViewById(R.id.iv_streamer_profile_image);
         reportIV = findViewById(R.id.iv_report_streamer_profile);
-
         reportIV.setOnClickListener(reportListener);
 
         getStreamerInfo();
 
-        usersRef.child(streamerID).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                usernameTV.setText(snapshot.child(KEY_USERNAME).getValue().toString());
-                descriptionTV.setText(snapshot.child(KEY_DESCRIPTION).getValue().toString());
-                //followersTV.setText(snapshot.child(KEY_FOLLOWERS).getValue().toString());
-                //followingTV.setText(snapshot.child(KEY_FOLLOWING).getValue().toString());
+        if (streamerID != null) {
+            usersRef.child(streamerID).
+                    addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    usernameTV.setText(snapshot.child(KEY_USERNAME).getValue().toString());
+                    descriptionTV.setText(snapshot.child(KEY_DESCRIPTION).getValue().toString());
+                    //followersTV.setText(snapshot.child(KEY_FOLLOWERS).getValue().toString());
+                    //followingTV.setText(snapshot.child(KEY_FOLLOWING).getValue().toString());
 
+                    String imageURI = snapshot.child(KEY_IMAGE_URL).getValue().toString();
+                    Uri thisURI = Uri.parse(imageURI);
+                    Picasso.get()
+                            .load(thisURI)
+                            .fit()
+                            .centerCrop()
+                            .into(profileIV);
+                }
 
-                String imageURI = snapshot.child(KEY_IMAGE_URL).getValue().toString();
-                Uri thisURI = Uri.parse(imageURI);
-                Picasso.get()
-                        .load(thisURI)
-                        .fit()
-                        .centerCrop()
-                        .into(profileIV);
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+                }
+            });
+        } else {
+            //TODO: show OopsDialog
+        }
     }
 
     View.OnClickListener reportListener = new View.OnClickListener() {
@@ -97,11 +94,8 @@ public class StreamerProfileActivity extends AppCompatActivity {
 
     private void getStreamerInfo() {
         Intent intent = getIntent();
-        if (intent != null) {
-            Bundle extra = intent.getExtras();
-            if (extra != null & !extra.isEmpty()) {
-                streamerID = extra.getString(KEY_USER_ID);
-            }
+        if (intent != null && intent.hasExtra(KEY_USER_ID)) {
+            streamerID = intent.getStringExtra(KEY_USER_ID);
         }
     }
 }

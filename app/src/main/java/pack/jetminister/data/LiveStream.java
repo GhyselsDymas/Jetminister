@@ -12,7 +12,6 @@ public class LiveStream {
     private static final String TAG = "LiveStream";
 
     public static final String KEY_LIVE_STREAMS = "liveStreams";
-    public static final String KEY_LIVE_STREAM = "liveStream";
     public static final String KEY_STREAM_ID = "streamId";
     public static final String KEY_STREAM_USERNAME = "streamUsername";
     public static final String KEY_STREAM_PLAYBACK_URL = "playbackURL";
