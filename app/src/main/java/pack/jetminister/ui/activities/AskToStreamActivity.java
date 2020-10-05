@@ -44,6 +44,7 @@ public class AskToStreamActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ask_to_stream);
+        hideStatusBar();
 
         nameTIL = findViewById(R.id.til_streamer_name);
         familyNameTIL = findViewById(R.id.til_streamer_family);
@@ -77,6 +78,12 @@ public class AskToStreamActivity extends AppCompatActivity {
                 sendMail();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideStatusBar();
     }
 
     private void sendMail() {
@@ -150,5 +157,11 @@ public class AskToStreamActivity extends AppCompatActivity {
             aboutYourselfTIL.setErrorEnabled(false);
             return true;
         }
+    }
+
+    private void hideStatusBar() {
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 }

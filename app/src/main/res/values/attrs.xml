@@ -9,4 +9,14 @@
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="ds">
+        <attr name="colorPrimary" format="color"/>
+        <attr name="colorPrimaryVariant" format="color"/>
+        <attr name="colorPrimaryDark" format="color"/>
+        <attr name="colorAccent" format="color"/>
+        <attr name="windowBackground" format="color"/>
+        <attr name="cardBackground" format="color"/>
+        <attr name="textColorPrimary" format="color"/>
+        <attr name="textOnPrimary" format="color"/>
+    </declare-styleable>
 </resources>

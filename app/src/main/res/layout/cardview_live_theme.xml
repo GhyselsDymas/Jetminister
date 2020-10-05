@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="3dp"
     android:layout_marginBottom="3dp"
-    app:cardBackgroundColor="#FFFFFF">
+    app:cardBackgroundColor="@color/cardBackground"
+    app:cardElevation="2dp">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -37,6 +38,7 @@
             android:id="@+id/rv_live_picture"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:elevation="4dp"
             android:scrollbars="horizontal"
             app:layout_constraintBottom_toTopOf="@+id/tv_see_more"
             app:layout_constraintEnd_toEndOf="parent"

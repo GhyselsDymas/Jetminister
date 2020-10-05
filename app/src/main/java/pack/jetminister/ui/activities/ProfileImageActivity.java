@@ -94,7 +94,7 @@ public class ProfileImageActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        hideStatusBar();
         setContentView(R.layout.activity_profile_image);
         ActionBar toolbar = getSupportActionBar();
         if (toolbar != null) {
@@ -186,6 +186,12 @@ public class ProfileImageActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideStatusBar();
+    }
+
     private void proceedToMain() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
@@ -197,6 +203,12 @@ public class ProfileImageActivity extends AppCompatActivity {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    private void hideStatusBar() {
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
     @Override

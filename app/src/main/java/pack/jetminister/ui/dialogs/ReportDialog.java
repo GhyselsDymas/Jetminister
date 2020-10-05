@@ -72,7 +72,7 @@ public class ReportDialog extends androidx.fragment.app.DialogFragment{
         builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                //TODO: update database with new report info
                 dialogInterface.dismiss();
             }
         });

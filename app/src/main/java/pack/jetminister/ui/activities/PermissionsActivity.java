@@ -6,6 +6,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.karumi.dexter.Dexter;
@@ -69,8 +70,15 @@ public class PermissionsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideStatusBar();
         setContentView(R.layout.activity_permissions);
         askUserPermissions();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideStatusBar();
     }
 
     private void askUserPermissions() {
@@ -82,5 +90,11 @@ public class PermissionsActivity extends AppCompatActivity {
                 .withErrorListener(errorListener)
                 //.onSameThread() not sure if this is entirely necessary
                 .check();
+    }
+
+    private void hideStatusBar() {
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 }

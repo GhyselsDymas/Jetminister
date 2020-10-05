@@ -37,11 +37,19 @@ public class StreamerProfileActivity extends AppCompatActivity {
     private ImageView profileIV, reportIV;
     private String streamerID;
 
+    View.OnClickListener reportListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            ReportDialog newReportDialogDialog = new ReportDialog();
+            newReportDialogDialog.show(getSupportFragmentManager(), "report");
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_streamer_profile);
-
+        hideStatusBar();
         ActionBar toolbar = getSupportActionBar();
         if (toolbar != null) {
             toolbar.hide();
@@ -86,13 +94,11 @@ public class StreamerProfileActivity extends AppCompatActivity {
         }
     }
 
-    View.OnClickListener reportListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            ReportDialog newReportDialogDialog = new ReportDialog();
-            newReportDialogDialog.show(getSupportFragmentManager(), "report");
-        }
-    };
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideStatusBar();
+    }
 
     private void getStreamerInfo() {
         Intent intent = getIntent();
@@ -103,5 +109,11 @@ public class StreamerProfileActivity extends AppCompatActivity {
     private void showStreamerProfileErrorDialog(){
         StreamerProfileErrorDialog streamerPrifileErrorDialog = new StreamerProfileErrorDialog();
         streamerPrifileErrorDialog.show(getSupportFragmentManager(), "stream_error");
+    }
+
+    private void hideStatusBar() {
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 }

@@ -248,6 +248,26 @@ public class PlaybackActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        playerView.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideStatusBar();
+        playerView.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        removeCurrentViewer();
+        playerView.onDestroy();
+    }
+
     private void getStreamerInfo() {
         Intent intent = getIntent();
         if (intent != null) {
@@ -290,7 +310,6 @@ public class PlaybackActivity extends AppCompatActivity {
 
     private void hideStatusBar() {
         View decorView = getWindow().getDecorView();
-        // Hide the status bar.
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
     }
@@ -467,25 +486,6 @@ public class PlaybackActivity extends AppCompatActivity {
     private void showStreamErrorDialog(){
         StreamErrorDialog streamErrorDialog = new StreamErrorDialog();
         streamErrorDialog.show(getSupportFragmentManager(), "stream_error");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        playerView.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        playerView.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        removeCurrentViewer();
-        playerView.onDestroy();
     }
 }
 

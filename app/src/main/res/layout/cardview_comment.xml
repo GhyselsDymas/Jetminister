@@ -21,6 +21,7 @@
             android:layout_marginTop="6dp"
             android:clickable="true"
             android:focusable="true"
+            android:paddingEnd="5dp"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"

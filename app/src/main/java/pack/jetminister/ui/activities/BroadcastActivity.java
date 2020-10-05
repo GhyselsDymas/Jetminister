@@ -194,6 +194,7 @@ public class BroadcastActivity
     @Override
     protected void onResume() {
         super.onResume();
+        hideStatusBar();
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
             stopPublishing();
