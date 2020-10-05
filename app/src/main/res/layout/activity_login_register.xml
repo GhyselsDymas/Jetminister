@@ -215,7 +215,7 @@
                 android:layout_marginEnd="40dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:text="@string/read_more_tv"
+                android:text="@string/read_more"
                 app:layout_constraintBottom_toTopOf="@+id/btn_register"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_register_password_confirm" />

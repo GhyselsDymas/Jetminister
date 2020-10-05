@@ -71,8 +71,8 @@
     <string name="profile_description_tv">Channel description</string>
     <string name="register_cb_terms_conditions">I accept the Terms and Conditions</string>
     <string name="register_no_account_tv">No account yet?</string>
-    <string name="see_more_tv">See more</string>
-    <string name="read_more_tv">Read more</string>
+    <string name="see_more">See more</string>
+    <string name="read_more">Read more</string>
     <string name="btn_choose_image">Choose image</string>
     <string name="profile_iv_preview">A preview of the image you selected</string>
     <string name="start">Start</string>
@@ -100,4 +100,5 @@
     <string name="report_dialog_title">Report abuse</string>
     <string name="report_dialog_message">Please give adequate information</string>
     <string name="report_dialog_reasons">Write your reasons for reporting here</string>
+    <string name="streamer_profile_error_message">Could not find streamer\'s profile page</string>
 </resources>

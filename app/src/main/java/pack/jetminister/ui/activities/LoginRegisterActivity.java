@@ -213,7 +213,6 @@ public class LoginRegisterActivity extends AppCompatActivity {
                                 //create new User object to store into firebase Database
                                 User newUser = new User(emailFromInput, passwordFromInput);
                                 newUser.setUsername(usernameFromInput);
-                                //TODO: how to store Strings as List in Firebase?
                                 //add user to database
                                 addUserToDatabase(newUser);
                                 proceedToMain();

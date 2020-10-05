@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,12 +20,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.List;
 
 import pack.jetminister.R;
 import pack.jetminister.ui.activities.PlaybackActivity;
 
 
+import static java.text.Normalizer.Form.NFD;
 import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_USERNAME;
@@ -32,16 +37,29 @@ import static pack.jetminister.data.User.KEY_USERNAME;
 import static pack.jetminister.data.User.KEY_USERS;
 import static pack.jetminister.data.User.KEY_USER_ID;
 
-public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.LivePictureHolder> {
+public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.LivePictureHolder>
+        implements Filterable
+{
 
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
     private DatabaseReference streamersRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
     private Context mContext;
-    private List<String> mStreamerIDs;
+    private List<String> mAllStreamerIDs;
+    private List<String> mFilteredStreamerIDs;
+    private List<String> mStreamerUsernames;
+    private List<String> mFilteredStreamerUsernames;
 
-    public LivePictureAdapter(Context context, List<String> streamerIDs){
+
+    public LivePictureAdapter(Context context,
+                              List<String> allStreamerIDs,
+                              List<String> filteredStreamerIDs,
+                              List<String> streamerUsernames,
+                              List<String> filteredStreamerUsernames) {
         mContext = context;
-        mStreamerIDs = streamerIDs;
+        mAllStreamerIDs = allStreamerIDs;
+        mFilteredStreamerIDs = filteredStreamerIDs;
+        mStreamerUsernames = streamerUsernames;
+        mFilteredStreamerUsernames = filteredStreamerUsernames;
     }
 
     @NonNull
@@ -53,32 +71,67 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull LivePictureAdapter.LivePictureHolder holder, int position) {
-         usersRef.child(mStreamerIDs.get(position)).addValueEventListener(new ValueEventListener() {
-             @Override
-             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                 String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
-                 String currentImageURL = snapshot.child(KEY_IMAGE_URL).getValue(String.class);
-                 holder.usernameLive.setText(currentUsername);
-                 holder.followersLive.setText("0");
-                 if (currentImageURL.isEmpty()) {
-                     holder.imageLive.setImageResource(R.drawable.ic_launcher_background);
-                 } else{
-                     Picasso.get().load(currentImageURL)
-                             .fit().centerCrop()
-                             .into(holder.imageLive);
-                 }
-             }
 
-             @Override
-             public void onCancelled(@NonNull DatabaseError error) {
+        usersRef.child(mFilteredStreamerIDs.get(position)).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
+                String currentImageURL = snapshot.child(KEY_IMAGE_URL).getValue(String.class);
+                holder.usernameLive.setText(currentUsername);
+                holder.followersLive.setText("0");
+                if (currentImageURL.isEmpty()) {
+                    holder.imageLive.setImageResource(R.drawable.ic_launcher_background);
+                } else {
+                    Picasso.get().load(currentImageURL)
+                            .fit().centerCrop()
+                            .into(holder.imageLive);
+                }
+            }
 
-             }
-         });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return mStreamerIDs.size();
+        return mFilteredStreamerIDs.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                /*user input and matching data must be case insensitive and use Normalizer to ignore accented characters*/
+                String input = Normalizer.normalize(constraint, NFD).toLowerCase();
+                if (input.isEmpty()) {
+                    mFilteredStreamerIDs = mAllStreamerIDs;
+                    mFilteredStreamerUsernames = mStreamerUsernames;
+                } else {
+                    mFilteredStreamerIDs = mAllStreamerIDs;
+                    mFilteredStreamerUsernames = mStreamerUsernames;
+                    ArrayList<String> tempUsernames = new ArrayList<>();
+                    ArrayList<String> tempIds = new ArrayList<>();
+                    for (String element : mFilteredStreamerUsernames) {
+                        if (Normalizer.normalize(element.toLowerCase(), NFD).contains(input)) {
+                            int index = mFilteredStreamerUsernames.indexOf(element);
+                            tempIds.add(mFilteredStreamerIDs.get(index));
+                        }
+                    }
+                    mFilteredStreamerUsernames = tempUsernames;
+                    mFilteredStreamerIDs = tempIds;
+                }
+                return null;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                notifyDataSetChanged();
+            }
+        };
     }
 
     public class LivePictureHolder extends RecyclerView.ViewHolder {
@@ -97,25 +150,25 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
-                    String currentStreamerID = mStreamerIDs.get(position);
+                    String currentStreamerID = mAllStreamerIDs.get(position);
                     streamersRef.child(currentStreamerID)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            String currentStreamUsername = snapshot.child(KEY_STREAM_USERNAME).getValue(String.class);
-                            String currentPlaybackURL = snapshot.child(KEY_STREAM_PLAYBACK_URL).getValue(String.class);
-                            Intent intent = new Intent(mContext , PlaybackActivity.class);
-                            intent.putExtra(KEY_USER_ID, currentStreamerID);
-                            intent.putExtra(KEY_STREAM_USERNAME, currentStreamUsername);
-                            intent.putExtra(KEY_STREAM_PLAYBACK_URL, currentPlaybackURL);
-                            mContext.startActivity(intent);
-                        }
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    String currentStreamUsername = snapshot.child(KEY_STREAM_USERNAME).getValue(String.class);
+                                    String currentPlaybackURL = snapshot.child(KEY_STREAM_PLAYBACK_URL).getValue(String.class);
+                                    Intent intent = new Intent(mContext, PlaybackActivity.class);
+                                    intent.putExtra(KEY_USER_ID, currentStreamerID);
+                                    intent.putExtra(KEY_STREAM_USERNAME, currentStreamUsername);
+                                    intent.putExtra(KEY_STREAM_PLAYBACK_URL, currentPlaybackURL);
+                                    mContext.startActivity(intent);
+                                }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
 
-                        }
-                    });
+                                }
+                            });
                 }
             });
         }

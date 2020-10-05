@@ -144,7 +144,6 @@ public class BroadcastActivity
                 });
     };
 
-
     private View.OnClickListener deactivateStreamListener = v -> {
         stopBroadcast();
     };

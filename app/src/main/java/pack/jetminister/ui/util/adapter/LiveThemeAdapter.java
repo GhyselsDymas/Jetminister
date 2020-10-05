@@ -1,7 +1,6 @@
 package pack.jetminister.ui.util.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import pack.jetminister.R;
@@ -33,6 +31,7 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
     private LivePictureAdapter pictureAdapter;
     private Context mContext;
     private List<String> mThemes;
+
 
     public LiveThemeAdapter(Context context, List<String> themes) {
         mContext = context;
@@ -50,24 +49,39 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
     public void onBindViewHolder(@NonNull final LiveThemeHolder holder, int position) {
         final String currentTheme = mThemes.get(position);
         holder.streamersPerTheme = new ArrayList<>();
+        holder.filteredStreamersPerTheme = new ArrayList<>();
+        holder.streamerUsernames = new ArrayList<>();
+        holder.filteredStreamerUsernames = new ArrayList<>();
         DatabaseReference streamsRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
         streamsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 holder.streamersPerTheme.clear();
+                holder.filteredStreamersPerTheme.clear();
+                holder.streamerUsernames.clear();
+                holder.filteredStreamerUsernames.clear();
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     String streamerID = postSnapshot.getKey();
                     LiveStream currentStream = postSnapshot.getValue(LiveStream.class);
                     String streamerTheme = currentStream.getTheme();
+                    String streamerUsername = currentStream.getStreamUsername();
                     if (streamerTheme.equals(currentTheme)){
                         holder.streamersPerTheme.add(streamerID);
+                        holder.filteredStreamersPerTheme.add(streamerID);
+                        holder.streamerUsernames.add(streamerUsername);
+                        holder.filteredStreamerUsernames.add(streamerUsername);
                     }
                 }
                 holder.titleLiveTheme.setText(currentTheme);
-                holder.readMoreLiveTheme.setText(String.format("%s %s", mContext.getResources().getString(R.string.see_more_tv), currentTheme));
+                holder.readMoreLiveTheme.setText(String.format("%s in %s", mContext.getResources().getString(R.string.see_more), currentTheme));
                 holder.recyclerViewLive.setHasFixedSize(true);
                 holder.recyclerViewLive.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-                pictureAdapter = new LivePictureAdapter(mContext, holder.streamersPerTheme);
+                pictureAdapter = new LivePictureAdapter(mContext,
+                        holder.streamersPerTheme,
+                        holder.filteredStreamersPerTheme,
+                        holder.streamerUsernames,
+                        holder.filteredStreamerUsernames
+                );
                 holder.recyclerViewLive.setAdapter(pictureAdapter);
             }
 
@@ -78,6 +92,10 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
         });
     }
 
+    public LivePictureAdapter getPictureAdapter() {
+        return pictureAdapter;
+    }
+
     @Override
     public int getItemCount() {
         return mThemes.size();
@@ -85,16 +103,25 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
 
     public static class LiveThemeHolder extends RecyclerView.ViewHolder {
         public List<String> streamersPerTheme;
+        public List<String> filteredStreamersPerTheme;
+        public List<String> streamerUsernames;
+        public List<String> filteredStreamerUsernames;
         public TextView titleLiveTheme, readMoreLiveTheme;
         public RecyclerView recyclerViewLive;
 
         public LiveThemeHolder(@NonNull View itemView) {
             super(itemView);
-            titleLiveTheme = itemView.findViewById(R.id.textView_theme);
-            readMoreLiveTheme = itemView.findViewById(R.id.textView_read_more);
+            titleLiveTheme = itemView.findViewById(R.id.tv_theme);
+            readMoreLiveTheme = itemView.findViewById(R.id.tv_see_more);
             recyclerViewLive = itemView.findViewById(R.id.rv_live_picture);
         }
+
     }
+
+
+
+
+
 
 }
 

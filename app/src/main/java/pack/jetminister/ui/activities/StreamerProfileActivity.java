@@ -20,6 +20,8 @@ import com.squareup.picasso.Picasso;
 
 import pack.jetminister.R;
 import pack.jetminister.ui.dialogs.ReportDialog;
+import pack.jetminister.ui.dialogs.StreamErrorDialog;
+import pack.jetminister.ui.dialogs.StreamerProfileErrorDialog;
 
 import static pack.jetminister.data.User.KEY_DESCRIPTION;
 import static pack.jetminister.data.User.KEY_IMAGE_URL;
@@ -80,7 +82,7 @@ public class StreamerProfileActivity extends AppCompatActivity {
                 }
             });
         } else {
-            //TODO: show OopsDialog
+            showStreamerProfileErrorDialog();
         }
     }
 
@@ -97,5 +99,9 @@ public class StreamerProfileActivity extends AppCompatActivity {
         if (intent != null && intent.hasExtra(KEY_USER_ID)) {
             streamerID = intent.getStringExtra(KEY_USER_ID);
         }
+    }
+    private void showStreamerProfileErrorDialog(){
+        StreamerProfileErrorDialog streamerPrifileErrorDialog = new StreamerProfileErrorDialog();
+        streamerPrifileErrorDialog.show(getSupportFragmentManager(), "stream_error");
     }
 }
