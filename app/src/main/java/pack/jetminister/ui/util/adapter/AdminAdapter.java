@@ -56,6 +56,8 @@ public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder>
                                 holder.usernameAdmin.setText(currentUser.getUsername());
                                 if (!currentUser.isStreamer()){
                                     holder.streamerSwitch.setChecked(false);
+                                } else {
+                                    holder.streamerSwitch.setChecked(true);
                                 }
                                 holder.streamerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                     @Override
