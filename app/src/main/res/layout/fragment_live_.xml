@@ -56,7 +56,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_live_theme"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -64,6 +64,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/live_search_view"
             tools:listitem="@layout/cardview_live_theme" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#FFFFFF"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/live_search_view"
+            tools:listitem="@layout/cardview_search_bar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

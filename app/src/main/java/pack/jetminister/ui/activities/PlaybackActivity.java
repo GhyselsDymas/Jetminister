@@ -113,12 +113,13 @@ public class PlaybackActivity extends AppCompatActivity {
     private View.OnClickListener playPauseBtnListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            Toast.makeText(PlaybackActivity.this, "whatthefaack", Toast.LENGTH_SHORT).show();
             if (playerView.getPlayer().isPaused()) {
                 playerView.getPlayer().play();
             } else {
                 playerView.getPlayer().pause();
             }
-            Toast.makeText(PlaybackActivity.this, "whatthefaack", Toast.LENGTH_SHORT).show();
+
         }
     };
 

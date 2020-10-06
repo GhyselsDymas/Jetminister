@@ -42,6 +42,7 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
     @Override
     public LiveThemeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View themeCardView = LayoutInflater.from(mContext).inflate(R.layout.cardview_live_theme, parent, false);
+
         return new LiveThemeHolder(themeCardView);
     }
 

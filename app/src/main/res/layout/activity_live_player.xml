@@ -28,6 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <com.theoplayer.android.api.THEOplayerView
         android:id="@+id/player_theo_view"
         android:layout_width="match_parent"
@@ -43,10 +44,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:defaultCss="true"
+        app:cssPaths="C:\Users\dymas\AndroidStudioProjects\Jetminister\app\src\main\assets\css_player">
 
     </com.theoplayer.android.api.THEOplayerView>
-
 
     <TextView
         android:id="@+id/player_tv_live_state"
