@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -25,11 +26,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             if (darkLight.isChecked()){
-                Toast.makeText(context, R.string.settings_dark_mode_on_message, Toast.LENGTH_SHORT).show();
                 darkLight.setChecked(false);
-            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 Toast.makeText(context, R.string.settings_dark_mode_off_message, Toast.LENGTH_SHORT).show();
+            } else {
                 darkLight.setChecked(true);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                Toast.makeText(context, R.string.settings_dark_mode_on_message, Toast.LENGTH_SHORT).show();
             }
             return false;
         }
@@ -40,12 +43,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        if(isDarkMode()){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
         addPreferencesFromResource(R.xml.settings);
         darkLight = findPreference("dark_mode");
         context = darkLight.getContext();
         darkLight.setOnPreferenceChangeListener(darkLightListener);
         //TODO: implement dark mode in other activities by calling SharedPrefs boolean??
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean isDarkMode = settings.getBoolean("dark_mode", false);
+
+
+    }
+    private boolean isDarkMode(){
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return settings.getBoolean("dark_mode", false);
     }
 }

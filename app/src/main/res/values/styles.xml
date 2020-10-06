@@ -1,6 +1,4 @@
 <resources>
-
-    <!--    Day/Light Mode  -->
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
         <item name="android:colorPrimary">@color/colorPrimary</item>
         <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -12,18 +10,18 @@
         <item name="textOnPrimary">@color/textOnPrimary</item>
     </style>
 
-    <!--    Night/Dark Mode  -->
-    <style name="DarkAppTheme" parent="Theme.MaterialComponents.DayNight">
-        <item name="android:colorPrimary">#121212</item>
-        <item name="android:colorPrimaryDark">#030303</item>
-        <item name="android:colorAccent">#283593</item>
-        <item name="colorPrimaryVariant">#383838</item>
-        <item name="colorControlNormal">#52818181</item>
-        <item name="windowBackground">#12121212</item>
-        <item name="cardBackground">#17121212</item>
-        <item name="android:textColorPrimary">@color/textOnPrimary</item>
-        <item name="textOnPrimary">@color/textOnPrimary</item>
-    </style>
+<!--    &lt;!&ndash;    Night/Dark Mode  &ndash;&gt;-->
+<!--    <style name="DarkAppTheme" parent="Theme.MaterialComponents.DayNight">-->
+<!--        <item name="android:colorPrimary">#121212</item>-->
+<!--        <item name="android:colorPrimaryDark">#030303</item>-->
+<!--        <item name="android:colorAccent">#283593</item>-->
+<!--        <item name="colorPrimaryVariant">#383838</item>-->
+<!--        <item name="colorControlNormal">#52818181</item>-->
+<!--        <item name="windowBackground">#12121212</item>-->
+<!--        <item name="cardBackground">#17121212</item>-->
+<!--        <item name="android:textColorPrimary">@color/textOnPrimary</item>-->
+<!--        <item name="textOnPrimary">@color/textOnPrimary</item>-->
+<!--    </style>-->
 
 
     <style name="SplashStyle" parent="Theme.MaterialComponents.Light.NoActionBar">

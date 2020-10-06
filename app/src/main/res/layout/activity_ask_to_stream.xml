@@ -27,7 +27,8 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:text="Complete this form to become a streamer!"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@color/textColorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -37,6 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -79,6 +81,7 @@
                 android:layout_marginEnd="20dp"
                 android:text="What type of content will you share with the viewers from your stream?"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textColorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_streamer_family" />
@@ -91,6 +94,7 @@
                 android:layout_marginEnd="20dp"
                 android:text="This will determine if you are elligable to become a streamer."
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="@color/textPrimaryDark"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_content_streamer" />
@@ -100,6 +104,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -123,6 +128,7 @@
                 android:layout_marginEnd="20dp"
                 android:text="What is the target audience of your stream?"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textColorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_streamer_content" />
@@ -132,6 +138,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
                 android:entries="@array/TargetAudience"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -146,6 +153,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:text="Choose the closest server to your location."
+                android:textColor="@color/textPrimaryDark"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/spinner_audience" />
@@ -155,6 +163,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -169,6 +178,7 @@
                 android:layout_marginEnd="20dp"
                 android:text="Tell us something about youself."
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textColorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/spinner_server_location" />
@@ -178,6 +188,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -201,6 +212,7 @@
                 android:layout_marginEnd="20dp"
                 android:text="Is there anything else that we should know about?"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textColorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_streamer_aboutyourself" />
@@ -210,6 +222,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -232,25 +245,30 @@
                 android:layout_marginEnd="20dp"
                 android:text="This info will not be saved and will only be used to create a mail that will be sent to us, we will then decide if we would like for you to use our platform."
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="@color/textColorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_streamer_more" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_ask_to_stream"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="20dp"
-                android:background="@color/colorPrimaryDark"
-                android:text="Button"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:text="@string/submit"
                 android:textColor="@color/colorAccent"
+                android:textColorHighlight="@color/colorPrimaryVariant"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_end_small_streamer" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_end_small_streamer"
+                app:layout_constraintVertical_bias="0.0" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

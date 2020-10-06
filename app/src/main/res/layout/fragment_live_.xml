@@ -41,12 +41,14 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary">
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/live_search_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/windowBackground"
             android:imeOptions="actionSearch"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -69,7 +71,7 @@
             android:id="@+id/rv_search_bar"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="#FFFFFF"
+            android:background="@color/colorPrimary"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

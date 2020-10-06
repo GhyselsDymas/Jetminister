@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/windowBackground"
     tools:context=".ui.activities.StreamerProfileActivity">
 
     <androidx.cardview.widget.CardView
@@ -40,7 +41,7 @@
         android:layout_marginEnd="40dp"
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/textPrimaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView"
@@ -54,7 +55,7 @@
         android:layout_marginTop="10dp"
         android:contentDescription="@string/profile_followers_tv"
         android:text="@string/profile_followers_tv"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/textColorPrimary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_streamer_profile_username"
         tools:text="followers" />
@@ -64,7 +65,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
-        android:layout_marginLeft="80dp"
+        android:textColor="@color/textColorPrimary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4"
         tools:text="100" />
@@ -78,7 +79,7 @@
         android:contentDescription="@string/profile_following_tv"
         android:gravity="end"
         android:text="@string/profile_following_tv"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/textColorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView4"
         app:layout_constraintTop_toBottomOf="@+id/tv_streamer_profile_username"
@@ -89,12 +90,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="80dp"
-        android:layout_marginRight="80dp"
         android:gravity="end"
+        android:textColor="@color/textColorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/tv_streamer_profile_followers"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        app:layout_constraintTop_toBottomOf="@+id/textView5"
+        tools:text="211" />
 
     <TextView
         android:id="@+id/textView11"
@@ -105,7 +105,7 @@
         android:contentDescription="@string/profile_description_tv"
         android:text="@string/profile_description_tv"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/textPrimaryDark"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_streamer_profile_following" />
 
@@ -114,10 +114,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
-        android:layout_marginLeft="40dp"
         android:layout_marginTop="2dp"
         android:layout_marginEnd="40dp"
-        android:layout_marginRight="40dp"
+        android:lineSpacingExtra="6sp"
+        android:textColor="@color/textColorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView11"

@@ -1,12 +1,10 @@
 package pack.jetminister.ui.util.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -145,7 +143,7 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
             super(itemView);
 
             usernameLive = itemView.findViewById(R.id.live_username_textview);
-            followersLive = itemView.findViewById(R.id.live_followers_textview);
+            followersLive = itemView.findViewById(R.id.live_viewers_tv);
             imageLive = itemView.findViewById(R.id.live_userpic_imageView);
 
             itemView.setOnClickListener(new View.OnClickListener() {

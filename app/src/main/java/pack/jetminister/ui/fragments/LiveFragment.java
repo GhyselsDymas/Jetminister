@@ -30,18 +30,20 @@ import pack.jetminister.data.User;
 import pack.jetminister.ui.util.adapter.LiveThemeAdapter;
 import pack.jetminister.ui.util.adapter.SearchBarAdapter;
 
+import static pack.jetminister.data.User.KEY_USERS;
+
 public class LiveFragment extends Fragment {
 
     private AppCompatActivity mContext;
     private LiveThemeAdapter themeAdapter;
-    private SearchBarAdapter searchBarAdapter;
-//    private List<User> mUsers;
+    private SearchBarAdapter searchFilterAdapter;
+
     private List<String> mAllStreamerIDs;
     private List<String> mFilteredStreamerIDs;
     private List<String> mAllStreamerNames;
     private List<String> mFilteredStreamerNames;
 
-    private RecyclerView searchBarRV;
+    private RecyclerView SearchFilterRV;
 
     private SearchView.OnQueryTextListener searchListener = new SearchView.OnQueryTextListener() {
         @Override
@@ -53,11 +55,11 @@ public class LiveFragment extends Fragment {
         public boolean onQueryTextChange(String constraint) {
 
             if(!constraint.isEmpty()){
-            searchBarRV.setVisibility(View.VISIBLE);
-                searchBarAdapter.getFilter().filter(constraint);
+            SearchFilterRV.setVisibility(View.VISIBLE);
+                searchFilterAdapter.getFilter().filter(constraint);
             }
             else {
-                searchBarRV.setVisibility(View.INVISIBLE);
+                SearchFilterRV.setVisibility(View.INVISIBLE);
             }
             return false;
         }
@@ -93,16 +95,15 @@ public class LiveFragment extends Fragment {
         themeAdapter = new LiveThemeAdapter(mContext, mThemes);
         themeRecyclerView.setAdapter(themeAdapter);
 
-        searchBarRV = rootview.findViewById(R.id.rv_search_bar);
-        searchBarRV.setHasFixedSize(true);
-        searchBarRV.setLayoutManager(new LinearLayoutManager(mContext));
+        SearchFilterRV = rootview.findViewById(R.id.rv_search_bar);
+        SearchFilterRV.setHasFixedSize(true);
+        SearchFilterRV.setLayoutManager(new LinearLayoutManager(mContext));
 
-//        mUsers = new ArrayList<>();
         mAllStreamerIDs =new ArrayList<>();
         mFilteredStreamerIDs =new ArrayList<>();
         mAllStreamerNames=new ArrayList<>();
         mFilteredStreamerNames=new ArrayList<>();
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
 
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -119,24 +120,20 @@ public class LiveFragment extends Fragment {
                     mFilteredStreamerIDs.add(streamerID);
                     mAllStreamerNames.add(streamerName);
                     mFilteredStreamerNames.add(streamerName);
-//                    mUsers.add(user);
                 }
-                searchBarAdapter = new SearchBarAdapter(mContext,
+                searchFilterAdapter = new SearchBarAdapter(mContext,
                         mAllStreamerIDs,
                         mFilteredStreamerIDs,
                         mAllStreamerNames,
                         mFilteredStreamerNames
-//                        mUsers
                 );
-                searchBarRV.setAdapter(searchBarAdapter);
+                SearchFilterRV.setAdapter(searchFilterAdapter);
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(mContext, error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
-
         return rootview;
     }
 }

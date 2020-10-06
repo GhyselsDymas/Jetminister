@@ -13,8 +13,9 @@
     <color name="windowBackground">#e8eaf6</color>
     <color name="cardBackground">#f5fcee</color>
     <color name="colorControlNormal">#FF000044</color>
-    <color name="textColorPrimary">#000044</color>
+    <color name="textColorPrimary">#002984</color>
     <color name="textOnPrimary">#fafafa</color>
+    <color name ="textPrimaryDark">#000044</color>
     <color name="transparentBlack">#8c000000</color>
 
 </resources>

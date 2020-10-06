@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/windowBackground"
     android:paddingLeft="16dp"
     android:paddingTop="16dp"
     android:paddingRight="16dp"
@@ -18,11 +19,15 @@
         android:focusable="true"
         android:text="@string/player_stream_ended_profile"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/textColorPrimary"
+        android:textColorHighlight="@color/colorPrimary"
         android:textStyle="bold|italic"
         app:layout_constraintBottom_toTopOf="@+id/textView7"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/stream_ended_live_tv"
@@ -32,6 +37,8 @@
         android:focusable="true"
         android:text="@string/player_stream_ended_live"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/textColorPrimary"
+        android:textColorHighlight="@color/colorPrimary"
         android:textStyle="bold|italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -43,6 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
         android:text="@string/or"
+        android:textColor="@color/textColorPrimary"
         app:layout_constraintBottom_toTopOf="@+id/stream_ended_live_tv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

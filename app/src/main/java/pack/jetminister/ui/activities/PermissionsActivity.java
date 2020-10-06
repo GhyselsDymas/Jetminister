@@ -1,5 +1,6 @@
 package pack.jetminister.ui.activities;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
@@ -70,8 +71,12 @@ public class PermissionsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        hideStatusBar();
         setContentView(R.layout.activity_permissions);
+        hideStatusBar();
+        ActionBar toolbar = getSupportActionBar();
+        if (toolbar != null) {
+            toolbar.hide();
+        }
         askUserPermissions();
     }
 

@@ -53,8 +53,6 @@ public class LoginRegisterActivity extends AppCompatActivity {
     private TextInputLayout emailLoginTIL, passwordLoginTIL, emailRegisterTIL, usernameRegisterTIL, passwordRegisterTIL, passwordConfirmRegisterTIL;
     private CheckBox termsConditionCB;
 
-    private ActionBar toolbar;
-
     View.OnClickListener loginListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -90,10 +88,10 @@ public class LoginRegisterActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         hideStatusBar();
         setContentView(R.layout.activity_login_register);
-
-        toolbar = getSupportActionBar();
-        toolbar.setTitle(R.string.fragment_live);
-        toolbar.hide();
+        ActionBar toolbar = getSupportActionBar();
+        if (toolbar != null) {
+            toolbar.hide();
+        }
 
 
         emailLoginTIL = findViewById(R.id.til_login_email);

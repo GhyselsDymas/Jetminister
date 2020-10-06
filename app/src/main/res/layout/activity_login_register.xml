@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/windowBackground"
     tools:context=".ui.activities.LoginRegisterActivity">
 
     <ScrollView
@@ -28,6 +29,7 @@
                 android:layout_marginEnd="40dp"
                 android:text="@string/login_tv"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@color/textColorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -37,7 +39,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginRight="30dp"
                 app:errorEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -77,14 +79,19 @@
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_login"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="40dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
                 android:text="@string/login_btn"
+                android:textColor="@color/colorAccent"
+                android:textColorHighlight="@color/colorPrimaryVariant"
+                app:backgroundTint="@color/colorPrimaryDark"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_login_password" />
@@ -97,6 +104,8 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="40dp"
                 android:text="@string/register_no_account_tv"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="@color/textPrimaryDark"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btn_login" />
@@ -109,6 +118,7 @@
                 android:layout_marginEnd="40dp"
                 android:text="@string/register_tv_"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@color/textColorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_no_account" />
@@ -140,9 +150,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
-                app:errorEnabled="true"
                 app:counterEnabled="true"
                 app:counterMaxLength="16"
+                app:errorEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_register_email">
@@ -163,10 +173,10 @@
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
                 app:errorEnabled="true"
-                app:passwordToggleEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/til_register_username">
+                app:layout_constraintTop_toBottomOf="@+id/til_register_username"
+                app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edittext_register_password"
@@ -202,9 +212,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
                 android:text="@string/register_cb_terms_conditions"
-                app:layout_constraintBottom_toTopOf="@+id/btn_register"
+                android:textColor="@color/textColorPrimary"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_register_password_confirm" />
 
@@ -212,25 +221,34 @@
                 android:id="@+id/tv_register_terms_cond"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="40dp"
+                android:layout_marginStart="40dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:text="@string/read_more"
-                app:layout_constraintBottom_toTopOf="@+id/btn_register"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/til_register_password_confirm" />
+                android:textColor="@color/colorPrimary"
+                android:textColorHighlight="@color/colorPrimaryVariant"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/action_checkbox_terms_conditions" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_register"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="40dp"
                 android:layout_marginBottom="10dp"
-                android:text="@string/login_btn"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:text="@string/register_btn"
+                android:textColor="@color/colorAccent"
+                android:textColorHighlight="@color/colorPrimaryVariant"
+                android:textColorLink="@color/colorAccent"
+                app:backgroundTint="@color/colorPrimaryDark"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_register_terms_cond" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

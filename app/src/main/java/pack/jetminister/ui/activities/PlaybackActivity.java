@@ -119,7 +119,6 @@ public class PlaybackActivity extends AppCompatActivity {
             } else {
                 playerView.getPlayer().pause();
             }
-
         }
     };
 
@@ -143,20 +142,6 @@ public class PlaybackActivity extends AppCompatActivity {
         }
     };
 
-    private View.OnClickListener testStreamEndedListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            showStreamEndedDialog();
-        }
-    };
-
-    private View.OnClickListener testStreamErrorListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            showStreamErrorDialog();
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -175,7 +160,7 @@ public class PlaybackActivity extends AppCompatActivity {
         streamProfileIV = findViewById(R.id.player_iv_profile);
         streamLikeIV = findViewById(R.id.player_iv_like);
         streamShareIV = findViewById(R.id.player_iv_share);
-        playPauseIV = findViewById(R.id.player_iv_play);
+        playPauseIV = findViewById(R.id.player_iv_play_pause);
         playerView = findViewById(R.id.player_theo_view);
         playbackProgressBar = findViewById(R.id.player_progress_bar);
         postCommentET = findViewById(R.id.player_et_comment);
@@ -192,11 +177,6 @@ public class PlaybackActivity extends AppCompatActivity {
         streamProfileIV.setOnClickListener(streamProfileListener);
         KeyboardVisibilityEvent.setEventListener(this, keyboardVisibilityListener);
 
-
-        Button testStreamEndedBtn = findViewById(R.id.btn_test_ended);
-        testStreamEndedBtn.setOnClickListener(testStreamEndedListener);
-        Button testStreamErrorBtn = findViewById(R.id.btn_test_error);
-        testStreamErrorBtn.setOnClickListener(testStreamErrorListener);
 
         getStreamerInfo();
         showAmountLikes();
@@ -275,8 +255,9 @@ public class PlaybackActivity extends AppCompatActivity {
             Bundle extras = intent.getExtras();
             if (extras != null && !extras.isEmpty()) {
                 streamUsername = extras.getString(KEY_STREAM_USERNAME);
-                streamPlaybackURL = extras.getString(KEY_STREAM_PLAYBACK_URL);
+//                streamPlaybackURL = extras.getString(KEY_STREAM_PLAYBACK_URL);
                 streamerUID = extras.getString(KEY_USER_ID);
+                streamPlaybackURL = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8";
             }
         } else {
             Toast.makeText(this, R.string.player_stream_error, Toast.LENGTH_SHORT).show();
