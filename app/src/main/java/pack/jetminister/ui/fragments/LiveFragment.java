@@ -40,6 +40,9 @@ public class LiveFragment extends Fragment {
     private List<String> mFilteredStreamerIDs;
     private List<String> mAllStreamerNames;
     private List<String> mFilteredStreamerNames;
+
+    private RecyclerView searchBarRV;
+
     private SearchView.OnQueryTextListener searchListener = new SearchView.OnQueryTextListener() {
         @Override
         public boolean onQueryTextSubmit(String query) {
@@ -50,11 +53,13 @@ public class LiveFragment extends Fragment {
         public boolean onQueryTextChange(String constraint) {
 
             if(!constraint.isEmpty()){
-            searchBarAdapter.getFilter().filter(constraint);
-            return false;}
-            else {
-
+            searchBarRV.setVisibility(View.VISIBLE);
+                searchBarAdapter.getFilter().filter(constraint);
             }
+            else {
+                searchBarRV.setVisibility(View.INVISIBLE);
+            }
+            return false;
         }
     };
 
@@ -88,9 +93,9 @@ public class LiveFragment extends Fragment {
         themeAdapter = new LiveThemeAdapter(mContext, mThemes);
         themeRecyclerView.setAdapter(themeAdapter);
 
-        RecyclerView SearchBarRecyclerView = rootview.findViewById(R.id.rv_search_bar);
-        SearchBarRecyclerView.setHasFixedSize(true);
-        SearchBarRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        searchBarRV = rootview.findViewById(R.id.rv_search_bar);
+        searchBarRV.setHasFixedSize(true);
+        searchBarRV.setLayoutManager(new LinearLayoutManager(mContext));
 
 //        mUsers = new ArrayList<>();
         mAllStreamerIDs =new ArrayList<>();
@@ -123,7 +128,7 @@ public class LiveFragment extends Fragment {
                         mFilteredStreamerNames
 //                        mUsers
                 );
-                SearchBarRecyclerView.setAdapter(searchBarAdapter);
+                searchBarRV.setAdapter(searchBarAdapter);
             }
 
             @Override
