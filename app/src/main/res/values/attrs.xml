@@ -18,5 +18,6 @@
         <attr name="cardBackground" format="color"/>
         <attr name="textColorPrimary" format="color"/>
         <attr name="textOnPrimary" format="color"/>
+        <attr name="colorControlNormal" format="color"/>
     </declare-styleable>
 </resources>
