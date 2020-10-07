@@ -28,11 +28,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             if (darkLight.isChecked()){
                 darkLight.setChecked(false);
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                Toast.makeText(context, R.string.settings_dark_mode_off_message, Toast.LENGTH_SHORT).show();
             } else {
                 darkLight.setChecked(true);
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                Toast.makeText(context, R.string.settings_dark_mode_on_message, Toast.LENGTH_SHORT).show();
             }
             return false;
         }
@@ -52,8 +50,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         darkLight = findPreference("dark_mode");
         context = darkLight.getContext();
         darkLight.setOnPreferenceChangeListener(darkLightListener);
-        //TODO: implement dark mode in other activities by calling SharedPrefs boolean??
-
 
     }
     private boolean isDarkMode(){
