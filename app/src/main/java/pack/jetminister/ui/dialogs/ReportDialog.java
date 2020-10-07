@@ -25,11 +25,20 @@ import java.util.Arrays;
 import java.util.List;
 
 import pack.jetminister.R;
+import pack.jetminister.data.Reports;
 import pack.jetminister.data.User;
+
+import static pack.jetminister.data.Reports.KEY_REASON;
+import static pack.jetminister.data.Reports.KEY_REPORTS;
+import static pack.jetminister.data.Reports.KEY_REPORT_BODY;
 
 public class ReportDialog extends androidx.fragment.app.DialogFragment{
 
     private AppCompatActivity mContext;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private DatabaseReference usersDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
+
 
 
     @Override
@@ -42,6 +51,13 @@ public class ReportDialog extends androidx.fragment.app.DialogFragment{
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        final String uID = currentUser.getUid();
+        final DatabaseReference currentUserDatabaseRef = usersDatabaseRef.child(uID);
+//        String editTextValue = edittext.getText().toString();
+//        currentUserDatabaseRef.child(User.KEY_DESCRIPTION).setValue(editTextValue);
+
+        String streamerID= getArguments().getString("msg");
 
         builder.setTitle(R.string.report_dialog_title);
         builder.setMessage(R.string.report_dialog_message);
@@ -73,6 +89,11 @@ public class ReportDialog extends androidx.fragment.app.DialogFragment{
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 //TODO: update database with new report info
+
+                final DatabaseReference currentPath = usersDatabaseRef.child(streamerID).child(KEY_REPORTS).child(uID);
+                currentPath.child(KEY_REASON).setValue(spinner.getSelectedItem());
+                currentPath.child(KEY_REPORT_BODY).setValue(edittext.getText().toString());
+
                 dialogInterface.dismiss();
             }
         });

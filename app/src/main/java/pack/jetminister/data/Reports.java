@@ -3,6 +3,8 @@ package pack.jetminister.data;
 public class Reports {
 
     public static final String KEY_REPORTS = "reports";
+    public static final String KEY_REASON = "reason";
+    public static final String KEY_REPORT_BODY = "reportBody";
     private String reason;
     private String reportBody;
 

@@ -41,6 +41,11 @@ public class StreamerProfileActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             ReportDialog newReportDialogDialog = new ReportDialog();
+
+            Bundle bundle = new Bundle();
+            bundle.putString("msg", streamerID);
+            newReportDialogDialog.setArguments(bundle);
+
             newReportDialogDialog.show(getSupportFragmentManager(), "report");
         }
     };
