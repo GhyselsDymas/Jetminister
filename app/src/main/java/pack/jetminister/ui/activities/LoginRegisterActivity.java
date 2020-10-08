@@ -32,11 +32,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import pack.jetminister.R;
+import pack.jetminister.data.Follow;
 import pack.jetminister.data.User;
 import pack.jetminister.ui.util.validators.EmailValidator;
 import pack.jetminister.ui.util.validators.PasswordValidator;
 
+import static pack.jetminister.data.User.KEY_FOLLOWERS;
+import static pack.jetminister.data.User.KEY_FOLLOWING;
 import static pack.jetminister.data.User.KEY_USERNAME;
 import static pack.jetminister.data.User.KEY_USERS;
 
@@ -92,7 +100,6 @@ public class LoginRegisterActivity extends AppCompatActivity {
         if (toolbar != null) {
             toolbar.hide();
         }
-
 
         emailLoginTIL = findViewById(R.id.til_login_email);
         passwordLoginTIL = findViewById(R.id.til_login_password);
@@ -245,12 +252,15 @@ public class LoginRegisterActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
+                        Follow adminFollowee = new Follow("OKqHEIdN4iblQiCIzyjD6hZfyiO2", "Hackermann");
+                        usersDatabaseRef.child(newUID).child(KEY_FOLLOWERS).push().setValue(adminFollowee);
                         Toast.makeText(LoginRegisterActivity.this, R.string.register_success, Toast.LENGTH_SHORT).show();
                     } else {
                         Log.d(TAG, task.getException().getMessage());
                     }
                 }
             });
+
         } else {
             Log.d(TAG, String.valueOf(R.string.register_authentication_error));
         }

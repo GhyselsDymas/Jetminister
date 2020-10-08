@@ -1,12 +1,8 @@
 package pack.jetminister.data;
-import android.widget.TextView;
-
-import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-
-import pack.jetminister.R;
+import java.util.HashMap;
 
 
 public class User implements Serializable {
@@ -26,11 +22,11 @@ public class User implements Serializable {
     private String imageURL = "";
     private String description =  "Description of channel";
     private String theme = "Blank";
-    private ArrayList<String> followers, following;
+    private ArrayList<Follow> followers, following;
     private boolean streamer = false;
     private String location = "eu_belgium";
     private String creditCard = "";
-    private Integer reportedNumber = 0;
+    private Integer reportCount = 0;
 
 
     public User() {
@@ -65,11 +61,11 @@ public class User implements Serializable {
 
     public String getTheme() { return theme; }
 
-    public ArrayList<String> getFollowers() {
+    public ArrayList<Follow>  getFollowers() {
         return followers;
     }
 
-    public ArrayList<String> getFollowing() {
+    public ArrayList<Follow>  getFollowing() {
         return following;
     }
 
@@ -81,7 +77,9 @@ public class User implements Serializable {
 
     public String getCreditCard() { return creditCard; }
 
-    public Integer getReportedNumber() { return reportedNumber; }
+    public Integer getReportCount() { return reportCount; }
+
+
 
     public void setUsername(String username) {
         this.username = username;
@@ -107,11 +105,11 @@ public class User implements Serializable {
 
     public void setTheme(String theme) { this.theme = theme; }
 
-    public void setFollowers(ArrayList<String> followers) {
+    public void setFollowers(ArrayList<Follow>  followers) {
         this.followers = followers;
     }
 
-    public void setFollowing(ArrayList<String> following) {
+    public void setFollowing(ArrayList<Follow>  following) {
         this.following = following;
     }
 
@@ -123,5 +121,5 @@ public class User implements Serializable {
 
     public void setCreditCard(String creditCard) { this.creditCard = creditCard; }
 
-    public void setReportedNumber(Integer reportedNumber) { this.reportedNumber = reportedNumber; }
+    public void setReportCount(Integer reportCount) { this.reportCount = reportCount; }
 }

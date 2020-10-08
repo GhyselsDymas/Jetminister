@@ -255,9 +255,8 @@ public class PlaybackActivity extends AppCompatActivity {
             Bundle extras = intent.getExtras();
             if (extras != null && !extras.isEmpty()) {
                 streamUsername = extras.getString(KEY_STREAM_USERNAME);
-//                streamPlaybackURL = extras.getString(KEY_STREAM_PLAYBACK_URL);
                 streamerUID = extras.getString(KEY_USER_ID);
-                streamPlaybackURL = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8";
+                streamPlaybackURL = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8";//extras.getString(KEY_STREAM_PLAYBACK_URL);
             }
         } else {
             Toast.makeText(this, R.string.player_stream_error, Toast.LENGTH_SHORT).show();
@@ -304,6 +303,7 @@ public class PlaybackActivity extends AppCompatActivity {
     private void proceedToStreamerProfile() {
         Intent intent = new Intent(PlaybackActivity.this, StreamerProfileActivity.class);
         intent.putExtra(KEY_USER_ID, streamerUID);
+        intent.putExtra(KEY_USERNAME, streamUsername);
         startActivity(intent);
     }
 
