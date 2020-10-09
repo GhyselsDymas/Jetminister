@@ -121,6 +121,7 @@ public class StreamerProfileActivity extends AppCompatActivity {
         getStreamerInfo();
         updateFollowUnfollowIV();
         updateUI();
+
     }
 
     @Override
