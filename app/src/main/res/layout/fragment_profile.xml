@@ -65,10 +65,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
+        android:text="@string/zero"
         android:textColor="@color/textColorPrimary"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4"
-        tools:text="100" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <TextView
         android:id="@+id/textView5"
@@ -91,10 +91,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="80dp"
         android:gravity="end"
+        android:text="@string/zero"
         android:textColor="@color/textColorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5"
-        tools:text="69" />
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <TextView
         android:id="@+id/textView11"

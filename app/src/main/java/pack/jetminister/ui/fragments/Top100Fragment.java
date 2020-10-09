@@ -78,7 +78,6 @@ public class Top100Fragment extends Fragment {
                     User user = postSnapshot.getValue(User.class);
                     String userID = postSnapshot.getKey();
                     String username = user.getUsername();
-                    Log.d(TAG, "onDataChange: " + userID + " is " + username);
                     mAllStreamerIDs.add(userID);
                     mFilteredStreamerIDs.add(userID);
                     mStreamerUsernames.add(username);

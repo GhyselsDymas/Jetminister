@@ -21,6 +21,7 @@
     <string name="upload">Upload</string>
     <string name="or">or</string>
     <string name="home">Home</string>
+    <string name="zero">0</string>
     <string name="register_et_password">Password</string>
     <string name="register_et_password_confirm">Confirm password</string>
     <string name="register_et_descr">Description</string>

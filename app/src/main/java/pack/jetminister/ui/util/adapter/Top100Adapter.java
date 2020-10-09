@@ -80,7 +80,6 @@ public class Top100Adapter extends RecyclerView.Adapter<Top100Adapter.Top100Hold
                 String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
                 holder.usernameTop100.setText(currentUsername);
                 long followers = snapshot.child(KEY_FOLLOWERS).getChildrenCount();
-                Log.d(TAG, "onDataChange: " + currentUsername + " has "+ String.valueOf(followers) + " followers") ;
                 holder.followersTop100.setText(String.valueOf(followers));
                 String currentImageURL = snapshot.child(KEY_IMAGE_URL).getValue(String.class);
                 if (currentImageURL.isEmpty()) {

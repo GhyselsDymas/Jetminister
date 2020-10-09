@@ -74,16 +74,16 @@ public class StreamerProfileActivity extends AppCompatActivity {
     View.OnClickListener followListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (String.valueOf(followUnfollowIV.getTag(R.drawable.ic_follow_24)).equals(TAG_UNFOLLOW)) {
+            if (String.valueOf(followUnfollowIV.getTag(R.layout.activity_streamer_profile)).equals(TAG_UNFOLLOW)) {
                 deleteFollowerFromStreamer();
                 deleteFollowingFromCurrentUser();
                 followUnfollowIV.setImageResource(R.drawable.ic_follow_24);
-                followUnfollowIV.setTag(R.drawable.ic_follow_24, TAG_FOLLOW);
+                followUnfollowIV.setTag(R.layout.activity_streamer_profile, TAG_FOLLOW);
             } else {
                 addFollowerToStreamer();
                 addFollowingToCurrentUser();
                 followUnfollowIV.setImageResource(R.drawable.ic_unfollow_24);
-                followUnfollowIV.setTag(R.drawable.ic_follow_24, TAG_UNFOLLOW);
+                followUnfollowIV.setTag(R.layout.activity_streamer_profile, TAG_UNFOLLOW);
             }
         }
     };
@@ -115,10 +115,10 @@ public class StreamerProfileActivity extends AppCompatActivity {
 
         reportIV.setOnClickListener(reportListener);
         followUnfollowIV.setOnClickListener(followListener);
+        followUnfollowIV.setImageResource(R.drawable.ic_follow_24);
+        followUnfollowIV.setTag(R.layout.activity_streamer_profile, TAG_FOLLOW);
 
         getStreamerInfo();
-        followUnfollowIV.setImageResource(R.drawable.ic_follow_24);
-        followUnfollowIV.setTag(R.drawable.ic_follow_24, TAG_FOLLOW);
         updateFollowUnfollowIV();
         updateUI();
     }
@@ -143,16 +143,21 @@ public class StreamerProfileActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.hasChild(KEY_FOLLOWERS)) {
-                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                Follow checkFollower = dataSnapshot.child(KEY_FOLLOWERS).getValue(Follow.class);
-                                if (checkFollower != null && checkFollower.getFollowID().equals(currentUserId)) {
-                                    followUnfollowIV.setImageResource(R.drawable.ic_follow_24);
-                                    followUnfollowIV.setTag(R.drawable.ic_follow_24, TAG_UNFOLLOW);
+                            for (DataSnapshot dataSnapshot : snapshot.child(KEY_FOLLOWERS).getChildren()) {
+                                Follow checkFollower = dataSnapshot.getValue(Follow.class);
+                                String followerID = checkFollower.getFollowID();
+                                if (followerID.equals(currentUserId)) {
+                                    followUnfollowIV.setImageResource(R.drawable.ic_unfollow_24);
+                                    followUnfollowIV.setTag(R.layout.activity_streamer_profile, TAG_UNFOLLOW);
                                     break;
+                                } else {
+                                    followUnfollowIV.setImageResource(R.drawable.ic_follow_24);
+                                    followUnfollowIV.setTag(R.layout.activity_streamer_profile, TAG_FOLLOW);
                                 }
-                                followUnfollowIV.setImageResource(R.drawable.ic_follow_24);
-                                followUnfollowIV.setTag(R.drawable.ic_follow_24, TAG_FOLLOW);
                             }
+                        } else {
+                            followUnfollowIV.setImageResource(R.drawable.ic_follow_24);
+                            followUnfollowIV.setTag(R.layout.activity_streamer_profile, TAG_FOLLOW);
                         }
                     }
                     @Override
@@ -168,16 +173,8 @@ public class StreamerProfileActivity extends AppCompatActivity {
                     addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (!snapshot.hasChild(KEY_FOLLOWERS)) {
-                                followersTV.setText("0");
-                            } else {
                                 updateFollowerCount();
-                            }
-                            if (!snapshot.hasChild(KEY_FOLLOWING)) {
-                                followingTV.setText("0");
-                            } else {
                                 updateFollowingCount();
-                            }
                             usernameTV.setText(snapshot.child(KEY_USERNAME).getValue().toString());
                             descriptionTV.setText(snapshot.child(KEY_DESCRIPTION).getValue().toString());
                             String imageURI = snapshot.child(KEY_IMAGE_URL).getValue().toString();
@@ -188,6 +185,7 @@ public class StreamerProfileActivity extends AppCompatActivity {
                                     .centerCrop()
                                     .into(profileIV);
                         }
+
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
 
@@ -210,6 +208,7 @@ public class StreamerProfileActivity extends AppCompatActivity {
                     followersTV.setText(String.valueOf(followersCount));
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
