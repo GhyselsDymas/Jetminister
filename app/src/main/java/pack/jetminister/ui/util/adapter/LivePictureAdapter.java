@@ -72,7 +72,8 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull LivePictureAdapter.LivePictureHolder holder, int position) {
-        usersRef.child(mFilteredStreamerIDs.get(position)).addValueEventListener(new ValueEventListener() {
+        usersRef.child(mFilteredStreamerIDs.get(position))
+                .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);

@@ -52,11 +52,11 @@
                 app:layout_constraintTop_toTopOf="@+id/Textview_admin"
                 app:srcCompat="@drawable/ic_baseline_report_admin_24" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_more_info_user"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="25dp"
                 android:text="More info"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

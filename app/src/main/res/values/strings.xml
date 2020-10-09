@@ -103,9 +103,14 @@
     <string name="player_stream_error">Could not load stream, please try again</string>
     <string name="player_stream_error_message">Could not load stream, please try again or return to home</string>
     <string name="player_stream_error_oops">Oops!</string>
+    <string name="reports">Reports</string>
+    <string name="reports_logged">Logged</string>
+    <string name="reports_received">Received</string>
+    <string name="report_body">Report body</string>
     <string name="report_dialog_title">Report abuse</string>
     <string name="report_dialog_message">Please give adequate information</string>
     <string name="report_dialog_reasons">Write your reasons for reporting here</string>
+    <string name="report_confirmation">Your report has been logged and will be processed</string>
     <string name="streamer_profile_error_message">Could not find streamer\'s profile page</string>
     <string name="settings_dark_summary">Toggle between regular and dark mode</string>
     <string name="submit">Submit</string>

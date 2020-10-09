@@ -14,8 +14,9 @@ public class User implements Serializable {
     public static final String KEY_IMAGE_URL = "imageURL";
     public static final String KEY_FOLLOWERS = "followers";
     public static final String KEY_FOLLOWING = "following";
+    public static final String KEY_REPORTS_LOGGED = "reportsLogged";
+    public static final String KEY_REPORTS_RECEIVED = "reportsReceived";
     public static final String KEY_DESCRIPTION = "description";
-
 
     private String username, password, email;
     private String imageFilename = "";
@@ -23,11 +24,10 @@ public class User implements Serializable {
     private String description =  "Description of channel";
     private String theme = "Blank";
     private HashMap<String, Follow> followers, following;
+    private HashMap<String, Report> reportsLogged, reportsReceived;
     private boolean streamer = false;
     private String location = "eu_belgium";
     private String creditCard = "";
-    private Integer reportCount = 0;
-
 
     public User() {
     }
@@ -69,6 +69,14 @@ public class User implements Serializable {
         return following;
     }
 
+    public HashMap<String, Report> getReportsLogged() {
+        return reportsLogged;
+    }
+
+    public HashMap<String, Report> getReportsReceived() {
+        return reportsReceived;
+    }
+
     public boolean isStreamer() {
         return streamer;
     }
@@ -76,8 +84,6 @@ public class User implements Serializable {
     public String getLocation() { return location; }
 
     public String getCreditCard() { return creditCard; }
-
-    public Integer getReportCount() { return reportCount; }
 
 
 
@@ -113,6 +119,14 @@ public class User implements Serializable {
         this.following = following;
     }
 
+    public void setReportsLogged(HashMap<String, Report> reportsLogged) {
+        this.reportsLogged = reportsLogged;
+    }
+
+    public void setReportsReceived(HashMap<String, Report> reportsReceived) {
+        this.reportsReceived = reportsReceived;
+    }
+
     public void setStreamer(boolean streamer) {
         this.streamer = streamer;
     }
@@ -120,6 +134,4 @@ public class User implements Serializable {
     public void setLocation(String location) { this.location = location; }
 
     public void setCreditCard(String creditCard) { this.creditCard = creditCard; }
-
-    public void setReportCount(Integer reportCount) { this.reportCount = reportCount; }
 }

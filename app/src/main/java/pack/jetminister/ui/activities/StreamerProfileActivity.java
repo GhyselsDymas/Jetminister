@@ -65,7 +65,7 @@ public class StreamerProfileActivity extends AppCompatActivity {
         public void onClick(View view) {
             ReportDialog newReportDialogDialog = new ReportDialog();
             Bundle bundle = new Bundle();
-            bundle.putString(KEY_STREAMER, streamerID);
+            bundle.putString(KEY_USER_ID, streamerID);
             newReportDialogDialog.setArguments(bundle);
             newReportDialogDialog.show(getSupportFragmentManager(), KEY_REPORT);
         }

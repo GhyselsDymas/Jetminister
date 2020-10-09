@@ -1,6 +1,7 @@
 package pack.jetminister.ui.util.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,18 +23,20 @@ import java.util.List;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
+import pack.jetminister.ui.activities.MoreInfoAdmin;
 
 import static pack.jetminister.data.User.KEY_STREAMER;
 import static pack.jetminister.data.User.KEY_USERS;
+import static pack.jetminister.data.User.KEY_USER_ID;
 
 public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder> {
 
     private Context mContext;
-    private List<String> userIDs;
+    private List<String> mUserIDs;
 
     public AdminAdapter(Context context, List<String> IDs){
         mContext = context;
-        userIDs = IDs;
+        mUserIDs = IDs;
     }
 
     @NonNull
@@ -44,7 +48,7 @@ public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder>
 
     @Override
     public void onBindViewHolder(@NonNull AdminAdapter.AdminHolder holder, int position) {
-        String currentUserID = userIDs.get(position);
+        String currentUserID = mUserIDs.get(position);
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
         usersRef.child(currentUserID)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -84,18 +88,31 @@ public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder>
 
     @Override
     public int getItemCount() {
-        return userIDs.size();
+        return mUserIDs.size();
     }
 
     public class AdminHolder extends RecyclerView.ViewHolder {
 
         public TextView usernameAdmin;
         public SwitchCompat streamerSwitch;
+        public MaterialButton detailBtn;
 
         public AdminHolder(@NonNull View itemView) {
             super(itemView);
             usernameAdmin = itemView.findViewById(R.id.Textview_admin);
             streamerSwitch = itemView.findViewById(R.id.switch_streamer_admin_page);
+            detailBtn = itemView.findViewById(R.id.btn_more_info_user);
+
+            detailBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    String currentUserId = mUserIDs.get(position);
+                    Intent intent = new Intent(mContext, MoreInfoAdmin.class);
+                    intent.putExtra(KEY_USER_ID, currentUserId);
+                    mContext.startActivity(intent);
+                }
+            });
         }
     }
 
