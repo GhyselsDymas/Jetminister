@@ -73,6 +73,7 @@
     <string name="profile_followers_tv">followers</string>
     <string name="profile_following_tv">following</string>
     <string name="profile_description_tv">Channel description</string>
+    <string name="profile_streamer_error_not_registered">You must be logged in to follow a streamer!</string>
     <string name="register_cb_terms_conditions">I accept the Terms and Conditions</string>
     <string name="register_no_account_tv">No account yet?</string>
     <string name="see_more">See more</string>

@@ -30,6 +30,7 @@ import pack.jetminister.data.User;
 import pack.jetminister.ui.util.adapter.LiveThemeAdapter;
 import pack.jetminister.ui.util.adapter.SearchBarAdapter;
 
+import static pack.jetminister.data.User.KEY_FOLLOWERS;
 import static pack.jetminister.data.User.KEY_USERS;
 
 public class LiveFragment extends Fragment {

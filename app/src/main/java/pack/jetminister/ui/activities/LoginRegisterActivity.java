@@ -32,11 +32,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import pack.jetminister.R;
 import pack.jetminister.data.Follow;
 import pack.jetminister.data.User;
@@ -252,8 +247,6 @@ public class LoginRegisterActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        Follow adminFollowee = new Follow("OKqHEIdN4iblQiCIzyjD6hZfyiO2", "Hackermann");
-                        usersDatabaseRef.child(newUID).child(KEY_FOLLOWERS).push().setValue(adminFollowee);
                         Toast.makeText(LoginRegisterActivity.this, R.string.register_success, Toast.LENGTH_SHORT).show();
                     } else {
                         Log.d(TAG, task.getException().getMessage());

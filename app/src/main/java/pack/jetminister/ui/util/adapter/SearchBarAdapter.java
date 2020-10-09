@@ -20,8 +20,10 @@ import pack.jetminister.R;
 import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.User;
 import pack.jetminister.ui.activities.PlaybackActivity;
+import pack.jetminister.ui.activities.StreamerProfileActivity;
 
 import static java.text.Normalizer.Form.NFD;
+import static pack.jetminister.data.User.KEY_USERNAME;
 import static pack.jetminister.data.User.KEY_USER_ID;
 
 public class SearchBarAdapter extends RecyclerView.Adapter<SearchBarAdapter.SearchBarHolder> implements Filterable {
@@ -66,6 +68,30 @@ public class SearchBarAdapter extends RecyclerView.Adapter<SearchBarAdapter.Sear
         return  mFilteredStreamerUsernames.size();
     }
 
+    public class SearchBarHolder extends RecyclerView.ViewHolder {
+
+        public TextView usernameSearchBar, followersSearchBar;
+
+        public SearchBarHolder(@NonNull View itemView) {
+            super(itemView);
+
+            usernameSearchBar = itemView.findViewById(R.id.username_SearchBar);
+            followersSearchBar = itemView.findViewById(R.id.followerAmount_SearchBar);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    String currentStreamerID = mFilteredStreamerIDs.get(position);
+                    String currentUsername = mFilteredStreamerUsernames.get(position);
+                    Intent intent = new Intent(mContext , StreamerProfileActivity.class);
+                    intent.putExtra(KEY_USER_ID, currentStreamerID);
+                    intent.putExtra(KEY_USERNAME, currentUsername);
+                    mContext.startActivity(intent);
+                }
+            });
+        }
+    }
 
     @Override
     public Filter getFilter() {
@@ -100,29 +126,5 @@ public class SearchBarAdapter extends RecyclerView.Adapter<SearchBarAdapter.Sear
                 notifyDataSetChanged();
             }
         };
-    }
-
-    public class SearchBarHolder extends RecyclerView.ViewHolder {
-
-        public TextView usernameSearchBar, followersSearchBar;
-
-        public SearchBarHolder(@NonNull View itemView) {
-            super(itemView);
-
-            usernameSearchBar = itemView.findViewById(R.id.username_SearchBar);
-            followersSearchBar = itemView.findViewById(R.id.followerAmount_SearchBar);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int position = getAdapterPosition();
-                    String currentStreamerID = mFilteredStreamerIDs.get(position);
-                    String currentUsername = mFilteredStreamerUsernames.get(position);
-                    Intent intent = new Intent(mContext , PlaybackActivity.class);
-                    intent.putExtra(KEY_USER_ID, currentStreamerID);
-                    mContext.startActivity(intent);
-                }
-            });
-        }
     }
 }

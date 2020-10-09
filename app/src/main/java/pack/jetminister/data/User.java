@@ -22,7 +22,7 @@ public class User implements Serializable {
     private String imageURL = "";
     private String description =  "Description of channel";
     private String theme = "Blank";
-    private ArrayList<Follow> followers, following;
+    private HashMap<String, Follow> followers, following;
     private boolean streamer = false;
     private String location = "eu_belgium";
     private String creditCard = "";
@@ -61,11 +61,11 @@ public class User implements Serializable {
 
     public String getTheme() { return theme; }
 
-    public ArrayList<Follow>  getFollowers() {
+    public HashMap<String, Follow>   getFollowers() {
         return followers;
     }
 
-    public ArrayList<Follow>  getFollowing() {
+    public HashMap<String, Follow>   getFollowing() {
         return following;
     }
 
@@ -105,11 +105,11 @@ public class User implements Serializable {
 
     public void setTheme(String theme) { this.theme = theme; }
 
-    public void setFollowers(ArrayList<Follow>  followers) {
+    public void setFollowers(HashMap<String, Follow>   followers) {
         this.followers = followers;
     }
 
-    public void setFollowing(ArrayList<Follow>  following) {
+    public void setFollowing(HashMap<String, Follow>   following) {
         this.following = following;
     }
 

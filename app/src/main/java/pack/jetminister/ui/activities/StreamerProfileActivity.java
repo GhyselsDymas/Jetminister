@@ -8,9 +8,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -42,26 +44,29 @@ import static pack.jetminister.data.User.KEY_USER_ID;
 public class StreamerProfileActivity extends AppCompatActivity {
 
     private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
+    private static final String TAG = "StreamerProfileActivity";
+    private static final String TAG_UNFOLLOW = "unfollow";
+    private static final String TAG_FOLLOW = "follow";
+
 
     private TextView usernameTV, descriptionTV, followersTV, followingTV;
     private ImageView profileIV, reportIV, followUnfollowIV;
 
-    private boolean followed;
-    private List<Follow> mFollowerIDs;
-    private List<Follow> mFollowingIDs;
-    private FirebaseAuth  mAuth = FirebaseAuth.getInstance();
+
+    private List<Follow> mFollowers;
+    private List<Follow> mFollowings;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String currentUserId;
     private String streamerID;
+    private String streamerUsername;
 
     View.OnClickListener reportListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             ReportDialog newReportDialogDialog = new ReportDialog();
-
             Bundle bundle = new Bundle();
             bundle.putString(KEY_STREAMER, streamerID);
             newReportDialogDialog.setArguments(bundle);
-
             newReportDialogDialog.show(getSupportFragmentManager(), KEY_REPORT);
         }
     };
@@ -69,47 +74,19 @@ public class StreamerProfileActivity extends AppCompatActivity {
     View.OnClickListener followListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-                usersRef.child(currentUserId).child(KEY_USERNAME)
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.exists()) {
-                                    String currentUsername = snapshot.getValue(String.class);
-                                    if (!followed) {
-                                        Follow newFollower = new Follow(currentUserId, currentUsername);
-                                        usersRef.child(streamerID).child(KEY_FOLLOWERS).push().setValue(newFollower);
-                                        followed = true;
-                                    } else {
-                                        usersRef.child(streamerID).child(KEY_FOLLOWERS)
-                                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                                                    Follow deleteFollower = dataSnapshot.getValue(Follow.class);
-                                                    if (deleteFollower.getFollowID().equals(currentUserId)) {
-                                                        String key = dataSnapshot.getKey();
-                                                        usersRef.child(streamerID).child(KEY_FOLLOWERS).child(key).removeValue();
-                                                        followed = false;
-                                                    }
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-
-                                            }
-                                        });
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
+            if (String.valueOf(followUnfollowIV.getTag(R.drawable.ic_follow_24)).equals(TAG_UNFOLLOW)) {
+                deleteFollowerFromStreamer();
+                deleteFollowingFromCurrentUser();
+                followUnfollowIV.setImageResource(R.drawable.ic_follow_24);
+                followUnfollowIV.setTag(R.drawable.ic_follow_24, TAG_FOLLOW);
+            } else {
+                addFollowerToStreamer();
+                addFollowingToCurrentUser();
+                followUnfollowIV.setImageResource(R.drawable.ic_unfollow_24);
+                followUnfollowIV.setTag(R.drawable.ic_follow_24, TAG_UNFOLLOW);
             }
-        };
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,9 +98,12 @@ public class StreamerProfileActivity extends AppCompatActivity {
             toolbar.hide();
         }
 
-        if (mAuth.getCurrentUser() != null){
+        if (mAuth.getCurrentUser() != null) {
             currentUserId = mAuth.getCurrentUser().getUid();
         }
+
+        mFollowers = new ArrayList<>();
+        mFollowings = new ArrayList<>();
 
         followUnfollowIV = findViewById(R.id.iv_streamer_follow);
         usernameTV = findViewById(R.id.tv_streamer_profile_username);
@@ -137,6 +117,9 @@ public class StreamerProfileActivity extends AppCompatActivity {
         followUnfollowIV.setOnClickListener(followListener);
 
         getStreamerInfo();
+        followUnfollowIV.setImageResource(R.drawable.ic_follow_24);
+        followUnfollowIV.setTag(R.drawable.ic_follow_24, TAG_FOLLOW);
+        updateFollowUnfollowIV();
         updateUI();
     }
 
@@ -150,15 +133,51 @@ public class StreamerProfileActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             streamerID = intent.getStringExtra(KEY_USER_ID);
+            streamerUsername = intent.getStringExtra((KEY_USERNAME));
         }
     }
 
-    private void updateUI(){
+    private void updateFollowUnfollowIV() {
+        usersRef.child(streamerID)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.hasChild(KEY_FOLLOWERS)) {
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                Follow checkFollower = dataSnapshot.child(KEY_FOLLOWERS).getValue(Follow.class);
+                                if (checkFollower != null && checkFollower.getFollowID().equals(currentUserId)) {
+                                    followUnfollowIV.setImageResource(R.drawable.ic_follow_24);
+                                    followUnfollowIV.setTag(R.drawable.ic_follow_24, TAG_UNFOLLOW);
+                                    break;
+                                }
+                                followUnfollowIV.setImageResource(R.drawable.ic_follow_24);
+                                followUnfollowIV.setTag(R.drawable.ic_follow_24, TAG_FOLLOW);
+                            }
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
+    }
+
+    private void updateUI() {
         if (streamerID != null) {
+            updateFollowUnfollowIV();
             usersRef.child(streamerID).
                     addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (!snapshot.hasChild(KEY_FOLLOWERS)) {
+                                followersTV.setText("0");
+                            } else {
+                                updateFollowerCount();
+                            }
+                            if (!snapshot.hasChild(KEY_FOLLOWING)) {
+                                followingTV.setText("0");
+                            } else {
+                                updateFollowingCount();
+                            }
                             usernameTV.setText(snapshot.child(KEY_USERNAME).getValue().toString());
                             descriptionTV.setText(snapshot.child(KEY_DESCRIPTION).getValue().toString());
                             String imageURI = snapshot.child(KEY_IMAGE_URL).getValue().toString();
@@ -169,42 +188,45 @@ public class StreamerProfileActivity extends AppCompatActivity {
                                     .centerCrop()
                                     .into(profileIV);
                         }
-
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
 
                         }
                     });
-            getFollowers();
-            getFollowing();
-            showFollowUnfollowIV();
         } else {
             showStreamerProfileErrorDialog();
         }
     }
 
-    private void getFollowers(){
-        mFollowerIDs = new ArrayList<>();
-        usersRef.child(streamerID).child(KEY_FOLLOWERS).addChildEventListener(new ChildEventListener() {
+    private void updateFollowerCount() {
+        usersRef.child(streamerID).child(KEY_FOLLOWERS).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                mFollowerIDs.add(snapshot.getValue(Follow.class));
-                showFollowersCount();
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    int followersCount = 0;
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        followersCount++;
+                    }
+                    followersTV.setText(String.valueOf(followersCount));
+                }
             }
-
             @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+            public void onCancelled(@NonNull DatabaseError error) {
             }
+        });
+    }
 
+    private void updateFollowingCount() {
+        usersRef.child(streamerID).child(KEY_FOLLOWING).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                mFollowerIDs.remove(snapshot.getValue(Follow.class));
-                showFollowersCount();
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    int followingCount = 0;
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        followingCount++;
+                    }
+                    followingTV.setText(String.valueOf(followingCount));
+                }
             }
 
             @Override
@@ -213,74 +235,73 @@ public class StreamerProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void getFollowing(){
-        mFollowingIDs = new ArrayList<>();
-        usersRef.child(streamerID).child(KEY_FOLLOWING).addChildEventListener(new ChildEventListener() {
+    private void deleteFollowerFromStreamer() {
+        usersRef.child(streamerID).child(KEY_FOLLOWERS).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                mFollowingIDs.add(snapshot.getValue(Follow.class));
-                showFollowingCount();
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                showFollowingCount();
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                mFollowingIDs.remove(snapshot.getValue(Follow.class));
-                showFollowingCount();
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Follow deleteFollow = dataSnapshot.getValue(Follow.class);
+                    if (deleteFollow.getFollowID().equals(currentUserId)) {
+                        String followKey = dataSnapshot.getKey();
+                        usersRef.child(streamerID).child(KEY_FOLLOWERS).child(followKey).removeValue();
+                        break;
+                    }
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
-
     }
 
-    private void showFollowersCount(){
-        followersTV.setText(mFollowerIDs.size());
-    }
-
-    private void showFollowingCount(){
-        followingTV.setText(mFollowingIDs.size());
-    }
-
-    private void showFollowUnfollowIV(){
-        usersRef.child(streamerID).child(KEY_FOLLOWERS)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                            Follow deleteFollower = dataSnapshot.getValue(Follow.class);
-                            if (deleteFollower != null && deleteFollower.getFollowID().equals(currentUserId)) {
-                                followed = true;
-                                followUnfollowIV.setImageResource(R.drawable.ic_unfollow_24);
-                                return;
-                            }
-                            followed = false;
-                            followUnfollowIV.setImageResource(R.drawable.ic_follow_24);
-                        }
+    private void deleteFollowingFromCurrentUser() {
+        usersRef.child(currentUserId).child(KEY_FOLLOWING).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Follow deleteFollow = dataSnapshot.getValue(Follow.class);
+                    if (deleteFollow.getFollowID().equals(streamerID)) {
+                        String deleteFollowingKey = dataSnapshot.getKey();
+                        usersRef.child(currentUserId).child(KEY_FOLLOWING).child(deleteFollowingKey).removeValue();
+                        break;
                     }
+                }
+            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
     }
 
+    private void addFollowerToStreamer() {
+        usersRef.child(currentUserId).child(KEY_USERNAME).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String currentUsername = snapshot.getValue(String.class);
+                usersRef.child(streamerID).child(KEY_FOLLOWERS).push().setValue(new Follow(currentUserId, currentUsername));
+            }
 
-    private void showStreamerProfileErrorDialog(){
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+    private void addFollowingToCurrentUser() {
+        usersRef.child(currentUserId).child(KEY_FOLLOWING).push().setValue(new Follow(streamerID, streamerUsername));
+    }
+
+    private void showStreamerProfileErrorDialog() {
         StreamerProfileErrorDialog streamerPrifileErrorDialog = new StreamerProfileErrorDialog();
         streamerPrifileErrorDialog.show(getSupportFragmentManager(), "stream_error");
+    }
+
+    private void redirectToLogin() {
+        finish();
+        Intent intent = new Intent(this, LoginRegisterActivity.class);
+        startActivity(intent);
     }
 
     private void hideStatusBar() {

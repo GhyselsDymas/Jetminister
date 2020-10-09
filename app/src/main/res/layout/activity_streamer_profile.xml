@@ -107,7 +107,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="@color/textPrimaryDark"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_streamer_profile_following" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_streamer_profile_followers" />
 
     <TextView
         android:id="@+id/tv_streamer_profile_description"
@@ -127,6 +127,8 @@
         android:id="@+id/iv_streamer_follow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
         android:src="@drawable/ic_follow_24"
         app:layout_constraintEnd_toEndOf="@+id/tv_streamer_profile_username"
         app:layout_constraintTop_toTopOf="@+id/tv_streamer_profile_username" />

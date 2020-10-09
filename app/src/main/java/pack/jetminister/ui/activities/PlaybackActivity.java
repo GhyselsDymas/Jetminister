@@ -312,8 +312,11 @@ public class PlaybackActivity extends AppCompatActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        int amountViewers = snapshot.getValue(Integer.class);
-                        amountViewers++;
+                        int amountViewers = 1;
+                        if (snapshot.exists()){
+                            amountViewers = snapshot.getValue(Integer.class);
+                            amountViewers++;
+                        }
                         streamViewersTV.setText(String.valueOf(amountViewers));
                         streamersRef.child(streamerUID).child(KEY_STREAM_VIEWERS).setValue(amountViewers);
                     }
@@ -356,14 +359,16 @@ public class PlaybackActivity extends AppCompatActivity {
     }
 
     private void showAmountLikes() {
+        streamLikes = 0;
         streamersRef.child(streamerUID).child(KEY_STREAM_LIKES)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        streamLikes = snapshot.getValue(Integer.class);
+                        if (snapshot.exists()) {
+                            streamLikes = snapshot.getValue(Integer.class);
+                        }
                         streamLikesTV.setText(String.valueOf(streamLikes));
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                     }
@@ -406,6 +411,7 @@ public class PlaybackActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.player_comment_error_not_registered, Toast.LENGTH_SHORT).show();
         }
     }
+
     private EventListener<CanPlayEvent> readyToPlayListener = new EventListener<CanPlayEvent>() {
         @Override
         public void handleEvent(CanPlayEvent canPlayEvent) {
@@ -414,7 +420,6 @@ public class PlaybackActivity extends AppCompatActivity {
             playPauseIV.setVisibility(View.VISIBLE);
         }
     };
-
 
     private EventListener<PlayEvent> playEventListener = new EventListener<PlayEvent>() {
         @Override

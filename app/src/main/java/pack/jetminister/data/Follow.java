@@ -4,6 +4,9 @@ public class Follow {
     private String followID;
     private String followUsername;
 
+    public Follow() {
+    }
+
     public Follow(String followID, String followUsername) {
         this.followID = followID;
         this.followUsername = followUsername;

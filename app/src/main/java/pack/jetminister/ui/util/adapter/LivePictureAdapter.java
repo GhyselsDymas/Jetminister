@@ -32,6 +32,7 @@ import static java.text.Normalizer.Form.NFD;
 import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_USERNAME;
+import static pack.jetminister.data.User.KEY_FOLLOWERS;
 import static pack.jetminister.data.User.KEY_IMAGE_URL;
 import static pack.jetminister.data.User.KEY_USERNAME;
 import static pack.jetminister.data.User.KEY_USERS;
@@ -71,14 +72,14 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull LivePictureAdapter.LivePictureHolder holder, int position) {
-
         usersRef.child(mFilteredStreamerIDs.get(position)).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
-                String currentImageURL = snapshot.child(KEY_IMAGE_URL).getValue(String.class);
                 holder.usernameLive.setText(currentUsername);
-                holder.followersLive.setText("0");
+                long followers = snapshot.child(KEY_FOLLOWERS).getChildrenCount();
+                holder.followersLive.setText(String.valueOf(followers));
+                String currentImageURL = snapshot.child(KEY_IMAGE_URL).getValue(String.class);
                 if (currentImageURL.isEmpty()) {
                     holder.imageLive.setImageResource(R.drawable.ic_launcher_background);
                 } else {

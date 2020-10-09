@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,13 +28,18 @@ import pack.jetminister.R;
 import pack.jetminister.data.User;
 import pack.jetminister.ui.util.adapter.Top100Adapter;
 
+import static pack.jetminister.data.User.KEY_USERS;
+
 
 public class Top100Fragment extends Fragment {
 
-
+    private static final String TAG = "Top100Fragment";
     private RecyclerView mRecyclerVew;
     private Top100Adapter mAdapter;
-    private List<User> mUsers;
+    private List<String> mAllStreamerIDs;
+    private List<String> mFilteredStreamerIDs;
+    private List<String> mStreamerUsernames;
+    private List<String> mFilteredStreamerUsernames;
     private AppCompatActivity mContext;
 
     public Top100Fragment() {
@@ -54,17 +60,32 @@ public class Top100Fragment extends Fragment {
         mRecyclerVew.setHasFixedSize(true);
         mRecyclerVew.setLayoutManager(new LinearLayoutManager(mContext));
 
-        mUsers = new ArrayList<>();
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        mAllStreamerIDs = new ArrayList<>();
+        mFilteredStreamerIDs = new ArrayList<>();
+        mStreamerUsernames = new ArrayList<>();
+        mFilteredStreamerUsernames = new ArrayList<>();
+
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
 
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                mAllStreamerIDs.clear();
+                mFilteredStreamerIDs.clear();
+                mStreamerUsernames.clear();
+                mFilteredStreamerUsernames.clear();
                 for (DataSnapshot postSnapshot : snapshot.getChildren()){
                     User user = postSnapshot.getValue(User.class);
-                    mUsers.add(user);
+                    String userID = postSnapshot.getKey();
+                    String username = user.getUsername();
+                    Log.d(TAG, "onDataChange: " + userID + " is " + username);
+                    mAllStreamerIDs.add(userID);
+                    mFilteredStreamerIDs.add(userID);
+                    mStreamerUsernames.add(username);
+                    mFilteredStreamerUsernames.add(username);
+
                 }
-                mAdapter = new Top100Adapter(mContext, mUsers);
+                mAdapter = new Top100Adapter(mContext, mAllStreamerIDs, mFilteredStreamerIDs, mStreamerUsernames, mFilteredStreamerUsernames);
                 mRecyclerVew.setAdapter(mAdapter);
             }
 
