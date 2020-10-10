@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activities.MoreInfoAdmin">
+    tools:context=".ui.activities.AdminDetailActivity">
 
     <TextView
         android:id="@+id/detail_tv_username"
@@ -109,6 +109,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+        android:drawableEnd="@drawable/ic_switch_24"
+        android:drawablePadding="10dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="10dp"
         android:text="@string/reports"
         android:textOff="@string/reports_received"
         android:textOn="@string/reports_logged"

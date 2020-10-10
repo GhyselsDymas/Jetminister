@@ -5,20 +5,26 @@ public class Report {
     public static final String KEY_REASON = "reason";
     public static final String KEY_REPORT_BODY = "reportBody";
 
-    private String reporterId;
+    private String loggerID;
+    private String subjectID;
     private String reason;
     private String reportBody;
 
     public Report() { }
 
-    public Report(String reporterId, String reason, String reportBody) {
-        this.reporterId = reporterId;
+    public Report(String loggerID, String subjectID, String reason, String reportBody) {
+        this.loggerID = loggerID;
+        this.subjectID = subjectID;
         this.reason = reason;
         this.reportBody = reportBody;
     }
 
-    public String getReporterId() {
-        return reporterId;
+    public String getLoggerID() {
+        return loggerID;
+    }
+
+    public String getSubjectID() {
+        return subjectID;
     }
 
     public String getReason() {return reason;}
@@ -28,8 +34,12 @@ public class Report {
     }
 
 
-    public void setReporterId(String reporterId) {
-        this.reporterId = reporterId;
+    public void setLoggerID(String loggerID) {
+        this.loggerID = loggerID;
+    }
+
+    public void setSubjectID(String subjectID) {
+        this.subjectID = subjectID;
     }
 
     public String getReportBody() {

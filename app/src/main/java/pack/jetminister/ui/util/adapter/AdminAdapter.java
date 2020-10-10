@@ -23,7 +23,7 @@ import java.util.List;
 
 import pack.jetminister.R;
 import pack.jetminister.data.User;
-import pack.jetminister.ui.activities.MoreInfoAdmin;
+import pack.jetminister.ui.activities.AdminDetailActivity;
 
 import static pack.jetminister.data.User.KEY_STREAMER;
 import static pack.jetminister.data.User.KEY_USERS;
@@ -108,7 +108,7 @@ public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder>
                 public void onClick(View v) {
                     int position = getAdapterPosition();
                     String currentUserId = mUserIDs.get(position);
-                    Intent intent = new Intent(mContext, MoreInfoAdmin.class);
+                    Intent intent = new Intent(mContext, AdminDetailActivity.class);
                     intent.putExtra(KEY_USER_ID, currentUserId);
                     mContext.startActivity(intent);
                 }

@@ -27,6 +27,7 @@ import pack.jetminister.data.Report;
 import static pack.jetminister.data.User.KEY_REPORTS_LOGGED;
 import static pack.jetminister.data.User.KEY_REPORTS_RECEIVED;
 import static pack.jetminister.data.User.KEY_STREAMER;
+import static pack.jetminister.data.User.KEY_STREAMER_ID;
 import static pack.jetminister.data.User.KEY_USERS;
 import static pack.jetminister.data.User.KEY_USER_ID;
 
@@ -51,7 +52,7 @@ public class ReportDialog extends androidx.fragment.app.DialogFragment {
         final String currentUserID = currentUser.getUid();
         Bundle data = getArguments();
         if (data != null) {
-            String streamerID = data.getString(KEY_USER_ID);
+            String streamerID = data.getString(KEY_STREAMER_ID);
 
             builder.setTitle(R.string.report_dialog_title);
             builder.setMessage(R.string.report_dialog_message);
@@ -80,7 +81,7 @@ public class ReportDialog extends androidx.fragment.app.DialogFragment {
                 public void onClick(DialogInterface dialogInterface, int i) {
                     String reportReason = String.valueOf(reportSpinner.getSelectedItem());
                     String reportBody = reportReasonsET.getText().toString();
-                    Report newReport = new Report(currentUserID, reportReason, reportBody);
+                    Report newReport = new Report(currentUserID, streamerID, reportReason, reportBody);
                     usersRef.child(streamerID).child(KEY_REPORTS_RECEIVED).push().setValue(newReport)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override

@@ -74,6 +74,7 @@
     <string name="profile_followers_tv">followers</string>
     <string name="profile_following_tv">following</string>
     <string name="profile_description_tv">Channel description</string>
+    <string name="profile_description_empty">This channel has no description yet.</string>
     <string name="profile_streamer_error_not_registered">You must be logged in to follow a streamer!</string>
     <string name="register_cb_terms_conditions">I accept the Terms and Conditions</string>
     <string name="register_no_account_tv">No account yet?</string>
@@ -88,8 +89,6 @@
     <string name="permission_dialog_message">"Both camera and audio permissions are needed for broadcasting</string>
     <string name="broadcast_permission_notification">You need to grant permissions in order to begin streaming</string>
     <string name="title_activity_fullscreen">FullscreenActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="profile_btn_start_broadcast">Start broadcast</string>
     <string name="prof_iv_edit_description">Edit description of channel</string>
     <string name="title_activity_ask_to_stream">AskToStreamActivity</string>
@@ -111,7 +110,11 @@
     <string name="report_dialog_message">Please give adequate information</string>
     <string name="report_dialog_reasons">Write your reasons for reporting here</string>
     <string name="report_confirmation">Your report has been logged and will be processed</string>
+    <string name="admin_detail_report_reason">Reason</string>
+    <string name="admin_detail_report_subject">Subject</string>
+    <string name="admin_detail_report_logger">Logged by:</string>
     <string name="streamer_profile_error_message">Could not find streamer\'s profile page</string>
     <string name="settings_dark_summary">Toggle between regular and dark mode</string>
     <string name="submit">Submit</string>
+    <string name="request_stream_email_client">Choose your email client</string>
 </resources>

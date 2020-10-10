@@ -1,7 +1,6 @@
 package pack.jetminister.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -9,8 +8,9 @@ public class User implements Serializable {
     public static final String KEY_USER_ID = "userID";
     public static final String KEY_USERS = "users";
     public static final String KEY_USERNAME = "username";
+    public static final String KEY_STREAMER_ID = "streamerID";
     public static final String KEY_STREAMER = "streamer";
-    public static final String KEY_LOCATION = "location";
+    public static final String KEY_LOCATION = "serverLocation";
     public static final String KEY_IMAGE_URL = "imageURL";
     public static final String KEY_FOLLOWERS = "followers";
     public static final String KEY_FOLLOWING = "following";
@@ -19,14 +19,14 @@ public class User implements Serializable {
     public static final String KEY_DESCRIPTION = "description";
 
     private String username, password, email;
-    private String imageFilename = "";
-    private String imageURL = "";
-    private String description =  "Description of channel";
-    private String theme = "Blank";
+    private String imageFilename;
+    private String imageURL;
+    private String description;
+    private String theme;
     private HashMap<String, Follow> followers, following;
     private HashMap<String, Report> reportsLogged, reportsReceived;
-    private boolean streamer = false;
-    private String location = "eu_belgium";
+    private boolean streamer;
+    private String serverLocation;
     private String creditCard = "";
 
     public User() {
@@ -35,6 +35,17 @@ public class User implements Serializable {
     public User(String email, String password) {
         this.email = email;
         this.password = password;
+        this.imageFilename = "";
+        this.imageURL = "";
+        this.description = "";
+        this.theme = "";
+        this.followers = new HashMap<>();
+        this.following = new HashMap<>();
+        this.reportsLogged = new HashMap<>();
+        this.reportsReceived = new HashMap<>();
+        this.streamer = false;
+        this.serverLocation = "eu_belgium";
+        this.creditCard = "";
     }
 
     public String getUsername() {
@@ -81,7 +92,7 @@ public class User implements Serializable {
         return streamer;
     }
 
-    public String getLocation() { return location; }
+    public String getServerLocation() { return serverLocation; }
 
     public String getCreditCard() { return creditCard; }
 
@@ -131,7 +142,7 @@ public class User implements Serializable {
         this.streamer = streamer;
     }
 
-    public void setLocation(String location) { this.location = location; }
+    public void setServerLocation(String serverLocation) { this.serverLocation = serverLocation; }
 
     public void setCreditCard(String creditCard) { this.creditCard = creditCard; }
 }

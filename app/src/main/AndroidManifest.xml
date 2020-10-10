@@ -19,7 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_einsteintv_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activities.MoreInfoAdmin"></activity>
+        <activity android:name=".ui.activities.AdminDetailActivity"></activity>
         <activity
             android:name=".ui.activities.SplashScreenActivity"
             android:noHistory="true"
@@ -35,7 +35,7 @@
             android:name=".ui.activities.MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activities.AskToStreamActivity"
+            android:name=".ui.activities.RequestStreamActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.BroadcastActivity"

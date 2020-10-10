@@ -37,6 +37,7 @@ import static pack.jetminister.data.User.KEY_FOLLOWERS;
 import static pack.jetminister.data.User.KEY_FOLLOWING;
 import static pack.jetminister.data.User.KEY_IMAGE_URL;
 import static pack.jetminister.data.User.KEY_STREAMER;
+import static pack.jetminister.data.User.KEY_STREAMER_ID;
 import static pack.jetminister.data.User.KEY_USERNAME;
 import static pack.jetminister.data.User.KEY_USERS;
 import static pack.jetminister.data.User.KEY_USER_ID;
@@ -65,7 +66,8 @@ public class StreamerProfileActivity extends AppCompatActivity {
         public void onClick(View view) {
             ReportDialog newReportDialogDialog = new ReportDialog();
             Bundle bundle = new Bundle();
-            bundle.putString(KEY_USER_ID, streamerID);
+            bundle.putString(KEY_USER_ID, currentUserId);
+            bundle.putString(KEY_STREAMER_ID, streamerID);
             newReportDialogDialog.setArguments(bundle);
             newReportDialogDialog.show(getSupportFragmentManager(), KEY_REPORT);
         }

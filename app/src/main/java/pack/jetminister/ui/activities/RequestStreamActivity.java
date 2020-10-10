@@ -26,9 +26,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import pack.jetminister.R;
+import pack.jetminister.data.User;
 import pack.jetminister.data.util.BroadcastLocation;
 
-public class AskToStreamActivity extends AppCompatActivity {
+import static pack.jetminister.data.User.KEY_LOCATION;
+import static pack.jetminister.data.User.KEY_USERS;
+
+public class RequestStreamActivity extends AppCompatActivity {
 
     private TextInputLayout nameTIL , familyNameTIL , contentTIL , aboutYourselfTIL , moreTIL;
     private Button confirmButton;
@@ -37,9 +41,9 @@ public class AskToStreamActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
-    private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+    private DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
 
-    private final String[] REQUEST_EMAIL = {"ghyselsdymas@gmail.com"};
+    private final String[] REQUEST_EMAIL = {"info@jetminister.com"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +82,7 @@ public class AskToStreamActivity extends AppCompatActivity {
                 Integer location = spinnerServerLocation.getSelectedItemPosition();
 
                 List<String> myArrayList = Arrays.asList(getResources().getStringArray(R.array.locationServer));
-                usersRef.child(currentUser.getUid()).child("location").setValue(myArrayList.get(location));
+                usersRef.child(currentUser.getUid()).child(KEY_LOCATION).setValue(myArrayList.get(location));
 
                 sendMail();
             }
@@ -95,8 +99,8 @@ public class AskToStreamActivity extends AppCompatActivity {
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
         emailIntent.setData(Uri.parse("mailto:"));
         emailIntent.putExtra(Intent.EXTRA_EMAIL, REQUEST_EMAIL);
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Reqeust to become streamer by " + nameTIL.getEditText().getText().toString() + " " + familyNameTIL.getEditText().getText().toString());
-        emailIntent.putExtra(Intent.EXTRA_TEXT, "What type of content will you share with the viewers from your stream? \n\n\b\b"
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Streamer request by " + nameTIL.getEditText().getText().toString() + " " + familyNameTIL.getEditText().getText().toString());
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "What type of content will you share with your viewers? \n\n\b\b"
             + contentTIL.getEditText().getText().toString() +
                 "\n\n\nWhat is the target audience of your stream? \n\n\b\b" +
                 spinnerAudience.getSelectedItem().toString() +
@@ -107,7 +111,7 @@ public class AskToStreamActivity extends AppCompatActivity {
         );
 
         if (emailIntent.resolveActivity(this.getPackageManager()) != null) {
-            startActivity(Intent.createChooser(emailIntent, "Choose your email application you want to use"));
+            startActivity(Intent.createChooser(emailIntent, getResources().getString(R.string.request_stream_email_client)));
         }
     }
 
