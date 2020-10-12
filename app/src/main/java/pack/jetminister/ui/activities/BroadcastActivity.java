@@ -152,7 +152,7 @@ public class BroadcastActivity
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_live_broadcast);
+        setContentView(R.layout.activity_broadcast);
         ActionBar toolbar = getSupportActionBar();
         if (toolbar != null) {
             toolbar.hide();

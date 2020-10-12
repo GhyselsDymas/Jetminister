@@ -3,6 +3,7 @@ package pack.jetminister.ui.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,7 +43,7 @@ public class AdminDetailActivity extends AppCompatActivity {
     private List<Report> mReports;
 
     private TextView usernameTV, descriptionTV, followersTV, followingTV;
-    private ToggleButton reportsBtn;
+    private AppCompatToggleButton reportsBtn;
     private RecyclerView reportsRecyclerView;
     private ReportAdapter reportAdapter;
 
@@ -87,7 +88,7 @@ public class AdminDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_more_info_admin);
+        setContentView(R.layout.activity_admin_detail);
 
         usernameTV = findViewById(R.id.detail_tv_username);
         descriptionTV = findViewById(R.id.detail_tv_description);

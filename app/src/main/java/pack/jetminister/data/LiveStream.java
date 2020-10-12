@@ -3,6 +3,7 @@ package pack.jetminister.data;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import pack.jetminister.data.util.DirectPlaybackURL;
 import pack.jetminister.data.util.SourceConnectionInformation;
@@ -96,6 +97,7 @@ public class LiveStream {
     private boolean hostedPageLogoImageURL;
     @SerializedName("billing_mode")
     private String billingMode;
+    private HashMap<String, Comment> comments;
     private int likes;
     private int viewers;
 
@@ -289,6 +291,9 @@ public class LiveStream {
         this.viewers = viewers;
     }
 
+    public void setComments(HashMap<String, Comment> comments) {
+        this.comments = comments;
+    }
 
     public String getStreamId() {
         return streamId;
@@ -456,5 +461,9 @@ public class LiveStream {
 
     public int getViewers() {
         return viewers;
+    }
+
+    public HashMap<String, Comment> getComments() {
+        return comments;
     }
 }

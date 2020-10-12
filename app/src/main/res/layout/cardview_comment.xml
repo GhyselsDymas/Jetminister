@@ -14,7 +14,7 @@
         android:background="#4D000000">
 
         <TextView
-            android:id="@+id/username_comment_tv"
+            android:id="@+id/comment_tv_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
@@ -24,13 +24,13 @@
             android:paddingEnd="5dp"
             android:textColor="@color/windowBackground"
             android:textColorHighlight="@color/colorPrimaryVariant"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Username :" />
 
         <TextView
-            android:id="@+id/comment_comment_tv"
+            android:id="@+id/comment_tv_body"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
@@ -38,9 +38,9 @@
             android:layout_marginEnd="5dp"
             android:elegantTextHeight="true"
             android:textColor="@color/textOnPrimary"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/username_comment_tv"
+            app:layout_constraintStart_toEndOf="@+id/comment_tv_username"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="A very awesome comment!" />
     </androidx.constraintlayout.widget.ConstraintLayout>

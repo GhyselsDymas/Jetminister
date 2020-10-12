@@ -15,23 +15,24 @@
         android:layout_marginEnd="20dp"
         android:clickable="true"
         android:focusable="true"
-        android:text="Username"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Username" />
 
     <TextView
         android:id="@+id/detail_tv_description"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="5dp"
-        android:layout_marginEnd="20dp"
         android:clickable="true"
         android:focusable="true"
-        android:text="Read description"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:text="@string/profile_description_tv"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detail_tv_username" />
 
@@ -40,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:text="@string/profile_followers_tv"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detail_tv_description" />
@@ -60,12 +61,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
-        android:text="100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView6"
-        app:layout_constraintTop_toBottomOf="@+id/detail_tv_description" />
+        app:layout_constraintTop_toBottomOf="@+id/detail_tv_description"
+        tools:text="100" />
 
     <TextView
         android:id="@+id/detail_tv_following"
@@ -74,10 +75,10 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="20dp"
-        android:text="100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView8"
-        app:layout_constraintTop_toBottomOf="@+id/detail_tv_followers" />
+        app:layout_constraintTop_toBottomOf="@+id/detail_tv_followers"
+        tools:text="72" />
 
     <TextView
         android:id="@+id/textView12"
@@ -85,10 +86,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:text="Reports"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+        app:layout_constraintTop_toBottomOf="@+id/textView8"
+        tools:text="Reports" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/detail_rv_reports"
@@ -104,7 +105,7 @@
         app:layout_constraintTop_toBottomOf="@+id/detail_btn_reports"
         tools:listitem="@layout/cardview_admin_reports" />
 
-    <ToggleButton
+    <androidx.appcompat.widget.AppCompatToggleButton
         android:id="@+id/detail_btn_reports"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

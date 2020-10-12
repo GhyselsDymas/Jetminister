@@ -3,6 +3,7 @@ package pack.jetminister.ui.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,13 +14,14 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -57,7 +59,6 @@ import pack.jetminister.ui.util.adapter.CommentAdapter;
 import static pack.jetminister.data.Comment.KEY_COMMENTS;
 import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_LIKES;
-import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_USERNAME;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_VIEWERS;
 import static pack.jetminister.data.User.KEY_USERNAME;
@@ -76,8 +77,9 @@ public class PlaybackActivity extends AppCompatActivity {
     private TextView streamUsernameTV, streamLikesTV, streamViewersTV, playbackStateTV;
     private ProgressBar playbackProgressBar;
     private ImageView streamLiveIV, streamProfileIV, streamLikeIV, streamShareIV, playPauseIV, submitCommentIV;
+    private AppCompatToggleButton showCommentsToggleBtn;
     private THEOplayerView playerView;
-    private EditText postCommentET;
+    private TextInputLayout postCommentTIL;
     private RecyclerView recyclerViewComment;
 
     private boolean streamLiked;
@@ -122,6 +124,19 @@ public class PlaybackActivity extends AppCompatActivity {
         }
     };
 
+    private CompoundButton.OnCheckedChangeListener showCommentsListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (isChecked) {
+                showComments();
+                Log.d(TAG, "onCheckedChanged: COMMENTS DISPLAY ON");
+            } else {
+                hideComments();
+                Log.d(TAG, "onCheckedChanged: COMMENTS DISPLAY OFF");
+            }
+        }
+    };
+
     private View.OnClickListener streamProfileListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -132,12 +147,12 @@ public class PlaybackActivity extends AppCompatActivity {
     private View.OnClickListener submitCommentListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!postCommentET.getText().toString().trim().isEmpty()) {
-                String commentBody = postCommentET.getText().toString().trim();
+            if (!postCommentTIL.getEditText().getText().toString().trim().isEmpty()) {
+                String commentBody = postCommentTIL.getEditText().getText().toString().trim();
                 addCommentToStream(commentBody);
-                postCommentET.getText().clear();
+                postCommentTIL.getEditText().getText().clear();
                 hideKeyboard();
-                postCommentET.clearFocus();
+                postCommentTIL.clearFocus();
             }
         }
     };
@@ -146,7 +161,7 @@ public class PlaybackActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_live_player);
+        setContentView(R.layout.activity_playback);
         ActionBar toolbar = getSupportActionBar();
         if (toolbar != null) {
             toolbar.hide();
@@ -163,8 +178,13 @@ public class PlaybackActivity extends AppCompatActivity {
         playPauseIV = findViewById(R.id.player_iv_play_pause);
         playerView = findViewById(R.id.player_theo_view);
         playbackProgressBar = findViewById(R.id.player_progress_bar);
-        postCommentET = findViewById(R.id.player_et_comment);
-        submitCommentIV = findViewById(R.id.player_iv_comment_submit);
+        postCommentTIL = findViewById(R.id.player_til_comment);
+        showCommentsToggleBtn = findViewById(R.id.player_toggle_comments);
+
+        recyclerViewComment = findViewById(R.id.player_recyclerview_comments);
+        recyclerViewComment.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, true);
+        recyclerViewComment.setLayoutManager(linearLayoutManager);
 
         playerView.setOnClickListener(playPauseBtnListener);
         streamLiked = false;
@@ -173,16 +193,16 @@ public class PlaybackActivity extends AppCompatActivity {
         streamLikesTV.setText(String.valueOf(streamLikes));
         streamUsernameTV.setText(streamUsername);
         streamLikeIV.setOnClickListener(likeListener);
-        submitCommentIV.setOnClickListener(submitCommentListener);
+        postCommentTIL.setEndIconOnClickListener(submitCommentListener);
+        showCommentsToggleBtn.setOnCheckedChangeListener(showCommentsListener);
         streamProfileIV.setOnClickListener(streamProfileListener);
         KeyboardVisibilityEvent.setEventListener(this, keyboardVisibilityListener);
-
 
         getStreamerInfo();
         showAmountLikes();
         addCurrentViewer();
         showAmountViewers();
-
+        hideComments();
 
         TypedSource typedSource = TypedSource.Builder
                 .typedSource()
@@ -202,14 +222,8 @@ public class PlaybackActivity extends AppCompatActivity {
         player.addEventListener(PlayerEventTypes.PLAYING, streamPlayingListener);
 
 
-        recyclerViewComment = findViewById(R.id.player_recyclerview_comments);
-        recyclerViewComment.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, true);
-        recyclerViewComment.setLayoutManager(linearLayoutManager);
-
         mComments = new ArrayList<>();
         DatabaseReference streamersDatabaseRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS).child(streamerUID).child(KEY_COMMENTS);
-
         streamersDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -230,16 +244,23 @@ public class PlaybackActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        playerView.onPause();
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         hideStatusBar();
         playerView.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        removeCurrentViewer();
+        playerView.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        removeCurrentViewer();
     }
 
     @Override
@@ -289,6 +310,14 @@ public class PlaybackActivity extends AppCompatActivity {
         }
     }
 
+    private void hideComments() {
+        recyclerViewComment.setVisibility(View.GONE);
+    }
+
+    private void showComments() {
+        recyclerViewComment.setVisibility(View.VISIBLE);
+    }
+
     private void hideStatusBar() {
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
@@ -312,13 +341,17 @@ public class PlaybackActivity extends AppCompatActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        int amountViewers = 1;
-                        if (snapshot.exists()){
-                            amountViewers = snapshot.getValue(Integer.class);
+                        if (snapshot.exists()) {
+                            int amountViewers = snapshot.getValue(Integer.class);
                             amountViewers++;
+                            int finalAmountViewers = amountViewers;
+                            streamersRef.child(streamerUID).child(KEY_STREAM_VIEWERS).setValue(amountViewers).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    streamViewersTV.setText(String.valueOf(finalAmountViewers));
+                                }
+                            });
                         }
-                        streamViewersTV.setText(String.valueOf(amountViewers));
-                        streamersRef.child(streamerUID).child(KEY_STREAM_VIEWERS).setValue(amountViewers);
                     }
 
                     @Override
@@ -369,6 +402,7 @@ public class PlaybackActivity extends AppCompatActivity {
                         }
                         streamLikesTV.setText(String.valueOf(streamLikes));
                     }
+
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                     }
@@ -390,7 +424,6 @@ public class PlaybackActivity extends AppCompatActivity {
     }
 
     private void addCommentToStream(String commentBody) {
-        long commentID = System.currentTimeMillis();
         if (currentUser != null) {
             usersRef.child(currentUser.getUid()).child(KEY_USERNAME)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -398,7 +431,7 @@ public class PlaybackActivity extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             String username = snapshot.getValue(String.class);
                             Comment newComment = new Comment(currentUser.getUid(), username, commentBody);
-                            streamersRef.child(streamerUID).child(KEY_COMMENTS).child(String.valueOf(commentID)).setValue(newComment);
+                            streamersRef.child(streamerUID).child(KEY_COMMENTS).push().setValue(newComment);
                             Log.d(TAG, "new comment: " + newComment.toString());
                         }
 
@@ -449,6 +482,7 @@ public class PlaybackActivity extends AppCompatActivity {
     private EventListener<ErrorEvent> streamErrorListener = new EventListener<ErrorEvent>() {
         @Override
         public void handleEvent(ErrorEvent errorEvent) {
+            removeCurrentViewer();
             showStreamErrorDialog();
         }
     };
@@ -458,6 +492,7 @@ public class PlaybackActivity extends AppCompatActivity {
         public void handleEvent(EndedEvent endedEvent) {
             playbackProgressBar.setVisibility(View.GONE);
             streamLiveIV.setVisibility(View.INVISIBLE);
+            removeCurrentViewer();
             showStreamEndedDialog();
         }
     };
@@ -470,7 +505,7 @@ public class PlaybackActivity extends AppCompatActivity {
         streamEndedDialog.show(getSupportFragmentManager(), "stream_ended");
     }
 
-    private void showStreamErrorDialog(){
+    private void showStreamErrorDialog() {
         StreamErrorDialog streamErrorDialog = new StreamErrorDialog();
         streamErrorDialog.show(getSupportFragmentManager(), "stream_error");
     }

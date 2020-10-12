@@ -164,7 +164,7 @@
         android:layout_height="50dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/player_et_comment"
+        app:layout_constraintBottom_toTopOf="@+id/player_til_comment"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_share_white_24" />
 
@@ -190,35 +190,61 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_live_record_24" />
 
-    <EditText
-        android:id="@+id/player_et_comment"
+<!--    <ImageView-->
+<!--        android:id="@+id/player_iv_comment_submit"-->
+<!--        android:layout_width="35dp"-->
+<!--        android:layout_height="35dp"-->
+<!--        android:layout_marginEnd="10dp"-->
+<!--        android:layout_marginBottom="40dp"-->
+<!--        android:clickable="true"-->
+<!--        android:focusable="true"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:srcCompat="@drawable/ic_submit_24" />-->
+
+    <androidx.appcompat.widget.AppCompatToggleButton
+        android:id="@+id/player_toggle_comments"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/toggle_comment"
+        android:checked="false"
+        android:textOff=""
+        android:textOn=""
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_submit_24" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/player_til_comment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="20dp"
-        android:ems="10"
-        android:hint="@string/player_comment_hint"
-        android:imeOptions="actionDone|actionGo|actionSend"
-        android:inputType="text"
-        android:textColor="#E6FFFFFF"
-        android:textColorHint="#B3FFFFFF"
-        app:backgroundTint="#FFFFFF"
+        android:layout_marginBottom="10dp"
+        android:background="@color/transparentBlack"
+        android:textColorHint="@color/textOnPrimary"
+        app:boxBackgroundColor="@color/transparentBlack"
+        app:boxStrokeColor="@color/colorPrimaryVariant"
+        app:counterEnabled="true"
+        app:counterMaxLength="150"
+        app:endIconDrawable="@drawable/ic_submit_24"
+        app:endIconMode="custom"
+        app:endIconTint="#FFFFFF"
+        app:hintTextColor="@color/colorPrimaryVariant"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/player_iv_comment_submit"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/player_toggle_comments"
+        app:layout_constraintStart_toStartOf="parent">
 
-    <ImageView
-        android:id="@+id/player_iv_comment_submit"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="20dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_submit_24" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/transparentBlack"
+            android:hint="@string/player_comment_hint"
+            android:textColor="@color/textOnPrimary"
+            android:textColorHint="@color/textOnPrimary" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/player_recyclerview_comments"
@@ -228,7 +254,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/player_et_comment"
+        app:layout_constraintBottom_toTopOf="@+id/player_til_comment"
         app:layout_constraintEnd_toStartOf="@+id/player_iv_like"
         app:layout_constraintStart_toStartOf="parent"
         tools:listitem="@layout/cardview_comment" />
