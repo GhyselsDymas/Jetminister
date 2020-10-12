@@ -111,8 +111,9 @@
     <string name="report_dialog_reasons">Write your reasons for reporting here</string>
     <string name="report_confirmation">Your report has been logged and will be processed</string>
     <string name="admin_detail_report_reason">Reason</string>
-    <string name="admin_detail_report_subject">Subject</string>
+    <string name="admin_detail_report_about">About: </string>
     <string name="admin_detail_report_logger">Logged by:</string>
+    <string name="admin_detail_report_timestamp">Logged at:</string>
     <string name="streamer_profile_error_message">Could not find streamer\'s profile page</string>
     <string name="settings_dark_summary">Toggle between regular and dark mode</string>
     <string name="submit">Submit</string>

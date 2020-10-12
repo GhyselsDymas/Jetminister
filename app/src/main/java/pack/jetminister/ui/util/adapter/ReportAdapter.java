@@ -49,15 +49,16 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportAdmi
     @Override
     public void onBindViewHolder(@NonNull ReportAdapter.ReportAdminHolder holder, int position) {
         Report currentReport = mReports.get(position);
-        String reportSubjectID = String.valueOf(currentReport.getSubjectID());
+        String reportSubjectID = String.valueOf(currentReport.getAboutID());
         String reportLoggerID = String.valueOf(currentReport.getLoggerID());
         String reportReason = String.valueOf(currentReport.getReason());
+        String reportTimestamp = String.valueOf(currentReport.getReportTimeStamp());
         usersRef.child(reportLoggerID).child(KEY_USERNAME)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         String reportLoggerUsername = snapshot.getValue(String.class);
-                        holder.usernameReportLoggerTV.setText(String.format(reportLoggerUsername));
+                        holder.reportLoggerUsernameTV.setText(String.format(reportLoggerUsername));
                     }
 
                     @Override
@@ -69,14 +70,15 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportAdmi
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         String reportSubjectUsername = snapshot.getValue(String.class);
-                        holder.usernameReportSubjectTV.setText(String.format(reportSubjectUsername));
+                        holder.reportAboutUsernameTV.setText(String.format(reportSubjectUsername));
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                     }
                 });
-        holder.reasonReportAdmin.setText(reportReason);
+        holder.reportReasonTV.setText(reportReason);
+        holder.reportTimestampTV.setText(reportTimestamp);
     }
 
     @Override
@@ -86,24 +88,25 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportAdmi
 
     public class ReportAdminHolder extends RecyclerView.ViewHolder {
 
-        public TextView usernameReportLoggerTV, usernameReportSubjectTV, reasonReportAdmin;
+        public TextView reportLoggerUsernameTV, reportAboutUsernameTV, reportReasonTV, reportTimestampTV;
 
         public ReportAdminHolder(@NonNull View itemView) {
             super(itemView);
-            usernameReportLoggerTV = itemView.findViewById(R.id.admin_detail_tv_report_logger);
-                usernameReportSubjectTV = itemView.findViewById(R.id.admin_detail_tv_report_subject);
-            reasonReportAdmin = itemView.findViewById(R.id.admin_detail_tv_report_reason);
+            reportLoggerUsernameTV = itemView.findViewById(R.id.admin_detail_tv_report_logger);
+            reportAboutUsernameTV = itemView.findViewById(R.id.admin_detail_tv_report_subject);
+            reportReasonTV = itemView.findViewById(R.id.admin_detail_tv_report_reason);
+            reportTimestampTV = itemView.findViewById(R.id.admin_detail_tv_report_timestamp);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int position = getAdapterPosition();
                     Report report = mReports.get(position);
-                    String reporterID = report.getLoggerID();
+                    String loggerID = report.getLoggerID();
                     String reportBody = report.getReportBody();
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                     builder.setTitle(KEY_REPORT.toUpperCase())
-                            .setMessage(String.format("%s \n\n%s", reporterID, reportBody))
+                            .setMessage(reportBody)
                             .show();
                 }
             });

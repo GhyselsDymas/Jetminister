@@ -1,21 +1,17 @@
 package pack.jetminister.ui.activities;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,8 +19,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import pack.jetminister.R;
 import pack.jetminister.data.Follow;
@@ -36,7 +30,6 @@ import static pack.jetminister.data.User.KEY_DESCRIPTION;
 import static pack.jetminister.data.User.KEY_FOLLOWERS;
 import static pack.jetminister.data.User.KEY_FOLLOWING;
 import static pack.jetminister.data.User.KEY_IMAGE_URL;
-import static pack.jetminister.data.User.KEY_STREAMER;
 import static pack.jetminister.data.User.KEY_STREAMER_ID;
 import static pack.jetminister.data.User.KEY_USERNAME;
 import static pack.jetminister.data.User.KEY_USERS;
@@ -54,8 +47,6 @@ public class StreamerProfileActivity extends AppCompatActivity {
     private ImageView profileIV, reportIV, followUnfollowIV;
 
 
-    private List<Follow> mFollowers;
-    private List<Follow> mFollowings;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String currentUserId;
     private String streamerID;
@@ -103,9 +94,6 @@ public class StreamerProfileActivity extends AppCompatActivity {
         if (mAuth.getCurrentUser() != null) {
             currentUserId = mAuth.getCurrentUser().getUid();
         }
-
-        mFollowers = new ArrayList<>();
-        mFollowings = new ArrayList<>();
 
         followUnfollowIV = findViewById(R.id.iv_streamer_follow);
         usernameTV = findViewById(R.id.tv_streamer_profile_username);
