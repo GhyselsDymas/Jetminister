@@ -60,7 +60,6 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportAdmi
                         String reportLoggerUsername = snapshot.getValue(String.class);
                         holder.reportLoggerUsernameTV.setText(String.format(reportLoggerUsername));
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                     }
@@ -72,7 +71,6 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportAdmi
                         String reportSubjectUsername = snapshot.getValue(String.class);
                         holder.reportAboutUsernameTV.setText(String.format(reportSubjectUsername));
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                     }

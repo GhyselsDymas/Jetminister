@@ -476,7 +476,6 @@ public class PlaybackActivity extends AppCompatActivity {
     }
 }
 
-
 //    @Override
 //    public void stateUNKNOWN() {
 //        playbackProgressBar.setVisibility(View.VISIBLE);
