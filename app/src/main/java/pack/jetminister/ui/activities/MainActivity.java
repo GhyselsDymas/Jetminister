@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //check if system is set to dark mode,
+        // delegate will recreate all activities accordingly
         if(isDarkMode()){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
@@ -74,18 +76,20 @@ public class MainActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         hideStatusBar();
         setContentView(R.layout.activity_main);
+
+        //create toolbar to set titles of fragments but do not show it
         toolbar = getSupportActionBar();
-        toolbar.setTitle(R.string.fragment_live);
         toolbar.hide();
 
+        //create bottom navigation, link to the XML layout and attach listener
         BottomNavigationView bottomNavigationView;
         bottomNavigationView = findViewById(R.id.bottom_nav);
         bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavListener);
 
+        //set up navigation between the bottom navigation fragments
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
-
 
     @Override
     protected void onResume() {
@@ -94,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadFragment(Fragment fragment) {
+        //navigate to and replace fragments within the bottom navigation, then remove them from back stack
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.nav_host_fragment, fragment);
         transaction.addToBackStack(null);
@@ -107,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isDarkMode(){
+        //get the dark mode setting from app's SharedPreferences
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         return settings.getBoolean("dark_mode", false);
     }

@@ -74,7 +74,6 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
                     }
                 }
                 holder.titleLiveTheme.setText(currentTheme);
-                holder.readMoreLiveTheme.setText(String.format("%s in %s", mContext.getResources().getString(R.string.see_more), currentTheme));
                 holder.recyclerViewLive.setHasFixedSize(true);
                 holder.recyclerViewLive.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
                 pictureAdapter = new LivePictureAdapter(mContext,
@@ -118,11 +117,5 @@ public class LiveThemeAdapter extends RecyclerView.Adapter<LiveThemeAdapter.Live
         }
 
     }
-
-
-
-
-
-
 }
 

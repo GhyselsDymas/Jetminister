@@ -9,8 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -20,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.exoplayer.AspectRatioFrameLayout;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,19 +32,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.theoplayer.android.api.THEOplayerView;
-import com.theoplayer.android.api.event.EventListener;
-import com.theoplayer.android.api.event.player.CanPlayEvent;
-import com.theoplayer.android.api.event.player.EndedEvent;
-import com.theoplayer.android.api.event.player.ErrorEvent;
-import com.theoplayer.android.api.event.player.PauseEvent;
-import com.theoplayer.android.api.event.player.PlayEvent;
-import com.theoplayer.android.api.event.player.PlayerEventTypes;
-import com.theoplayer.android.api.event.player.PlayingEvent;
-import com.theoplayer.android.api.player.Player;
-import com.theoplayer.android.api.source.SourceDescription;
-import com.theoplayer.android.api.source.SourceType;
-import com.theoplayer.android.api.source.TypedSource;
+import com.streamaxia.player.StreamaxiaPlayer;
+import com.streamaxia.player.listener.StreamaxiaPlayerState;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
@@ -59,13 +51,14 @@ import pack.jetminister.ui.util.adapter.CommentAdapter;
 import static pack.jetminister.data.Comment.KEY_COMMENTS;
 import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_LIKES;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_USERNAME;
 import static pack.jetminister.data.LiveStream.KEY_STREAM_VIEWERS;
 import static pack.jetminister.data.User.KEY_USERNAME;
 import static pack.jetminister.data.User.KEY_USERS;
 import static pack.jetminister.data.User.KEY_USER_ID;
 
-public class PlaybackActivity extends AppCompatActivity {
+public class PlaybackActivity extends AppCompatActivity implements StreamaxiaPlayerState {
 
     private static final String TAG = "LivePlayerActivity";
 
@@ -76,25 +69,36 @@ public class PlaybackActivity extends AppCompatActivity {
 
     private TextView streamUsernameTV, streamLikesTV, streamViewersTV, playbackStateTV;
     private ProgressBar playbackProgressBar;
-    private ImageView streamLiveIV, streamProfileIV, streamLikeIV, streamShareIV, playPauseIV, submitCommentIV;
+    private ImageView streamLiveIV, streamProfileIV, streamLikeIV, streamShareIV, playPauseIV;
     private AppCompatToggleButton showCommentsToggleBtn;
-    private THEOplayerView playerView;
+    private AspectRatioFrameLayout aspectRatioFrameLayout;
+    private SurfaceView surfaceView;
+    //    private THEOplayerView playerView;
+    private StreamaxiaPlayer streamPlayer;
     private TextInputLayout postCommentTIL;
     private RecyclerView recyclerViewComment;
 
     private boolean streamLiked;
     private String streamUsername;
-    private String streamPlaybackURL;
+    private Uri streamPlaybackURI;
     private int streamLikes;
     private String streamerUID;
 
     private CommentAdapter mAdapter;
     private List<Comment> mComments;
 
-    Runnable hide = new Runnable() {
+    private View.OnClickListener playPauseBtnListener = new View.OnClickListener() {
         @Override
-        public void run() {
-            playPauseIV.setVisibility(View.GONE);
+        public void onClick(View v) {
+            if (playPauseIV.getVisibility() == View.GONE) {
+                playPauseIV.setVisibility(View.VISIBLE);
+                streamPlayer.pause();
+                playbackProgressBar.setVisibility(View.VISIBLE);
+            } else {
+                playPauseIV.setVisibility(View.GONE);
+                playbackProgressBar.setVisibility(View.GONE);
+                streamPlayer.play(streamPlaybackURI, StreamaxiaPlayer.TYPE_HLS);
+            }
         }
     };
 
@@ -112,27 +116,13 @@ public class PlaybackActivity extends AppCompatActivity {
         }
     };
 
-    private View.OnClickListener playPauseBtnListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Toast.makeText(PlaybackActivity.this, "whatthefaack", Toast.LENGTH_SHORT).show();
-            if (playerView.getPlayer().isPaused()) {
-                playerView.getPlayer().play();
-            } else {
-                playerView.getPlayer().pause();
-            }
-        }
-    };
-
     private CompoundButton.OnCheckedChangeListener showCommentsListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (isChecked) {
                 showComments();
-                Log.d(TAG, "onCheckedChanged: COMMENTS DISPLAY ON");
             } else {
                 hideComments();
-                Log.d(TAG, "onCheckedChanged: COMMENTS DISPLAY OFF");
             }
         }
     };
@@ -167,6 +157,7 @@ public class PlaybackActivity extends AppCompatActivity {
             toolbar.hide();
         }
         hideStatusBar();
+
         streamUsernameTV = findViewById(R.id.player_tv_username);
         streamViewersTV = findViewById(R.id.player_tv_watching);
         streamLikesTV = findViewById(R.id.player_tv_amount_likes);
@@ -176,17 +167,21 @@ public class PlaybackActivity extends AppCompatActivity {
         streamLikeIV = findViewById(R.id.player_iv_like);
         streamShareIV = findViewById(R.id.player_iv_share);
         playPauseIV = findViewById(R.id.player_iv_play_pause);
-        playerView = findViewById(R.id.player_theo_view);
         playbackProgressBar = findViewById(R.id.player_progress_bar);
         postCommentTIL = findViewById(R.id.player_til_comment);
         showCommentsToggleBtn = findViewById(R.id.player_toggle_comments);
+        surfaceView = findViewById(R.id.stream_playback_player_view);
+        aspectRatioFrameLayout = findViewById(R.id.stream_playback_aspect_ratio);
+
+        streamPlayer = new StreamaxiaPlayer();
+        streamPlayer.initStreamaxiaPlayer(surfaceView, aspectRatioFrameLayout, playbackStateTV, this, this, streamPlaybackURI);
 
         recyclerViewComment = findViewById(R.id.player_recyclerview_comments);
         recyclerViewComment.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, true);
         recyclerViewComment.setLayoutManager(linearLayoutManager);
 
-        playerView.setOnClickListener(playPauseBtnListener);
+        aspectRatioFrameLayout.setOnClickListener(playPauseBtnListener);
         streamLiked = false;
         streamLikeIV.setImageResource(R.drawable.ic_like_border_white_24);
         streamLikesTV.setVisibility(View.VISIBLE);
@@ -204,23 +199,22 @@ public class PlaybackActivity extends AppCompatActivity {
         showAmountViewers();
         hideComments();
 
-        TypedSource typedSource = TypedSource.Builder
-                .typedSource()
-                .src(streamPlaybackURL)
-                .type(SourceType.HLS)
-                .build();
-        SourceDescription sourceDescription = SourceDescription.Builder
-                .sourceDescription(typedSource)
-                .build();
-        Player player = playerView.getPlayer();
-        player.setSource(sourceDescription);
-        player.addEventListener(PlayerEventTypes.PLAY, playEventListener);
-        player.addEventListener(PlayerEventTypes.PAUSE, pauseEventListener);
-        player.addEventListener(PlayerEventTypes.CANPLAY, readyToPlayListener);
-        player.addEventListener(PlayerEventTypes.ERROR, streamErrorListener);
-        player.addEventListener(PlayerEventTypes.ENDED, streamEndedListener);
-        player.addEventListener(PlayerEventTypes.PLAYING, streamPlayingListener);
-
+//        TypedSource typedSource = TypedSource.Builder
+//                .typedSource()
+//                .src(streamPlaybackURL)
+//                .type(SourceType.HLS)
+//                .build();
+//        SourceDescription sourceDescription = SourceDescription.Builder
+//                .sourceDescription(typedSource)
+//                .build();
+//        Player player = playerView.getPlayer();
+//        player.setSource(sourceDescription);
+//        player.addEventListener(PlayerEventTypes.PLAY, playEventListener);
+//        player.addEventListener(PlayerEventTypes.PAUSE, pauseEventListener);
+//        player.addEventListener(PlayerEventTypes.CANPLAY, readyToPlayListener);
+//        player.addEventListener(PlayerEventTypes.ERROR, streamErrorListener);
+//        player.addEventListener(PlayerEventTypes.ENDED, streamEndedListener);
+//        player.addEventListener(PlayerEventTypes.PLAYING, streamPlayingListener);
 
         mComments = new ArrayList<>();
         DatabaseReference streamersDatabaseRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS).child(streamerUID).child(KEY_COMMENTS);
@@ -241,33 +235,36 @@ public class PlaybackActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+
+        initRTMPExoPlayer();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         hideStatusBar();
-        playerView.onResume();
+        streamPlayer.pause();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         removeCurrentViewer();
-        playerView.onPause();
+        streamPlayer.pause();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         removeCurrentViewer();
+        streamPlayer.stop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         removeCurrentViewer();
-        playerView.onDestroy();
+        streamPlayer.stop();
     }
 
     private void getStreamerInfo() {
@@ -277,13 +274,20 @@ public class PlaybackActivity extends AppCompatActivity {
             if (extras != null && !extras.isEmpty()) {
                 streamUsername = extras.getString(KEY_STREAM_USERNAME);
                 streamerUID = extras.getString(KEY_USER_ID);
-                streamPlaybackURL = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8";//extras.getString(KEY_STREAM_PLAYBACK_URL);
+                streamPlaybackURI = Uri.parse(extras.getString(KEY_STREAM_PLAYBACK_URL));
             }
         } else {
             Toast.makeText(this, R.string.player_stream_error, Toast.LENGTH_SHORT).show();
             proceedToMain();
         }
     }
+
+    Runnable hide = new Runnable() {
+        @Override
+        public void run() {
+            playPauseIV.setVisibility(View.GONE);
+        }
+    };
 
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -437,7 +441,6 @@ public class PlaybackActivity extends AppCompatActivity {
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
-
                         }
                     });
         } else {
@@ -445,57 +448,57 @@ public class PlaybackActivity extends AppCompatActivity {
         }
     }
 
-    private EventListener<CanPlayEvent> readyToPlayListener = new EventListener<CanPlayEvent>() {
-        @Override
-        public void handleEvent(CanPlayEvent canPlayEvent) {
-            playbackProgressBar.setVisibility(View.GONE);
-            playPauseIV.setImageResource(R.drawable.ic_play_white_24);
-            playPauseIV.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private EventListener<PlayEvent> playEventListener = new EventListener<PlayEvent>() {
-        @Override
-        public void handleEvent(PlayEvent playEvent) {
-            playPauseIV.setVisibility(View.GONE);
-            playbackProgressBar.setVisibility(View.GONE);
-            streamLiveIV.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private EventListener<PlayingEvent> streamPlayingListener = new EventListener<PlayingEvent>() {
-        @Override
-        public void handleEvent(PlayingEvent playingEvent) {
-            playPauseIV.setVisibility(View.GONE);
-            playbackProgressBar.setVisibility(View.GONE);
-            streamLiveIV.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private EventListener<PauseEvent> pauseEventListener = new EventListener<PauseEvent>() {
-        @Override
-        public void handleEvent(PauseEvent pauseEvent) {
-            playPauseIV.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private EventListener<ErrorEvent> streamErrorListener = new EventListener<ErrorEvent>() {
-        @Override
-        public void handleEvent(ErrorEvent errorEvent) {
-            removeCurrentViewer();
-            showStreamErrorDialog();
-        }
-    };
-
-    private EventListener<EndedEvent> streamEndedListener = new EventListener<EndedEvent>() {
-        @Override
-        public void handleEvent(EndedEvent endedEvent) {
-            playbackProgressBar.setVisibility(View.GONE);
-            streamLiveIV.setVisibility(View.INVISIBLE);
-            removeCurrentViewer();
-            showStreamEndedDialog();
-        }
-    };
+//    private EventListener<CanPlayEvent> readyToPlayListener = new EventListener<CanPlayEvent>() {
+//        @Override
+//        public void handleEvent(CanPlayEvent canPlayEvent) {
+//            playbackProgressBar.setVisibility(View.GONE);
+//            playPauseIV.setImageResource(R.drawable.ic_play_white_24);
+//            playPauseIV.setVisibility(View.VISIBLE);
+//        }
+//    };
+//
+//    private EventListener<PlayEvent> playEventListener = new EventListener<PlayEvent>() {
+//        @Override
+//        public void handleEvent(PlayEvent playEvent) {
+//            playPauseIV.setVisibility(View.GONE);
+//            playbackProgressBar.setVisibility(View.GONE);
+//            streamLiveIV.setVisibility(View.VISIBLE);
+//        }
+//    };
+//
+//    private EventListener<PlayingEvent> streamPlayingListener = new EventListener<PlayingEvent>() {
+//        @Override
+//        public void handleEvent(PlayingEvent playingEvent) {
+//            playPauseIV.setVisibility(View.GONE);
+//            playbackProgressBar.setVisibility(View.GONE);
+//            streamLiveIV.setVisibility(View.VISIBLE);
+//        }
+//    };
+//
+//    private EventListener<PauseEvent> pauseEventListener = new EventListener<PauseEvent>() {
+//        @Override
+//        public void handleEvent(PauseEvent pauseEvent) {
+//            playPauseIV.setVisibility(View.VISIBLE);
+//        }
+//    };
+//
+//    private EventListener<ErrorEvent> streamErrorListener = new EventListener<ErrorEvent>() {
+//        @Override
+//        public void handleEvent(ErrorEvent errorEvent) {
+//            removeCurrentViewer();
+//            showStreamErrorDialog();
+//        }
+//    };
+//
+//    private EventListener<EndedEvent> streamEndedListener = new EventListener<EndedEvent>() {
+//        @Override
+//        public void handleEvent(EndedEvent endedEvent) {
+//            playbackProgressBar.setVisibility(View.GONE);
+//            streamLiveIV.setVisibility(View.INVISIBLE);
+//            removeCurrentViewer();
+//            showStreamEndedDialog();
+//        }
+//    };
 
     private void showStreamEndedDialog() {
         StreamEndedDialog streamEndedDialog = StreamEndedDialog.newInstance(streamerUID);
@@ -509,39 +512,56 @@ public class PlaybackActivity extends AppCompatActivity {
         StreamErrorDialog streamErrorDialog = new StreamErrorDialog();
         streamErrorDialog.show(getSupportFragmentManager(), "stream_error");
     }
+
+    private void initRTMPExoPlayer() {
+        streamPlayer.initStreamaxiaPlayer(
+                surfaceView,
+                aspectRatioFrameLayout,
+                playbackStateTV,
+                this,
+                this,
+                streamPlaybackURI);
+    }
+
+    @Override
+    public void stateUNKNOWN() {
+        showStreamErrorDialog();
+        playbackProgressBar.setVisibility(View.VISIBLE);
+        streamLiveIV.setVisibility(View.INVISIBLE);
+        playPauseIV.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void stateIDLE() {
+        playbackProgressBar.setVisibility(View.VISIBLE);
+        streamLiveIV.setVisibility(View.INVISIBLE);
+        playPauseIV.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void stateBUFFERING() {
+        playbackProgressBar.setVisibility(View.VISIBLE);
+        streamLiveIV.setVisibility(View.INVISIBLE);
+        playPauseIV.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void statePREPARING() {
+        streamLiveIV.setVisibility(View.INVISIBLE);
+        playbackProgressBar.setVisibility(View.VISIBLE);
+        playPauseIV.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void stateREADY() {
+        playbackProgressBar.setVisibility(View.GONE);
+        playbackStateTV.setVisibility(View.INVISIBLE);
+        playPauseIV.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void stateENDED() {
+        playbackProgressBar.setVisibility(View.GONE);
+        showStreamEndedDialog();
+    }
 }
-
-//    @Override
-//    public void stateUNKNOWN() {
-//        playbackProgressBar.setVisibility(View.VISIBLE);
-//        streamLiveIV.setVisibility(View.INVISIBLE);
-//    }
-//
-//    @Override
-//    public void stateIDLE() {
-//        playbackProgressBar.setVisibility(View.VISIBLE);
-//        streamLiveIV.setVisibility(View.INVISIBLE);
-//    }
-//
-//    @Override
-//    public void stateBUFFERING() {
-//        playbackProgressBar.setVisibility(View.VISIBLE);
-//        streamLiveIV.setVisibility(View.INVISIBLE);
-//    }
-//
-//    @Override
-//    public void statePREPARING() {
-//        streamLiveIV.setVisibility(View.INVISIBLE);
-//        playbackProgressBar.setVisibility(View.VISIBLE);
-//    }
-//
-//    @Override
-//    public void stateREADY() {
-//        playbackProgressBar.setVisibility(View.GONE);
-//        playbackStateTV.setVisibility(View.INVISIBLE);
-//    }
-//
-//    @Override
-//    public void stateENDED() {
-
-//    }

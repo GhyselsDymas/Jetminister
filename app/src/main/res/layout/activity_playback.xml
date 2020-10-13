@@ -10,25 +10,23 @@
     android:focusableInTouchMode="true"
     tools:context=".ui.activities.PlaybackActivity">
 
-    <com.theoplayer.android.api.THEOplayerView
-        android:id="@+id/player_theo_view"
+    <com.google.android.exoplayer.AspectRatioFrameLayout
+        android:id="@+id/stream_playback_aspect_ratio"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/black"
-        android:orientation="vertical"
-        android:paddingStart="4dp"
-        android:paddingTop="4dp"
-        android:paddingEnd="4dp"
-        android:paddingBottom="4dp"
-        app:chromeless="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:defaultCss="true"
-        app:cssPaths="C:\Users\dymas\AndroidStudioProjects\Jetminister\app\src\main\assets\css_player">
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:background="@color/black_overlay">
+        <SurfaceView
+            android:id="@+id/stream_playback_player_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center"/>
 
-    </com.theoplayer.android.api.THEOplayerView>
+    </com.google.android.exoplayer.AspectRatioFrameLayout>
 
     <TextView
         android:id="@+id/player_tv_live_state"
@@ -177,7 +175,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/player_theo_view" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/player_iv_live"

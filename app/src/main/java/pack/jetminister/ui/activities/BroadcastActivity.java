@@ -27,8 +27,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.streamaxia.android.CameraPreview;
+import com.streamaxia.android.StreamaxiaPublisher;
+import com.streamaxia.android.handlers.EncoderHandler;
+import com.streamaxia.android.handlers.RecordHandler;
+import com.streamaxia.android.handlers.RtmpHandler;
+import com.streamaxia.android.utils.Size;
 
 import java.io.IOException;
+import java.net.SocketException;
+import java.util.List;
 
 import pack.jetminister.R;
 import pack.jetminister.data.util.Broadcast;
@@ -54,23 +62,21 @@ import static pack.jetminister.data.User.KEY_USERS;
 
 public class BroadcastActivity
         extends AppCompatActivity
-//        implements RtmpHandler.RtmpListener,
-//        RecordHandler.RecordListener,
-//        EncoderHandler.EncodeListener
-{
-//    private StreamaxiaPublisher broadcastPublisher;
-//    private CameraPreview previewCameraBroadcast;
-//    public final static int BITRATE = 500;
-//    public final static int WIDTH = 720;
-//    public final static int HEIGHT = 1280;
+        implements RtmpHandler.RtmpListener,
+        RecordHandler.RecordListener,
+        EncoderHandler.EncodeListener {
+
+    private StreamaxiaPublisher broadcastPublisher;
+    private CameraPreview previewCameraBroadcast;
+    public final static int BITRATE = 500;
+    public final static int WIDTH = 720;
+    public final static int HEIGHT = 1280;
 
     private static final String TAG = "LiveBroadcastActivity";
-    private static final String API_KEY_DYMAS = "6gs5AUUZ20A7NSQPF3fFMZ3aD2bCOenpqfPQxl5qDIb6V36VW2FPUsnfdbUv3117";
+//    private static final String API_KEY_DYMAS = "6gs5AUUZ20A7NSQPF3fFMZ3aD2bCOenpqfPQxl5qDIb6V36VW2FPUsnfdbUv3117";
     private static final String API_KEY_DAVID = "ffwQUAgvgFL310lMtP1O5Ee9rvnrg5bH8TgufZWHDAn2EHDeMJuWnKrdrVZU3356";
-    private static final String ACCESS_KEY_DYMAS = "9nDkUi9yAe0j0BQIK7n9vaKlLIgMJQ49rHXOdrnMA2cA0iaZCWQQH8APaHJe305c";
+//    private static final String ACCESS_KEY_DYMAS = "9nDkUi9yAe0j0BQIK7n9vaKlLIgMJQ49rHXOdrnMA2cA0iaZCWQQH8APaHJe305c";
     private static final String ACCESS_KEY_DAVID = "zaXG6RyhKF8DPQJTJNmG2n4Zcx98eU4mDmXmr2OKFgZQ7fz19AKtmYkqpYtd3334";
-
-
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String currentUID = mAuth.getCurrentUser().getUid();
@@ -98,13 +104,10 @@ public class BroadcastActivity
                         startBroadcast(publishURL);
                     }
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-
                 }
             });
-
         }
     };
 
@@ -115,19 +118,18 @@ public class BroadcastActivity
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         progressBar.setVisibility(View.VISIBLE);
                         if (!snapshot.exists()) {
-                            usersRef.child(currentUID).addListenerForSingleValueEvent(new ValueEventListener() {
+                            usersRef.child(currentUID)
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     String userLocation = snapshot.child(KEY_LOCATION).getValue(String.class);
                                     String currentUsername = snapshot.child(KEY_USERNAME).getValue(String.class);
-                                    LiveStream newLiveStream = new LiveStream(currentUsername, currentTheme, userLocation, "Hackermann", "1234azer");
+                                    LiveStream newLiveStream = new LiveStream(currentUsername, currentTheme, userLocation, "Hackermann", "Dymas1234");
                                     Broadcast newBroadcast = new Broadcast(newLiveStream);
                                     createLiveStream(newBroadcast);
                                 }
-
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
-
                                 }
                             });
                         } else {
@@ -137,7 +139,6 @@ public class BroadcastActivity
                             startRequestingStreamState(snapshot.child(KEY_STREAM_ID).getValue(String.class));
                         }
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                     }
@@ -166,7 +167,7 @@ public class BroadcastActivity
         stateBroadcastTV = findViewById(R.id.tv_live_broadcast_state);
         progressBar = findViewById(R.id.broadcast_progressbar);
         broadcastChronometer = findViewById(R.id.chronometer_live_broadcast);
-//        previewCameraBroadcast = findViewById(R.id.cam_preview_live_broadcast);
+        previewCameraBroadcast = findViewById(R.id.cam_preview_live_broadcast);
         liveIconIV = findViewById(R.id.player_iv_live);
         publishIcon = findViewById(R.id.live_broadcast_publish);
         publishIcon.setOnClickListener(publishListener);
@@ -179,15 +180,15 @@ public class BroadcastActivity
                 .build();
         wowzaRestApi = retrofit.create(WowzaRestApi.class);
 
-//        broadcastPublisher = new StreamaxiaPublisher(previewCameraBroadcast, this);
-//        broadcastPublisher.setEncoderHandler(new EncoderHandler(this));
-//        broadcastPublisher.setRtmpHandler(new RtmpHandler(this));
-//        broadcastPublisher.setRecordEventHandler(new RecordHandler(this));
+        broadcastPublisher = new StreamaxiaPublisher(previewCameraBroadcast, this);
+        broadcastPublisher.setEncoderHandler(new EncoderHandler(this));
+        broadcastPublisher.setRtmpHandler(new RtmpHandler(this));
+        broadcastPublisher.setRecordEventHandler(new RecordHandler(this));
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
-//            previewCameraBroadcast.startCamera();
-//            setStreamerDefaultValues();
+            previewCameraBroadcast.startCamera();
+            setStreamerDefaultValues();
         }
     }
 
@@ -198,7 +199,7 @@ public class BroadcastActivity
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
             stopPublishing();
-//            deactivateStream();
+            deactivateStream();
             stopChronometer();
         } else {
             Intent intent = new Intent(this, PermissionsActivity.class);
@@ -210,33 +211,33 @@ public class BroadcastActivity
     @Override
     protected void onRestart() {
         super.onRestart();
-//        previewCameraBroadcast.startCamera();
+        previewCameraBroadcast.startCamera();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        previewCameraBroadcast.stopCamera();
-//        broadcastPublisher.stopPublish();
-//        broadcastPublisher.pauseRecord();
+        previewCameraBroadcast.stopCamera();
+        broadcastPublisher.stopPublish();
+        broadcastPublisher.pauseRecord();
         deactivateStream();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-//        previewCameraBroadcast.stopCamera();
-//        broadcastPublisher.stopPublish();
+        previewCameraBroadcast.stopCamera();
+        broadcastPublisher.stopPublish();
         deactivateStream();
-//        broadcastPublisher.pauseRecord();
+        broadcastPublisher.pauseRecord();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        broadcastPublisher.stopPublish();
+        broadcastPublisher.stopPublish();
         deactivateStream();
-//        broadcastPublisher.stopRecord();
+        broadcastPublisher.stopRecord();
     }
 
     private void getCurrentTheme() {
@@ -246,20 +247,19 @@ public class BroadcastActivity
         }
     }
 
-
     private void hideStatusBar() {
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
     }
 
-//    private void handleException(Exception e) {
-//        try {
-//            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-//            broadcastPublisher.stopPublish();
-//        } catch (Exception e1) {
-//        }
-//    }
+    private void handleException(Exception e) {
+        try {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            broadcastPublisher.stopPublish();
+        } catch (Exception e1) {
+        }
+    }
 
     private void setStatusMessage(final String msg) {
         runOnUiThread(new Runnable() {
@@ -271,7 +271,7 @@ public class BroadcastActivity
     }
 
     private void createLiveStream(Broadcast newBroadcast) {
-        Call<Broadcast> call = wowzaRestApi.createLiveStream(API_KEY_DYMAS, ACCESS_KEY_DYMAS, newBroadcast);
+        Call<Broadcast> call = wowzaRestApi.createLiveStream(API_KEY_DAVID, ACCESS_KEY_DAVID, newBroadcast);
         call.enqueue(new Callback<Broadcast>() {
             @Override
             public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
@@ -293,7 +293,6 @@ public class BroadcastActivity
                     startRequestingStreamState(streamId);
                 }
             }
-
             @Override
             public void onFailure(Call<Broadcast> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t.getMessage());
@@ -326,8 +325,6 @@ public class BroadcastActivity
         streamsRef.child(currentUID).child(KEY_STREAM_VIEWERS).setValue(0);
     }
 
-
-
     private void startRequestingStreamState(String streamId) {
         startHandler = new Handler();
         startHandler.postDelayed(new Runnable() {
@@ -340,7 +337,7 @@ public class BroadcastActivity
     }
 
     private void getStreamState(String streamID) {
-        Call<Broadcast> call = wowzaRestApi.getLiveStreamState(API_KEY_DYMAS, ACCESS_KEY_DYMAS, streamID);
+        Call<Broadcast> call = wowzaRestApi.getLiveStreamState(API_KEY_DAVID, ACCESS_KEY_DAVID, streamID);
         call.enqueue(new Callback<Broadcast>() {
             @Override
             public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
@@ -364,17 +361,14 @@ public class BroadcastActivity
                     }
                 }
             }
-
             @Override
             public void onFailure(Call<Broadcast> call, Throwable t) {
             }
         });
-
-
     }
 
     private void activateStream(String streamID) {
-        Call<Broadcast> call = wowzaRestApi.startLiveStream(API_KEY_DYMAS, ACCESS_KEY_DYMAS, streamID);
+        Call<Broadcast> call = wowzaRestApi.startLiveStream(API_KEY_DAVID, ACCESS_KEY_DAVID, streamID);
         call.enqueue(new Callback<Broadcast>() {
             @Override
             public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
@@ -388,7 +382,6 @@ public class BroadcastActivity
                 }
                 Toast.makeText(BroadcastActivity.this, "Code :" + response.code(), Toast.LENGTH_SHORT).show();
             }
-
             @Override
             public void onFailure(Call<Broadcast> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t.getMessage());
@@ -402,7 +395,7 @@ public class BroadcastActivity
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     String currentStreamID = snapshot.getValue(String.class);
-                    Call<Broadcast> call = wowzaRestApi.stopLiveStream(API_KEY_DYMAS, ACCESS_KEY_DYMAS, currentStreamID);
+                    Call<Broadcast> call = wowzaRestApi.stopLiveStream(API_KEY_DAVID, ACCESS_KEY_DAVID, currentStreamID);
                     call.enqueue(new Callback<Broadcast>() {
                         @Override
                         public void onResponse(Call<Broadcast> call, Response<Broadcast> response) {
@@ -415,7 +408,6 @@ public class BroadcastActivity
                                 }
                             }
                         }
-
                         @Override
                         public void onFailure(Call<Broadcast> call, Throwable t) {
                             Log.d(TAG, "onFailure: " + t.getMessage());
@@ -423,7 +415,6 @@ public class BroadcastActivity
                     });
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
@@ -435,7 +426,7 @@ public class BroadcastActivity
                 publishIcon.setVisibility(View.GONE);
                 broadcastChronometer.setBase(SystemClock.elapsedRealtime());
                 broadcastChronometer.start();
-//                broadcastPublisher.startPublish(publishURL);
+                broadcastPublisher.startPublish(publishURL);
     }
 
     private void stopBroadcast() {
@@ -446,7 +437,7 @@ public class BroadcastActivity
     }
 
     private void stopPublishing() {
-//        broadcastPublisher.stopPublish();
+        broadcastPublisher.stopPublish();
     }
 
     private void stopChronometer() {
@@ -454,132 +445,106 @@ public class BroadcastActivity
         broadcastChronometer.stop();
     }
 
-//    private void setStreamerDefaultValues() {
-//        // Set one of the available resolutions
-//        List<Size> sizes = broadcastPublisher.getSupportedPictureSizes(this.getResources().getConfiguration().orientation);
-//        Size resolution = sizes.get(0);
-//        broadcastPublisher.setVideoOutputResolution(resolution.width, resolution.height, this.getResources().getConfiguration().orientation);
-//    }
+    private void setStreamerDefaultValues() {
+        // Set one of the available resolutions
+        List<Size> sizes = broadcastPublisher.getSupportedPictureSizes(this.getResources().getConfiguration().orientation);
+        Size resolution = sizes.get(0);
+        broadcastPublisher.setVideoOutputResolution(resolution.width, resolution.height, this.getResources().getConfiguration().orientation);
+    }
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-//        broadcastPublisher.setScreenOrientation(newConfig.orientation);
+        broadcastPublisher.setScreenOrientation(newConfig.orientation);
     }
 
-//    @Override
-//    public void onNetworkWeak() {
-//
-//    }
-//
-//    @Override
-//    public void onNetworkResume() {
-//
-//    }
-//
-//    @Override
-//    public void onEncodeIllegalArgumentException(IllegalArgumentException e) {
-//
-//    }
-//
-//    @Override
-//    public void onRecordPause() {
-//
-//    }
-//
-//    @Override
-//    public void onRecordResume() {
-//
-//    }
-//
-//    @Override
-//    public void onRecordStarted(String s) {
-//
-//    }
-//
-//    @Override
-//    public void onRecordFinished(String s) {
-//
-//    }
-//
-//    @Override
-//    public void onRecordIllegalArgumentException(IllegalArgumentException e) {
-//        handleException(e);
-//    }
-//
-//    @Override
-//    public void onRecordIOException(IOException e) {
-//        handleException(e);
-//    }
-//
-//    @Override
-//    public void onRtmpConnecting(String s) {
-//        setStatusMessage(s);
-//    }
-//
-//    @Override
-//    public void onRtmpConnected(String s) {
-//        setStatusMessage(s);
-//        stopBroadcastTV.setClickable(true);
-//    }
-//
-//    @Override
-//    public void onRtmpVideoStreaming() {
-//
-//    }
-//
-//    @Override
-//    public void onRtmpAudioStreaming() {
-//
-//    }
-//
-//    @Override
-//    public void onRtmpStopped() {
-//        setStatusMessage("STOPPED");
-//    }
-//
-//    @Override
-//    public void onRtmpDisconnected() {
-//        setStatusMessage("Disconnected");
-//
-//    }
-//
-//    @Override
-//    public void onRtmpVideoFpsChanged(double v) {
-//
-//    }
-//
-//    @Override
-//    public void onRtmpVideoBitrateChanged(double v) {
-//
-//    }
-//
-//    @Override
-//    public void onRtmpAudioBitrateChanged(double v) {
-//
-//    }
-//
-//    @Override
-//    public void onRtmpSocketException(SocketException e) {
-//        handleException(e);
-//    }
-//
-//    @Override
-//    public void onRtmpIOException(IOException e) {
-//        handleException(e);
-//    }
-//
-//    @Override
-//    public void onRtmpIllegalArgumentException(IllegalArgumentException e) {
-//        handleException(e);
-//    }
-//
-//    @Override
-//    public void onRtmpIllegalStateException(IllegalStateException e) {
-//        handleException(e);
-//    }
-//
-//    @Override
-//    public void onRtmpAuthenticationg(String s) {
-//    }
+    @Override
+    public void onNetworkWeak() {}
+
+    @Override
+    public void onNetworkResume() {}
+
+    @Override
+    public void onEncodeIllegalArgumentException(IllegalArgumentException e) {}
+
+    @Override
+    public void onRecordPause() {}
+
+    @Override
+    public void onRecordResume() {}
+
+    @Override
+    public void onRecordStarted(String s) {}
+
+    @Override
+    public void onRecordFinished(String s) {}
+
+    @Override
+    public void onRecordIllegalArgumentException(IllegalArgumentException e) {
+        handleException(e);
+    }
+
+    @Override
+    public void onRecordIOException(IOException e) {
+        handleException(e);
+    }
+
+    @Override
+    public void onRtmpConnecting(String s) {
+        setStatusMessage(s);
+    }
+
+    @Override
+    public void onRtmpConnected(String s) {
+        setStatusMessage(s);
+        stopBroadcastTV.setClickable(true);
+    }
+
+    @Override
+    public void onRtmpVideoStreaming() {}
+
+    @Override
+    public void onRtmpAudioStreaming() {}
+
+    @Override
+    public void onRtmpStopped() {
+        setStatusMessage("STOPPED");
+    }
+
+    @Override
+    public void onRtmpDisconnected() {
+        setStatusMessage("Disconnected");
+    }
+
+    @Override
+    public void onRtmpVideoFpsChanged(double v) {}
+
+    @Override
+    public void onRtmpVideoBitrateChanged(double v) {}
+
+    @Override
+    public void onRtmpAudioBitrateChanged(double v) {}
+
+    @Override
+    public void onRtmpSocketException(SocketException e) {
+        handleException(e);
+    }
+
+    @Override
+    public void onRtmpIOException(IOException e) {
+        handleException(e);
+    }
+
+    @Override
+    public void onRtmpIllegalArgumentException(IllegalArgumentException e) {
+        handleException(e);
+    }
+
+    @Override
+    public void onRtmpIllegalStateException(IllegalStateException e) {
+        handleException(e);
+    }
+
+    @Override
+    public void onRtmpAuthenticationg(String s) {}
 }

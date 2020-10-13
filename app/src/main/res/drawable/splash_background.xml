@@ -5,8 +5,8 @@
         android:start="0dp"
         android:bottom="0dp"
         android:drawable="@color/colorPrimary"/>
-    <item android:drawable="@drawable/einstein_blue_bg"
-        android:height="150dp"
-        android:width="150dp"
+    <item android:drawable="@drawable/einstein_alpha_bg"
+        android:height="400dp"
+        android:width="400dp"
         android:gravity="center"/>
 </layer-list>

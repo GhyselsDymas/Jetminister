@@ -22,12 +22,20 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.List;
 
 import pack.jetminister.R;
+import pack.jetminister.data.LiveStream;
 import pack.jetminister.data.User;
 import pack.jetminister.ui.activities.AdminDetailActivity;
 
+import static pack.jetminister.data.LiveStream.KEY_LIVE_STREAMS;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_ID;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_PLAYBACK_URL;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_THEME;
+import static pack.jetminister.data.LiveStream.KEY_STREAM_USERNAME;
+import static pack.jetminister.data.User.KEY_LOCATION;
 import static pack.jetminister.data.User.KEY_STREAMER;
 import static pack.jetminister.data.User.KEY_USERS;
 import static pack.jetminister.data.User.KEY_USER_ID;
+import static pack.jetminister.data.util.SourceConnectionInformation.KEY_STREAM_PUBLISH_URL;
 
 public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder> {
 
@@ -50,6 +58,7 @@ public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder>
     public void onBindViewHolder(@NonNull AdminAdapter.AdminHolder holder, int position) {
         String currentUserID = mUserIDs.get(position);
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(KEY_USERS);
+        DatabaseReference streamsRef = FirebaseDatabase.getInstance().getReference(KEY_LIVE_STREAMS);
         usersRef.child(currentUserID)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -72,6 +81,7 @@ public class AdminAdapter extends RecyclerView.Adapter<AdminAdapter.AdminHolder>
                                         } else {
                                             currentUser.setStreamer(false);
                                             usersRef.child(currentUserID).child(KEY_STREAMER).setValue(false);
+                                            streamsRef.child(currentUserID).removeValue();
                                         }
                                     }
                                 });

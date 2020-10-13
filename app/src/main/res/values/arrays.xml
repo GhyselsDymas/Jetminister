@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="themes">
-        <item>Popular</item>
-        <item>Music</item>
-        <item>Business</item>
-        <item>Cooking</item>
-        <item>Life</item>
+        <item>Einstein Business Belgium</item>
+        <item>Einstein Business International</item>
+        <item>Einstein Entertainment</item>
+        <item>Einstein Lifestyle</item>
     </array>
 
     <array name="TargetAudience">

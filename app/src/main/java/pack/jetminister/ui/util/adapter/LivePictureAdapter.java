@@ -50,7 +50,6 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
     private List<String> mStreamerUsernames;
     private List<String> mFilteredStreamerUsernames;
 
-
     public LivePictureAdapter(Context context,
                               List<String> allStreamerIDs,
                               List<String> filteredStreamerIDs,
@@ -89,10 +88,8 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
                             .into(holder.imageLive);
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
@@ -128,7 +125,6 @@ public class LivePictureAdapter extends RecyclerView.Adapter<LivePictureAdapter.
                 }
                 return null;
             }
-
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 notifyDataSetChanged();

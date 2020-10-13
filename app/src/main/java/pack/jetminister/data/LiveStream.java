@@ -37,7 +37,7 @@ public class LiveStream {
     @SerializedName("name")
     private String streamUsername;
     @SerializedName("broadcast_location")
-    private String streamLocation;
+    private String serverLocation;
     @SerializedName("username")
     private String authUsername;
     @SerializedName("password")
@@ -111,13 +111,15 @@ public class LiveStream {
     private LiveStream() {
     }
 
-    public LiveStream(String streamUsername, String streamLocation, String theme, String authUsername, String authPassword) {
+    public LiveStream(String streamUsername, String theme, String serverLocation, String authUsername, String authPassword) {
         this.streamUsername = streamUsername;
-        this.streamLocation = streamLocation;
+        this.serverLocation = serverLocation;
         this.theme = theme;
         this.authUsername = authUsername;
         this.authPassword = authPassword;
         //default values created when de-serialising JSON object
+//        this.playbackURL= "";
+//        this.pubishURL = "";
         this.authenticationDisabled = false;
         this.encoderType = "other_rtmp";
         this.transcoderType = "transcoded";
@@ -127,8 +129,8 @@ public class LiveStream {
         this.hostedPage = false;
         this.hostedPageSharingIcons = false;
         this.billingMode = "pay_as_you_go";
-        this.viewers = 0;
-        this.likes = 0;
+//        this.viewers = 0;
+//        this.likes = 0;
     }
 
     public void setStreamId(String streamId) {
@@ -155,8 +157,8 @@ public class LiveStream {
         this.streamUsername = streamUsername;
     }
 
-    public void setStreamLocation(String streamLocation) {
-        this.streamLocation = streamLocation;
+    public void setServerLocation(String serverLocation) {
+        this.serverLocation = serverLocation;
     }
 
     public void setTheme(String theme) {
@@ -329,8 +331,8 @@ public class LiveStream {
         return streamUsername;
     }
 
-    public String getStreamLocation() {
-        return streamLocation;
+    public String getServerLocation() {
+        return serverLocation;
     }
 
     public String getTheme() {
@@ -476,4 +478,31 @@ public class LiveStream {
     public HashMap<String, Comment> getComments() {
         return comments;
     }
+
+
+    @Override
+    public String toString() {
+        return "LiveStream{" +
+                "streamUsername='" + streamUsername + '\'' +
+                ", theme='" + theme + '\'' +
+                ", serverLocation='" + serverLocation + '\'' +
+                ", authUsername='" + authUsername + '\'' +
+                ", authPassword='" + authPassword + '\'' +
+                ", authenticationDisabled=" + authenticationDisabled +
+                ", encoderType='" + encoderType + '\'' +
+                ", transcoderType='" + transcoderType + '\'' +
+                ", lowLatency=" + lowLatency +
+                ", aspectRatioHeight=" + aspectRatioHeight +
+                ", aspectRatioWidth=" + aspectRatioWidth +
+                ", playbackURL='" + playbackURL + '\'' +
+                ", hostedPage=" + hostedPage +
+                ", hostedPageSharingIcons=" + hostedPageSharingIcons +
+                ", pubishURL='" + pubishURL + '\'' +
+                ", billingMode='" + billingMode + '\'' +
+                ", likes=" + likes +
+                ", viewers=" + viewers +
+                '}';
+    }
+
+
 }
