@@ -2,12 +2,12 @@ package pack.jetminister.data;
 
 public class Comment {
 
-
     public static final String KEY_COMMENTS = "comments";
     private String userID;
     private String username;
     private String body;
 
+    //no-argument constructor necessary for Firebase Realtime Database operations
     public Comment() {
     }
 

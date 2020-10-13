@@ -2,8 +2,9 @@ package pack.jetminister.data.util;
 
 import com.google.gson.annotations.SerializedName;
 
+//de-serialized POJO from Wowza RestAPI JSON object
 public class Wowza {
-
+    //annotation for linking JSON and Java variable names to same field
     @SerializedName("name")
     private String wowzaName;
     @SerializedName("output_id")

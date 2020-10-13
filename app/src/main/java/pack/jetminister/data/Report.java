@@ -3,9 +3,9 @@ package pack.jetminister.data;
 import org.threeten.bp.LocalDateTime;
 
 public class Report {
+    //constant accessed in code as key for passing/bundling String
+    //or as child name in Firebase Realtime Database
     public static final String KEY_REPORT = "report";
-    public static final String KEY_REASON = "reason";
-    public static final String KEY_REPORT_BODY = "reportBody";
 
     private String loggerID;
     private String aboutID;
@@ -13,6 +13,7 @@ public class Report {
     private String reportBody;
     private String reportTimeStamp;
 
+    //no-argument constructor necessary for Firebase Realtime Database operations
     public Report() { }
 
     public Report(String loggerID, String aboutID, String reason, String reportBody, String reportTimeStamp) {

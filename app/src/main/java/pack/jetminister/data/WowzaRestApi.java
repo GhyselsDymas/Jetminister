@@ -10,6 +10,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
+//all HTTP requests made to server using Retrofit library
 public interface WowzaRestApi {
     @POST("live_streams")
     Call<Broadcast> createLiveStream(@Header("wsc-api-key") String APIKey,

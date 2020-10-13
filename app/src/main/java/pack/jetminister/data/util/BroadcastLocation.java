@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+// contains all valid server locations for Wowza RestAPI
 public enum BroadcastLocation {
     ASIA_PACIFIC_AUSTRALIA("Asia Pacific Australia"),
     ASIA_PACIFIC_INDIA("Asia Pacific India"),
@@ -35,7 +36,6 @@ public enum BroadcastLocation {
     private BroadcastLocation(String location) {
         this.location = location;
     }
-
 
     public static List<String> getBroadcastLocationList() {
         return Collections.unmodifiableList(BROADCAST_LOCATION_LIST);

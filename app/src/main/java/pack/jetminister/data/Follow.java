@@ -4,6 +4,7 @@ public class Follow {
     private String followID;
     private String followUsername;
 
+    //no-argument constructor necessary for Firebase Realtime Database operations
     public Follow() {
     }
 

@@ -2,9 +2,13 @@ package pack.jetminister.data.util;
 
 import com.google.gson.annotations.SerializedName;
 
-public class SourceConnectionInformation {
-    public static final String KEY_STREAM_PUBLISH_URL = "publishURL";
 
+//de-serialized POJO from Wowza RestAPI JSON object
+public class SourceConnectionInformation {
+    //constant accessed in code as key for passing/bundling String
+    //or as child name in Firebase Realtime Database
+    public static final String KEY_STREAM_PUBLISH_URL = "publishURL";
+    //annotation for linking JSON and Java variable names to same field
     @SerializedName("primary_server")
     private String primaryServerAddress;
     @SerializedName("host_port")

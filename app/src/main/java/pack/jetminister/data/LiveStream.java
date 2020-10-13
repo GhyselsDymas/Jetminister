@@ -9,9 +9,12 @@ import pack.jetminister.data.util.DirectPlaybackURL;
 import pack.jetminister.data.util.SourceConnectionInformation;
 import pack.jetminister.data.util.StreamTarget;
 
+//de-serialized POJO from Wowza RestAPI JSON object
+//expanded to contain additional data used in-app
 public class LiveStream {
     private static final String TAG = "LiveStream";
-
+    //constants accessed in code as keys for passing/bundling Strings
+    //or as child names in Firebase Realtime Database
     public static final String KEY_LIVE_STREAMS = "liveStreams";
     public static final String KEY_STREAM_ID = "streamId";
     public static final String KEY_STREAM_USERNAME = "streamUsername";
@@ -20,6 +23,7 @@ public class LiveStream {
     public static final String KEY_STREAM_VIEWERS = "viewers";
     public static final String KEY_STREAM_THEME = "theme";
 
+    //annotation for linking JSON and Java variable names to same field
     @SerializedName("id")
     private String streamId;
     @SerializedName("state")
@@ -34,7 +38,6 @@ public class LiveStream {
     private String streamUsername;
     @SerializedName("broadcast_location")
     private String streamLocation;
-    private String theme;
     @SerializedName("username")
     private String authUsername;
     @SerializedName("password")
@@ -85,7 +88,6 @@ public class LiveStream {
     @SerializedName("player_hls_playback_url")
     private String playbackURL;
     @SerializedName("hosted_page")
-    private String pubishURL;
     private boolean hostedPage;
     @SerializedName("hosted_page_title")
     private String hostedPageTitle;
@@ -96,11 +98,16 @@ public class LiveStream {
     @SerializedName("hosted_page_logo_image_url")
     private boolean hostedPageLogoImageURL;
     @SerializedName("billing_mode")
+
+    //additional fields used in source code
+    private String pubishURL;
+    private String theme;
     private String billingMode;
     private HashMap<String, Comment> comments;
     private int likes;
     private int viewers;
 
+    //no-argument constructor necessary for Firebase Realtime Database operations
     private LiveStream() {
     }
 
@@ -110,6 +117,7 @@ public class LiveStream {
         this.theme = theme;
         this.authUsername = authUsername;
         this.authPassword = authPassword;
+        //default values created when de-serialising JSON object
         this.authenticationDisabled = false;
         this.encoderType = "other_rtmp";
         this.transcoderType = "transcoded";
@@ -294,6 +302,8 @@ public class LiveStream {
     public void setComments(HashMap<String, Comment> comments) {
         this.comments = comments;
     }
+
+
 
     public String getStreamId() {
         return streamId;

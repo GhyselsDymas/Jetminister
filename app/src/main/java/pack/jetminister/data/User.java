@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 
 public class User implements Serializable {
+    //constants accessed in code as keys for passing/bundling Strings
+    //or as child names in Firebase Realtime Database
     public static final String KEY_USER_ID = "userID";
     public static final String KEY_USERS = "users";
     public static final String KEY_USERNAME = "username";
@@ -29,12 +31,14 @@ public class User implements Serializable {
     private String serverLocation;
     private String creditCard = "";
 
+    //no-argument constructor necessary for Firebase Realtime Database operations
     public User() {
     }
 
     public User(String email, String password) {
         this.email = email;
         this.password = password;
+        //default values created when initialising new User object
         this.imageFilename = "";
         this.imageURL = "";
         this.description = "";
